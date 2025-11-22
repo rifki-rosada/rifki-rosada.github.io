@@ -1,6 +1,45 @@
 1:"$Sreact.fragment"
-2:I[53501,["/_next/static/chunks/ca7fb24a71164ad7.js"],"default"]
+2:I[53501,["/_next/static/chunks/acbb3b2ec62c1ef8.js"],"default"]
 3:I[39756,["/_next/static/chunks/ff1a16fafef87110.js","/_next/static/chunks/247eb132b7f7b574.js"],"default"]
 4:I[37457,["/_next/static/chunks/ff1a16fafef87110.js","/_next/static/chunks/247eb132b7f7b574.js"],"default"]
 :HL["/_next/static/chunks/187511c54f6229a9.css","style"]
-0:{"buildId":"4GvOpchmT0DQZf4jVtUmZ","rsc":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/187511c54f6229a9.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/ca7fb24a71164ad7.js","async":true}]],["$","html",null,{"lang":"en","children":["$","body",null,{"children":[["$","$L2",null,{}],["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}],"notFound":[["$","main",null,{"className":"min-h-screen flex flex-col justify-center items-center text-center px-6 space-y-4","children":[["$","h1",null,{"className":"text-5xl font-bold text-white","children":"404"}],["$","p",null,{"className":"text-gray-400 text-lg max-w-md","children":"Looks like this page doesn't exist. No worries — let's get you back on track."}],["$","a",null,{"href":"/","className":"px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-700 transition mt-4","children":"Go Home"}]]}],[]]}]]}]}]]}],"loading":null,"isPartial":false}
+5:T63a,
+              document.addEventListener("DOMContentLoaded", function () {
+                const links = document.querySelectorAll('a[href]');
+                const options = { rootMargin: "300px" };
+
+                const preload = (url) => {
+                  if (!url || url.startsWith("#") || url.startsWith("mailto:")) return;
+                  const link = document.createElement("link");
+                  link.rel = "prefetch";
+                  link.href = url;
+                  document.head.appendChild(link);
+                };
+
+                // ✅ Preload when link scrolls near viewport
+                const observer = new IntersectionObserver((entries) => {
+                  entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                      preload(entry.target.getAttribute('href'));
+                      observer.unobserve(entry.target);
+                    }
+                  });
+                }, options);
+
+                links.forEach(link => observer.observe(link));
+
+                // ✅ Ultra Mode: Preload on Hover
+                links.forEach(link => {
+                  link.addEventListener('mouseenter', () => {
+                    preload(link.getAttribute('href'));
+                  });
+                });
+
+                // ✅ Ultra Mode: Preload on Touch (mobile)
+                links.forEach(link => {
+                  link.addEventListener('touchstart', () => {
+                    preload(link.getAttribute('href'));
+                  }, { passive: true });
+                });
+              });
+            0:{"buildId":"kohAlb1llZL6ScluagJHO","rsc":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/187511c54f6229a9.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/acbb3b2ec62c1ef8.js","async":true}]],["$","html",null,{"lang":"en","children":["$","body",null,{"children":[["$","$L2",null,{}],["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}],"notFound":[["$","main",null,{"className":"min-h-screen flex flex-col justify-center items-center text-center px-6 space-y-4","children":[["$","h1",null,{"className":"text-5xl font-bold text-white","children":"404"}],["$","p",null,{"className":"text-gray-400 text-lg max-w-md","children":"Looks like this page doesn't exist. No worries — let's get you back on track."}],["$","a",null,{"href":"/","className":"px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-700 transition mt-4","children":"Go Home"}]]}],[]]}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$5"}}]]}]}]]}],"loading":null,"isPartial":false}

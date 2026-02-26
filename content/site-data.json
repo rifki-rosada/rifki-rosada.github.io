@@ -1,68 +1,74 @@
-﻿{
+{
   "site": {
     "name": "Rifki Rosada",
     "url": "https://rifkirosada.com",
-    "title": "Full-Stack and Automation Engineer",
-    "heroHeadline": "I build revenue-critical web products and automations for remote teams.",
-    "heroSubheadline": "Full-stack engineer focused on CRM workflows, AI-assisted UX, and automation systems that help teams ship faster and operate with less manual work.",
-    "heroCta": {
-      "primaryLabel": "Hire Me",
-      "primaryHref": "/hire/",
-      "secondaryLabel": "View Work",
-      "secondaryHref": "/work/"
+    "title": "Android + AI Engineer",
+    "tagline": "Production-ready AI chat/search UX and automation systems for remote teams.",
+    "heroHeadline": "Android + AI Engineer building production-ready AI chat/search UX and automation/internal tools that reduce manual work.",
+    "heroSubheadline": "I help remote teams ship reliable product workflows across Android, full-stack web systems, and automation pipelines.",
+    "heroPrimaryCta": {
+      "label": "Hire me",
+      "href": "/hire/"
     },
-    "credibilityLine": "Shipped solutions across CRM, Android AI UX, monorepo architecture, and operational automation.",
+    "heroSecondaryCta": {
+      "label": "View work",
+      "href": "/work/"
+    },
     "keywords": [
-      "Full-Stack Engineer",
+      "Android Engineer",
+      "AI Engineer",
       "Automation Engineer",
       "Laravel",
       "Next.js",
-      "NestJS",
+      "Kotlin",
       "n8n",
       "Google Apps Script",
-      "Remote Contractor"
-    ]
+      "Remote Contract Engineer"
+    ],
+    "themeColor": "#0a0f1e"
   },
   "contact": {
     "email": "rifkirosada7@gmail.com",
     "linkedin": "https://www.linkedin.com/in/rifkirosada/",
     "github": "https://github.com/rifki-rosada",
-    "whatsapp": ""
+    "youtube": "https://www.youtube.com/results?search_query=rifki+rosada",
+    "whatsapp": "",
+    "responseTime": "Usually replies within 24 hours on weekdays."
   },
   "proofStrip": [
-    "Built a custom CRM pipeline and performance system on Laravel + Next.js + Postgres with Dockerized deployment.",
-    "Implemented AI chat entry and search state correctness improvements for the RRI Android app experience.",
-    "Delivered monorepo and workflow automation setups that replaced manual spreadsheet copy-paste operations."
+    "Shipped AI chat/search UX in a live Android app",
+    "Delivered a full-stack CRM pipeline system end-to-end",
+    "Built automation workflows that centralize inbound leads into a single source of truth"
   ],
   "services": [
     {
-      "name": "Revenue Ops Platform Sprint",
-      "timeline": "2-4 weeks",
-      "startingPrice": "USD 2,500+",
-      "deliverables": [
-        "Workflow discovery and priority map",
-        "CRM or internal dashboard implementation",
-        "Role-based access and deployment handoff"
-      ]
-    },
-    {
-      "name": "AI and Search UX Implementation",
+      "name": "AI Chat/Search UX Delivery",
       "timeline": "1-3 weeks",
       "startingPrice": "USD 1,800+",
       "deliverables": [
-        "Chat/search interaction flow design",
-        "State correctness fixes and QA checklist",
-        "Release-ready implementation notes"
+        "Flow map for chat entry, suggestion states, and search handoff",
+        "Implementation in existing Android/web architecture",
+        "Stability checklist and post-release adjustments"
       ]
     },
     {
-      "name": "Automation Workflow Buildout",
+      "name": "Custom CRM and Internal Tool Sprint",
+      "timeline": "2-5 weeks",
+      "startingPrice": "USD 2,500+",
+      "deliverables": [
+        "Data model and role-based workflow design",
+        "Backend + dashboard implementation",
+        "Deployment-ready handoff docs"
+      ]
+    },
+    {
+      "name": "Automation Workflow Build",
       "timeline": "1-2 weeks",
       "startingPrice": "USD 1,200+",
       "deliverables": [
-        "n8n or Apps Script workflow development",
-        "Order/logging pipeline integrations",
-        "Operations-ready monitoring and fallback plan"
+        "n8n/GAS flow implementation with API integrations",
+        "Validation and fallback handling",
+        "Ops-ready logging and monitoring notes"
       ]
     }
   ],
@@ -71,28 +77,36 @@
     "timeline": "Monthly",
     "startingPrice": "USD 900+/month",
     "deliverables": [
-      "Planned weekly engineering blocks",
-      "Bug fixes, optimizations, and workflow updates",
-      "Async reporting with next-step recommendations"
+      "Planned engineering blocks each week",
+      "Priority bug fixes and optimizations",
+      "Async status updates + next-step recommendations"
     ]
   },
   "workProcess": [
     {
-      "title": "1) Scope Alignment",
-      "detail": "I review your goals, constraints, and timeline, then propose a scoped milestone plan within 48 hours."
+      "title": "Scope and Milestones",
+      "detail": "You send goals and constraints, then I return a milestone plan with delivery order."
     },
     {
-      "title": "2) Build in Milestones",
-      "detail": "Work is delivered in short milestones with visible progress and documented decisions."
+      "title": "Execution",
+      "detail": "Each milestone ships with clear commits, implementation notes, and test coverage where applicable."
     },
     {
-      "title": "3) Weekly Communication",
-      "detail": "You get async updates, blockers, and next actions through a single communication channel."
+      "title": "Communication",
+      "detail": "Async-first updates with blockers, decisions, and what is next."
     },
     {
-      "title": "4) Handover and Support",
-      "detail": "Each engagement closes with deployment notes, code walkthrough context, and stabilization support."
+      "title": "Definition of Done",
+      "detail": "A milestone closes only when acceptance criteria, deployment notes, and handoff context are complete."
     }
+  ],
+  "introTemplate": [
+    "Hi Rifki,",
+    "I need help with [project type] for [company/team].",
+    "Main goal: [business outcome].",
+    "Current blockers: [top constraints].",
+    "Timeline: [target date].",
+    "Can you propose milestones and estimate?"
   ],
   "scopeTemplate": [
     "Project name:",
@@ -104,151 +118,71 @@
     "Access and technical constraints:",
     "Definition of done:"
   ],
-  "caseStudies": [
+  "trust": {
+    "stack": [
+      "Laravel",
+      "Next.js",
+      "NestJS",
+      "Kotlin",
+      "PostgreSQL",
+      "Docker",
+      "n8n",
+      "Google Apps Script"
+    ],
+    "credibility": [
+      "Shipped production CRM, Android AI UX, and automation systems for live operations.",
+      "Internship and contract delivery experience across web/mobile engineering teams.",
+      "Hands-on ownership from architecture decisions to deployment handoff."
+    ],
+    "profiles": [
+      {
+        "label": "GitHub",
+        "url": "https://github.com/rifki-rosada"
+      },
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/in/rifkirosada/"
+      },
+      {
+        "label": "YouTube",
+        "url": "https://www.youtube.com/results?search_query=rifki+rosada"
+      }
+    ]
+  },
+  "experience": [
     {
-      "slug": "custom-crm-sales-pipeline-performance-system",
-      "title": "Custom CRM - Sales Pipeline and Performance System",
-      "shortSummary": "Designed and implemented a custom CRM platform to centralize sales pipeline visibility and performance tracking.",
-      "category": "Web Platform",
-      "featured": true,
-      "problem": "Sales activity and performance tracking were split across disconnected documents, making weekly reviews and decision-making slow.",
-      "constraints": [
-        "Needed to fit an existing operational process without stopping active sales work.",
-        "Required role-based access and stable reporting behavior for managers and contributors.",
-        "Had to run on controlled infrastructure with clear deployment ownership."
-      ],
-      "approach": [
-        "Mapped pipeline stages and reporting requirements before implementation.",
-        "Built the backend workflow and data model in Laravel with PostgreSQL.",
-        "Implemented the operator-facing interface in Next.js and containerized deployment with Nginx and Docker."
-      ],
-      "result": [
-        "Created one source of truth for pipeline and performance review.",
-        "Reduced coordination overhead between sales and leadership during weekly check-ins.",
-        "Delivered a system that can be extended with additional sales operations modules."
-      ],
-      "techStack": [
-        "Laravel",
-        "Next.js",
-        "PostgreSQL",
-        "Nginx",
-        "Docker"
+      "title": "Remote Contract Engineer",
+      "period": "Recent",
+      "description": "Built delivery-focused systems for client operations, product UX, and internal tooling.",
+      "highlights": [
+        "Implemented CRM, Android AI UX, and operations automation projects",
+        "Worked directly with stakeholders on milestones and rollout decisions",
+        "Delivered handoff documentation for maintenance continuity"
       ]
     },
     {
-      "slug": "rri-android-app-ai-chat-search-ux",
-      "title": "RRI Android App - AI Chat and Search UX",
-      "shortSummary": "Improved AI chat entry and search behavior by implementing recommendation bubbles and state correctness handling.",
-      "category": "Android UX",
-      "featured": true,
-      "problem": "Users needed a clearer path from AI chat entry to relevant search actions, while preserving state consistency across interactions.",
-      "constraints": [
-        "AI chat needed to be integrated through a WebView entry point in an existing Android flow.",
-        "State transitions had to remain consistent across user taps, suggestions, and search results.",
-        "Changes had to ship without destabilizing the existing app behavior."
-      ],
-      "approach": [
-        "Implemented WebView-based AI chat entry aligned with the current navigation model.",
-        "Added recommendation bubbles to reduce decision friction for first actions.",
-        "Refined state handling logic to keep selected intents and resulting queries synchronized."
-      ],
-      "result": [
-        "Delivered a cleaner AI-assisted discovery flow for mobile users.",
-        "Improved UX consistency by addressing state mismatch edge cases.",
-        "Provided implementation notes to support future feature iteration."
-      ],
-      "techStack": [
-        "Android",
-        "Kotlin",
-        "WebView",
-        "Search UX"
+      "title": "Software Engineering Internship",
+      "period": "Internship",
+      "description": "Supported production feature delivery and quality stabilization in team environments.",
+      "highlights": [
+        "Contributed to production web features and issue resolution",
+        "Collaborated with team review and testing workflows",
+        "Built practical engineering habits for reliable shipping"
       ]
-    },
+    }
+  ],
+  "featuredCaseSlugs": [
+    "enterprise-crm-sales-pipeline-performance-system",
+    "media-app-android-ai-chat-search-ux",
+    "automation-workflows-n8n-gas-api-integrations",
+    "multi-surface-monorepo-nextjs-nestjs-platform",
+    "social-feed-ui-fixes-cards-polish"
+  ],
+  "legacyRedirects": [
     {
-      "slug": "indogate-monorepo-nextjs-nestjs-platform",
-      "title": "IndoGate Monorepo - Admin, Landing, and API",
-      "shortSummary": "Consolidated product surfaces into a monorepo architecture with Next.js frontend apps and a NestJS API.",
-      "category": "Architecture",
-      "featured": true,
-      "problem": "Separate repositories for dashboard, landing page, and backend API created dependency drift and release overhead.",
-      "constraints": [
-        "Multiple app surfaces needed independent delivery while sharing core standards.",
-        "Team workflows required clear boundaries between frontend apps and backend services.",
-        "Tooling had to stay simple for contributors using npm workspaces."
-      ],
-      "approach": [
-        "Structured the project using npm workspaces with dedicated app and service packages.",
-        "Standardized scripts and conventions for local development and CI-friendly execution.",
-        "Implemented Next.js AdminDashboard, Next.js Landing, and NestJS API within one coordinated repository."
-      ],
-      "result": [
-        "Reduced release friction across related surfaces by unifying repository management.",
-        "Improved consistency in dependency updates and shared engineering conventions.",
-        "Enabled more predictable collaboration between product and engineering contributors."
-      ],
-      "techStack": [
-        "npm workspaces",
-        "Next.js",
-        "NestJS",
-        "TypeScript"
-      ]
-    },
-    {
-      "slug": "automation-workflows-n8n-gas-api-integrations",
-      "title": "Automation Workflows - n8n, GAS, and API Integrations",
-      "shortSummary": "Built operations automations for order logging and WhatsApp tracking pipelines using n8n and Google Apps Script.",
-      "category": "Automation",
-      "featured": true,
-      "problem": "Operational logging tasks were manual, repetitive, and prone to inconsistencies between communication channels and spreadsheets.",
-      "constraints": [
-        "Workflows needed to be understandable by non-technical operations users.",
-        "Integrations had to stay resilient when third-party payloads changed.",
-        "Error handling needed to preserve auditability for operational reviews."
-      ],
-      "approach": [
-        "Implemented web order to sheet workflows with validation and normalization steps.",
-        "Added WhatsApp to sheet logging and tagging automations for tracking continuity.",
-        "Used n8n and Google Apps Script to balance flexibility, speed, and maintainability."
-      ],
-      "result": [
-        "Reduced manual copy-paste effort in daily operations.",
-        "Improved consistency of log records across channels.",
-        "Provided reusable automation patterns for future workflow extensions."
-      ],
-      "techStack": [
-        "n8n",
-        "Google Apps Script",
-        "REST APIs",
-        "Google Sheets"
-      ]
-    },
-    {
-      "slug": "hyppe-ui-fixes-social-cards-polish",
-      "title": "HYPPE UI Fixes - Social Cards Polish",
-      "shortSummary": "Refined social card UI behavior and styling consistency to improve readability and perceived quality.",
-      "category": "UI Polish",
-      "featured": false,
-      "problem": "Feed card presentation had inconsistent spacing and visual hierarchy, reducing clarity in dense content lists.",
-      "constraints": [
-        "Fixes had to fit into an existing design language without broad redesign scope.",
-        "Changes needed to avoid regressions on multiple device widths.",
-        "Implementation had to be low-risk for production rollout."
-      ],
-      "approach": [
-        "Reviewed card-level spacing, typography rhythm, and interaction cues.",
-        "Applied focused UI refinements for better readability and alignment consistency.",
-        "Verified behavior across representative mobile and desktop viewport ranges."
-      ],
-      "result": [
-        "Delivered cleaner and more consistent social card presentation.",
-        "Improved scannability of feed items for faster user comprehension.",
-        "Prepared UI foundation for future feature additions with less visual debt."
-      ],
-      "techStack": [
-        "Frontend UI",
-        "Design QA",
-        "Responsive CSS"
-      ]
+      "from": "/projects/",
+      "to": "/work/",
+      "title": "Projects moved to Work"
     }
   ]
 }

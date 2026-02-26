@@ -1,0 +1,278 @@
+[
+  {
+    "slug": "enterprise-crm-sales-pipeline-performance-system",
+    "title": "Enterprise CRM - Sales Pipeline & Performance System",
+    "shortSummary": "Designed and delivered a custom CRM that centralized pipeline tracking and performance reporting into one operational workflow.",
+    "outcome": "Centralized pipeline and performance reviews into one live dashboard used for weekly decision cycles.",
+    "category": "Client Delivery",
+    "type": "client",
+    "featured": true,
+    "priority": 1,
+    "problem": "Sales pipeline updates and performance reporting lived across disconnected files, causing slow reviews and unclear ownership.",
+    "constraints": [
+      "Had to fit active sales operations with minimal disruption",
+      "Needed role-based access for contributors and managers",
+      "Deployment target required Docker + Nginx with predictable recovery"
+    ],
+    "approach": [
+      "Mapped sales stages and reporting logic before schema design",
+      "Built backend services in Laravel with PostgreSQL for pipeline events and rollups",
+      "Implemented the operator UI in Next.js with focused workflows for data entry and reviews",
+      "Containerized stack with Docker and Nginx for stable deployment handoff"
+    ],
+    "results": [
+      "Created one source of truth for pipeline movement and performance snapshots",
+      "Reduced manual reconciliation during weekly check-ins",
+      "Delivered a modular base ready for future sales ops features"
+    ],
+    "techStack": [
+      "Laravel",
+      "Next.js",
+      "PostgreSQL",
+      "Docker",
+      "Nginx"
+    ],
+    "ndaNote": "Client details withheld. Details available under NDA.",
+    "visualCaption": "Architecture overview showing CRM services, dashboard UI, and reporting data flow."
+  },
+  {
+    "slug": "media-app-android-ai-chat-search-ux",
+    "title": "Media Android App - AI Chat + Search UX",
+    "shortSummary": "Improved AI chat entry and search behavior with suggestion bubbles and state-handling fixes in a live Android app flow.",
+    "outcome": "Shipped a clearer AI-assisted discovery flow with fewer state mismatch edge cases.",
+    "category": "Client Delivery",
+    "type": "client",
+    "featured": true,
+    "priority": 2,
+    "problem": "Users lacked a clear transition from AI chat prompts to meaningful search actions, and state sync issues reduced UX reliability.",
+    "constraints": [
+      "AI entry needed to integrate through an existing WebView pathway",
+      "Search state had to stay consistent across intents, suggestions, and results",
+      "Changes had to be shipped safely in an active production app"
+    ],
+    "approach": [
+      "Introduced WebView AI chat entry aligned with existing navigation",
+      "Added suggestion bubbles to reduce first-action friction",
+      "Refined state transitions to keep selected intents and queries synchronized",
+      "Documented implementation edge cases for future iterations"
+    ],
+    "results": [
+      "Delivered a smoother AI chat to search handoff",
+      "Improved UX predictability by resolving state mismatch behavior",
+      "Enabled faster future iteration with clearer behavior contracts"
+    ],
+    "techStack": [
+      "Android",
+      "Kotlin",
+      "WebView",
+      "Search UX"
+    ],
+    "ndaNote": "Client details withheld. Details available under NDA.",
+    "visualCaption": "Interaction map for AI chat entry, suggestion taps, and synchronized search states."
+  },
+  {
+    "slug": "automation-workflows-n8n-gas-api-integrations",
+    "title": "Automation Workflows",
+    "shortSummary": "Built automation pipelines (n8n, GAS, APIs) for web order ingestion and WhatsApp logging/tagging into a shared operations sheet.",
+    "outcome": "Replaced repetitive manual logging with automated lead/order pipelines and cleaner operational visibility.",
+    "category": "Client Delivery",
+    "type": "client",
+    "featured": true,
+    "priority": 3,
+    "problem": "Inbound orders and chat updates were copied manually into spreadsheets, producing inconsistent records and delayed follow-up.",
+    "constraints": [
+      "Needed to remain usable for non-technical operations users",
+      "Third-party payloads could change without notice",
+      "Logging needed traceability for audits and handovers"
+    ],
+    "approach": [
+      "Implemented web-order-to-sheet automation with validation and normalization",
+      "Added WhatsApp-to-sheet logging and tagging workflows",
+      "Used n8n + Google Apps Script to balance speed and maintainability",
+      "Defined fallback paths and operational checks for failed runs"
+    ],
+    "results": [
+      "Reduced daily manual copy-paste work",
+      "Improved consistency of lead and order records",
+      "Provided reusable automation patterns for future workflow extensions"
+    ],
+    "techStack": [
+      "n8n",
+      "Google Apps Script",
+      "REST APIs",
+      "Google Sheets"
+    ],
+    "ndaNote": "Client details withheld. Details available under NDA.",
+    "visualCaption": "Workflow diagram for inbound orders/chats into validation, tagging, and sheet logging."
+  },
+  {
+    "slug": "multi-surface-monorepo-nextjs-nestjs-platform",
+    "title": "Multi-Surface Platform Monorepo",
+    "shortSummary": "Consolidated admin, landing, and API development in a single monorepo with npm workspaces.",
+    "outcome": "Reduced release friction by aligning frontend and backend delivery in one repository.",
+    "category": "Client Delivery",
+    "type": "client",
+    "featured": true,
+    "priority": 4,
+    "problem": "Separate repositories for related surfaces caused dependency drift and slower coordinated releases.",
+    "constraints": [
+      "Needed isolated app ownership with shared engineering standards",
+      "Contributors required simple local setup",
+      "CI tasks needed deterministic scripts"
+    ],
+    "approach": [
+      "Structured repository with npm workspaces",
+      "Standardized scripts and package boundaries across services",
+      "Implemented Next.js admin + landing apps and NestJS API in one delivery model",
+      "Documented local development and release routines"
+    ],
+    "results": [
+      "Improved dependency consistency",
+      "Simplified cross-surface releases",
+      "Made onboarding and maintenance easier for contributors"
+    ],
+    "techStack": [
+      "npm workspaces",
+      "Next.js",
+      "NestJS",
+      "TypeScript"
+    ],
+    "ndaNote": "Client details withheld. Details available under NDA.",
+    "visualCaption": "Monorepo structure map for frontend apps, API service, and shared tooling."
+  },
+  {
+    "slug": "social-feed-ui-fixes-cards-polish",
+    "title": "Social Feed UI Fixes and Card Polish",
+    "shortSummary": "Delivered targeted UI polish and bug fixes on social feed cards to improve readability and consistency.",
+    "outcome": "Improved feed scannability and visual consistency without broad redesign risk.",
+    "category": "Client Delivery",
+    "type": "client",
+    "featured": true,
+    "priority": 5,
+    "problem": "Social cards had uneven spacing and hierarchy, reducing clarity in dense feed views.",
+    "constraints": [
+      "Changes had to fit current design language",
+      "Fixes needed to remain stable across mobile and desktop breakpoints",
+      "Rollout risk had to stay low"
+    ],
+    "approach": [
+      "Reviewed spacing rhythm, card hierarchy, and interaction cues",
+      "Applied focused CSS and component-level fixes",
+      "Validated behavior across representative viewport ranges"
+    ],
+    "results": [
+      "Cleaner card presentation and improved readability",
+      "Reduced visual inconsistency in feed layouts",
+      "Prepared UI baseline for future feature work"
+    ],
+    "techStack": [
+      "Frontend UI",
+      "Responsive CSS",
+      "Design QA"
+    ],
+    "ndaNote": "Client details withheld. Details available under NDA.",
+    "visualCaption": "Before/after style map showing card spacing, hierarchy, and content readability improvements."
+  },
+  {
+    "slug": "i-scantea-edge-ml-grading-prototype",
+    "title": "I-ScanTea",
+    "shortSummary": "Built an edge ML prototype for tea leaf quality scanning with mobile-first inference flow.",
+    "outcome": "Demonstrated on-device classification workflow for practical field capture scenarios.",
+    "category": "ML / Edge",
+    "type": "public",
+    "featured": false,
+    "priority": 6,
+    "problem": "Manual quality checks required repeated visual comparison and lacked a fast digital workflow.",
+    "constraints": [
+      "Needed to run with limited connectivity",
+      "Inference had to stay lightweight for mobile hardware",
+      "Data quality varied across real capture conditions"
+    ],
+    "approach": [
+      "Prepared dataset and labeling workflow for target classes",
+      "Built a compact inference pipeline suitable for mobile deployment",
+      "Designed capture and result flow for quick operator feedback"
+    ],
+    "results": [
+      "Delivered a usable prototype for offline-first quality checks",
+      "Established a repeatable evaluation flow for future model updates",
+      "Provided a base architecture for production hardening"
+    ],
+    "techStack": [
+      "TensorFlow Lite",
+      "Android",
+      "Python",
+      "Edge ML"
+    ],
+    "ndaNote": "Public project. Client details not involved; no private data disclosed.",
+    "visualCaption": "Edge ML pipeline sketch from capture to local inference and grade output."
+  },
+  {
+    "slug": "scanberry-mobile-vision-prototype",
+    "title": "Scanberry",
+    "shortSummary": "Created a mobile computer-vision prototype for fruit scanning workflows with edge inference constraints.",
+    "outcome": "Validated a practical on-device scan flow for classification without cloud dependency.",
+    "category": "ML / Edge",
+    "type": "public",
+    "featured": false,
+    "priority": 7,
+    "problem": "The workflow needed rapid classification support in environments with unstable connectivity.",
+    "constraints": [
+      "Inference latency needed to remain acceptable on-device",
+      "Model behavior had to tolerate imperfect capture angles",
+      "UI had to keep scan interactions simple for repeat use"
+    ],
+    "approach": [
+      "Built lightweight model iteration and evaluation loop",
+      "Implemented mobile capture and inference triggers",
+      "Tested UI flow for repeated scan-and-review usage"
+    ],
+    "results": [
+      "Delivered a demo-ready scan workflow with local inference",
+      "Identified clear next steps for dataset and model improvement",
+      "Documented architecture tradeoffs for deployment planning"
+    ],
+    "techStack": [
+      "Computer Vision",
+      "Android",
+      "TensorFlow Lite",
+      "Mobile UX"
+    ],
+    "ndaNote": "Public project. Client details not involved; no private data disclosed.",
+    "visualCaption": "Scan flow with image capture, local prediction, and confidence output summary."
+  },
+  {
+    "slug": "offscan-ai-offline-ocr-android",
+    "title": "OffScan AI",
+    "shortSummary": "Built and shipped an offline OCR Android app focused on privacy-preserving, on-device text extraction.",
+    "outcome": "Published an app workflow that performs OCR locally without cloud upload requirements.",
+    "category": "ML / Edge",
+    "type": "public",
+    "featured": false,
+    "priority": 8,
+    "problem": "Users needed OCR extraction with stronger privacy guarantees and no network dependency.",
+    "constraints": [
+      "All processing needed to stay on-device",
+      "UX had to work for quick single-hand capture flow",
+      "Performance and battery impact needed careful balance"
+    ],
+    "approach": [
+      "Designed offline-first OCR flow for camera/image import",
+      "Implemented on-device processing and result export interactions",
+      "Published support pages and resource structure for app users"
+    ],
+    "results": [
+      "Delivered a privacy-first OCR experience",
+      "Enabled reliable text extraction without mandatory internet access",
+      "Provided clear support and policy documentation"
+    ],
+    "techStack": [
+      "Android",
+      "On-device OCR",
+      "Edge AI",
+      "Mobile Product"
+    ],
+    "ndaNote": "Public app details available. No client-sensitive data disclosed.",
+    "visualCaption": "Product architecture for offline OCR capture, parsing, and export on device."
+  }
+]

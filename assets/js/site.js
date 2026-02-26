@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
   function normalizePath(pathname) {
     if (!pathname) return "/";
     const clean = pathname.endsWith("/") ? pathname : pathname + "/";
@@ -8,9 +8,11 @@
   const currentPath = normalizePath(window.location.pathname);
 
   document.querySelectorAll("a[data-nav-link]").forEach((link) => {
+    if (link.getAttribute("aria-current") === "page") return;
     const href = link.getAttribute("href");
     if (!href || !href.startsWith("/")) return;
-    if (normalizePath(href) === currentPath) {
+    const normalized = normalizePath(href);
+    if ((normalized === "/" && currentPath === "/") || (normalized !== "/" && currentPath.startsWith(normalized))) {
       link.setAttribute("aria-current", "page");
     }
   });
@@ -18,70 +20,80 @@
   const navToggle = document.querySelector("[data-nav-toggle]");
   const mobileNav = document.querySelector("[data-mobile-nav]");
 
-  function setMenuOpen(isOpen) {
+  function setMenuState(open) {
     if (!navToggle || !mobileNav) return;
-    navToggle.setAttribute("aria-expanded", String(isOpen));
-    mobileNav.setAttribute("aria-hidden", String(!isOpen));
+    navToggle.setAttribute("aria-expanded", String(open));
+    mobileNav.setAttribute("aria-hidden", String(!open));
   }
 
   if (navToggle && mobileNav) {
-    setMenuOpen(false);
-    navToggle.addEventListener("click", () => {
+    setMenuState(false);
+
+    navToggle.addEventListener("click", function () {
       const expanded = navToggle.getAttribute("aria-expanded") === "true";
-      setMenuOpen(!expanded);
+      setMenuState(!expanded);
     });
 
     mobileNav.querySelectorAll("a").forEach((link) => {
-      link.addEventListener("click", () => setMenuOpen(false));
+      link.addEventListener("click", function () {
+        setMenuState(false);
+      });
     });
 
-    window.addEventListener("keydown", (event) => {
+    window.addEventListener("keydown", function (event) {
       if (event.key === "Escape") {
-        setMenuOpen(false);
+        setMenuState(false);
+      }
+    });
+
+    document.addEventListener("click", function (event) {
+      if (!(event.target instanceof Element)) return;
+      const clickInsideMenu = mobileNav.contains(event.target);
+      const clickToggle = navToggle.contains(event.target);
+      if (!clickInsideMenu && !clickToggle) {
+        setMenuState(false);
       }
     });
   }
 
-  const supportsClipboard = typeof navigator !== "undefined" && navigator.clipboard && navigator.clipboard.writeText;
-
   async function copyText(text) {
-    if (supportsClipboard) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
       await navigator.clipboard.writeText(text);
       return true;
     }
 
-    const buffer = document.createElement("textarea");
-    buffer.value = text;
-    buffer.setAttribute("readonly", "");
-    buffer.style.position = "absolute";
-    buffer.style.left = "-9999px";
-    document.body.appendChild(buffer);
-    buffer.select();
-    const success = document.execCommand("copy");
-    document.body.removeChild(buffer);
-    return success;
+    const fallback = document.createElement("textarea");
+    fallback.value = text;
+    fallback.setAttribute("readonly", "true");
+    fallback.style.position = "absolute";
+    fallback.style.left = "-9999px";
+    document.body.appendChild(fallback);
+    fallback.select();
+    const copied = document.execCommand("copy");
+    document.body.removeChild(fallback);
+    return copied;
   }
 
-  document.querySelectorAll("[data-copy-scope]").forEach((button) => {
-    button.addEventListener("click", async () => {
-      const sourceId = button.getAttribute("data-copy-scope");
-      const sourceElement = sourceId ? document.getElementById(sourceId) : null;
-      const target = button.getAttribute("data-copy-feedback");
-      const feedbackElement = target ? document.getElementById(target) : null;
+  document.querySelectorAll("[data-copy-target]").forEach((button) => {
+    button.addEventListener("click", async function () {
+      const sourceId = button.getAttribute("data-copy-target");
+      const feedbackId = button.getAttribute("data-copy-feedback");
+      const source = sourceId ? document.getElementById(sourceId) : null;
+      const feedback = feedbackId ? document.getElementById(feedbackId) : null;
 
-      if (!sourceElement) return;
-
-      const text = sourceElement.innerText.trim();
+      if (!source) return;
+      const text = source.innerText.trim();
 
       try {
-        const copied = await copyText(text);
-        if (!feedbackElement) return;
-        feedbackElement.textContent = copied
-          ? "Scope template copied. Paste it in your message and fill each line."
-          : "Copy failed in this browser. You can still select and copy manually.";
-      } catch (error) {
-        if (feedbackElement) {
-          feedbackElement.textContent = "Copy failed in this browser. You can still select and copy manually.";
+        const ok = await copyText(text);
+        if (feedback) {
+          feedback.textContent = ok
+            ? "Copied. Paste and edit before sending."
+            : "Copy failed in this browser. Please copy manually.";
+        }
+      } catch {
+        if (feedback) {
+          feedback.textContent = "Copy failed in this browser. Please copy manually.";
         }
       }
     });

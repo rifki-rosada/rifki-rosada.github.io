@@ -1,11 +1,11 @@
 {
-  "name": "Rifki Rosada - Full-Stack and Automation Engineer",
+  "name": "Rifki Rosada - Android + AI Engineer",
   "short_name": "Rifki Rosada",
-  "description": "Full-stack engineer focused on CRM workflows, AI-assisted UX, and automation systems that help teams ship faster and operate with less manual work.",
+  "description": "Production-ready AI chat/search UX and automation systems for remote teams.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f3f6fb",
-  "theme_color": "#102b45",
+  "background_color": "#070b18",
+  "theme_color": "#0a0f1e",
   "icons": [
     {
       "src": "/favicon-192.png",

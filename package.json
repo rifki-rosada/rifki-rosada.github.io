@@ -1,0 +1,11 @@
+﻿{
+  "name": "rifki-portfolio-site",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-site.mjs",
+    "check": "node scripts/build-site.mjs --check",
+    "lint": "npm run check"
+  }
+}

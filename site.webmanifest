@@ -1,11 +1,11 @@
 {
-  "name": "Rifki Rosada Portfolio",
+  "name": "Rifki Rosada - Full-Stack and Automation Engineer",
   "short_name": "Rifki Rosada",
-  "description": "Android & Edge AI Engineer specializing in offline-first architecture, Jetpack Compose, and on-device AI (TensorFlow Lite).",
+  "description": "Full-stack engineer focused on CRM workflows, AI-assisted UX, and automation systems that help teams ship faster and operate with less manual work.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a0a0a",
-  "theme_color": "#0a0a0a",
+  "background_color": "#f3f6fb",
+  "theme_color": "#102b45",
   "icons": [
     {
       "src": "/favicon-192.png",

@@ -3,7 +3,7 @@
     "slug": "enterprise-crm-sales-pipeline-performance-system",
     "title": "Enterprise CRM - Sales Pipeline & Performance System",
     "shortSummary": "Designed and delivered a custom CRM that centralized pipeline tracking and performance reporting into one operational workflow.",
-    "outcome": "Centralized pipeline and performance reviews into one live dashboard used for weekly decision cycles.",
+    "outcome": "Replaced fragmented spreadsheets with a shared CRM dashboard that anchored weekly pipeline decisions.",
     "category": "Client Delivery",
     "type": "client",
     "featured": true,
@@ -23,9 +23,9 @@
       "Containerized stack with Docker and Nginx for stable deployment handoff"
     ],
     "results": [
-      "Created one source of truth for pipeline movement and performance snapshots",
-      "Reduced manual reconciliation during weekly check-ins",
-      "Delivered a modular base ready for future sales ops features"
+      "Established one source of truth for pipeline movement and performance snapshots",
+      "Cut weekly review friction by removing manual reconciliation steps",
+      "Delivered a modular baseline ready for future sales ops features"
     ],
     "techStack": [
       "Laravel",
@@ -41,7 +41,7 @@
     "slug": "media-app-android-ai-chat-search-ux",
     "title": "Media Android App - AI Chat + Search UX",
     "shortSummary": "Improved AI chat entry and search behavior with suggestion bubbles and state-handling fixes in a live Android app flow.",
-    "outcome": "Shipped a clearer AI-assisted discovery flow with fewer state mismatch edge cases.",
+    "outcome": "Shipped a clearer AI-assisted discovery flow that stabilized chat-to-search behavior in production.",
     "category": "Client Delivery",
     "type": "client",
     "featured": true,
@@ -61,9 +61,9 @@
       "Documented implementation edge cases for future iterations"
     ],
     "results": [
-      "Delivered a smoother AI chat to search handoff",
-      "Improved UX predictability by resolving state mismatch behavior",
-      "Enabled faster future iteration with clearer behavior contracts"
+      "Delivered a smoother AI chat-to-search handoff",
+      "Improved UX predictability by resolving state mismatch behavior in key flows",
+      "Enabled faster future iterations with clearer behavior contracts"
     ],
     "techStack": [
       "Android",
@@ -78,7 +78,7 @@
     "slug": "automation-workflows-n8n-gas-api-integrations",
     "title": "Automation Workflows",
     "shortSummary": "Built automation pipelines (n8n, GAS, APIs) for web order ingestion and WhatsApp logging/tagging into a shared operations sheet.",
-    "outcome": "Replaced repetitive manual logging with automated lead/order pipelines and cleaner operational visibility.",
+    "outcome": "Replaced repetitive manual logging with automation pipelines that improved operational visibility.",
     "category": "Client Delivery",
     "type": "client",
     "featured": true,
@@ -98,8 +98,8 @@
       "Defined fallback paths and operational checks for failed runs"
     ],
     "results": [
-      "Reduced daily manual copy-paste work",
-      "Improved consistency of lead and order records",
+      "Reduced daily manual copy-paste work in inbound operations",
+      "Improved consistency of lead and order records across channels",
       "Provided reusable automation patterns for future workflow extensions"
     ],
     "techStack": [
@@ -115,7 +115,7 @@
     "slug": "multi-surface-monorepo-nextjs-nestjs-platform",
     "title": "Multi-Surface Platform Monorepo",
     "shortSummary": "Consolidated admin, landing, and API development in a single monorepo with npm workspaces.",
-    "outcome": "Reduced release friction by aligning frontend and backend delivery in one repository.",
+    "outcome": "Reduced cross-team release friction by aligning frontend and backend delivery in one monorepo.",
     "category": "Client Delivery",
     "type": "client",
     "featured": true,
@@ -135,8 +135,8 @@
       "Documented local development and release routines"
     ],
     "results": [
-      "Improved dependency consistency",
-      "Simplified cross-surface releases",
+      "Improved dependency consistency across related product surfaces",
+      "Simplified cross-surface release coordination",
       "Made onboarding and maintenance easier for contributors"
     ],
     "techStack": [
@@ -152,7 +152,7 @@
     "slug": "social-feed-ui-fixes-cards-polish",
     "title": "Social Feed UI Fixes and Card Polish",
     "shortSummary": "Delivered targeted UI polish and bug fixes on social feed cards to improve readability and consistency.",
-    "outcome": "Improved feed scannability and visual consistency without broad redesign risk.",
+    "outcome": "Improved feed scannability and visual consistency through targeted fixes with low rollout risk.",
     "category": "Client Delivery",
     "type": "client",
     "featured": true,
@@ -171,9 +171,9 @@
       "Validated behavior across representative viewport ranges"
     ],
     "results": [
-      "Cleaner card presentation and improved readability",
-      "Reduced visual inconsistency in feed layouts",
-      "Prepared UI baseline for future feature work"
+      "Delivered cleaner card presentation and better feed readability",
+      "Reduced visual inconsistency in dense feed layouts",
+      "Prepared a more stable UI baseline for future feature work"
     ],
     "techStack": [
       "Frontend UI",

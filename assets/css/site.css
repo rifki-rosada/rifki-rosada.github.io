@@ -402,6 +402,12 @@ main {
   color: var(--text-muted);
 }
 
+.sla-note {
+  margin-top: 0.48rem;
+  color: #d8e8ff;
+  font-size: 0.95rem;
+}
+
 .panel {
   padding: 1.2rem;
 }
@@ -577,6 +583,19 @@ main {
   font-weight: 700;
 }
 
+.case-proof-nda {
+  width: fit-content;
+  border-radius: 999px;
+  border: 1px solid rgba(109, 240, 213, 0.35);
+  background: rgba(14, 34, 49, 0.86);
+  color: #c8f5ea;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 720;
+  padding: 0.2rem 0.52rem;
+}
+
 .case-outcome {
   color: var(--text-muted);
 }
@@ -606,6 +625,19 @@ main {
 .case-summary p {
   color: var(--text-muted);
   font-size: 0.87rem;
+}
+
+.case-summary-expanded {
+  gap: 0.64rem;
+}
+
+.case-summary-expanded li {
+  padding: 0.58rem 0.68rem;
+}
+
+.case-summary-expanded p {
+  color: #d8e8ff;
+  font-size: 0.92rem;
 }
 
 .stack-list {
@@ -747,6 +779,15 @@ main {
   text-decoration-color: currentColor;
 }
 
+.breadcrumbs [aria-current="page"] {
+  color: #dfeaff;
+  font-weight: 680;
+}
+
+.nav-toggle:focus-visible {
+  box-shadow: 0 0 0 3px rgba(109, 240, 213, 0.24);
+}
+
 .case-layout {
   display: grid;
   gap: 1rem;
@@ -806,6 +847,12 @@ main {
   padding: 0.72rem 0.8rem;
   color: #cfe4ff;
   font-size: 0.92rem;
+}
+
+.nda-proof-line {
+  margin-top: 0.56rem;
+  color: #b7cdf3;
+  font-size: 0.86rem;
 }
 
 .process-grid {

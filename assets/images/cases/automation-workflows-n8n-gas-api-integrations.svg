@@ -26,6 +26,6 @@
 
   <text x="120" y="380" fill="#7dd7ff" font-size="24" font-family="'Segoe UI', Tahoma, sans-serif">Client Delivery</text>
   <text x="120" y="430" fill="#f0f5ff" font-size="42" font-family="'Segoe UI', Tahoma, sans-serif" font-weight="700">Automation Workflows</text>
-  <text x="120" y="480" fill="#b8c7e8" font-size="24" font-family="'Segoe UI', Tahoma, sans-serif">Replaced repetitive manual logging with automated lead/order pipelines and cleaner oper...</text>
+  <text x="120" y="480" fill="#b8c7e8" font-size="24" font-family="'Segoe UI', Tahoma, sans-serif">Replaced repetitive manual logging with automation pipelines that improved operational ...</text>
   <text x="120" y="534" fill="#8fb7ff" font-size="22" font-family="'Segoe UI', Tahoma, sans-serif">n8n | Google Apps Script | REST APIs | Google Sheets</text>
 </svg>

@@ -208,7 +208,9 @@ function renderDocument({
   jsonLd,
   ogType = "website",
   noIndex = false,
-  injectHead = ""
+  injectHead = "",
+  ogImage = `${siteUrl}/og-image.png`,
+  ogImageAlt = `${siteData.site.name} portfolio preview`
 }) {
   const canonical = toAbsoluteUrl(route);
   const robots = noIndex ? "noindex, nofollow" : "index, follow";
@@ -226,25 +228,27 @@ function renderDocument({
   <meta name="robots" content="${robots}">
   <link rel="canonical" href="${escapeAttribute(canonical)}">
   <meta property="og:type" content="${escapeAttribute(ogType)}">
+  <meta property="og:locale" content="en_US">
   <meta property="og:title" content="${escapeAttribute(title)}">
   <meta property="og:description" content="${escapeAttribute(description)}">
   <meta property="og:url" content="${escapeAttribute(canonical)}">
   <meta property="og:site_name" content="${escapeAttribute(siteData.site.name)}">
-  <meta property="og:image" content="${escapeAttribute(`${siteUrl}/og-image.png`)}">
+  <meta property="og:image" content="${escapeAttribute(ogImage)}">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="${escapeAttribute(`${siteData.site.name} portfolio preview`)}">
+  <meta property="og:image:alt" content="${escapeAttribute(ogImageAlt)}">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="${escapeAttribute(canonical)}">
   <meta name="twitter:title" content="${escapeAttribute(title)}">
   <meta name="twitter:description" content="${escapeAttribute(description)}">
-  <meta name="twitter:image" content="${escapeAttribute(`${siteUrl}/og-image.png`)}">
+  <meta name="twitter:image" content="${escapeAttribute(ogImage)}">
   <title>${escapeHtml(title)}</title>
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16">
   <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32">
   <link rel="apple-touch-icon" href="/favicon-192.png" sizes="192x192">
   <link rel="manifest" href="/site.webmanifest">
-  <link rel="stylesheet" href="/assets/css/site.css">
+  <link rel="stylesheet" href="/assets/css/site.min.css">
   ${renderJsonLd(jsonLd)}
   ${injectHead}
 </head>
@@ -341,12 +345,14 @@ function renderCaseCard(caseStudy, index, options = {}) {
   const problemLine = caseStudy.problem || caseStudy.shortSummary;
   const approachLine = (caseStudy.approach || [])[0] || caseStudy.shortSummary;
   const resultLine = caseStudy.outcome || (caseStudy.results || [])[0] || caseStudy.shortSummary;
+  const ndaProof = caseStudy.type === "client" ? '<p class="case-proof-nda">Proof under NDA</p>' : "";
 
   return `
     <article class="card case-card" data-animate style="--delay:${animationDelay(index, 0.04)}">
       ${showVisual ? renderCaseVisual(caseStudy) : renderCaseCategoryVisual(caseStudy)}
       <div class="case-content">
         <p class="case-kicker">${escapeHtml(caseStudy.category)}</p>
+        ${ndaProof}
         <h3 class="line-clamp line-clamp-2"><a href="${escapeAttribute(caseStudy.route)}">${escapeHtml(caseStudy.title)}</a></h3>
         <ul class="case-summary">
           <li><span class="case-summary-label">Problem</span><p class="line-clamp line-clamp-2">${escapeHtml(problemLine)}</p></li>
@@ -415,7 +421,7 @@ function homePage() {
   };
 
   const body = `
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
       <section class="hero section">
         <div class="container hero-grid">
           <div class="hero-main" data-animate>
@@ -451,6 +457,10 @@ function homePage() {
           <div class="grid grid-3 cards-equal">
             ${renderServiceCards(siteData.services || [])}
           </div>
+          <div class="actions actions-inline">
+            <a class="btn btn-primary" href="/hire/">Hire me</a>
+            <a class="btn btn-secondary" href="/contact/">Send scope</a>
+          </div>
         </div>
       </section>
 
@@ -462,6 +472,7 @@ function homePage() {
             ${selectedCases.map((item, index) => renderCaseCard(item, index, { showVisual: true })).join("")}
           </div>
           <div class="actions actions-inline">
+            <a class="btn btn-primary" href="/hire/">Hire me</a>
             <a class="btn btn-secondary" href="/work/">View all work</a>
           </div>
         </div>
@@ -520,11 +531,15 @@ function homePage() {
 
 function workPage() {
   const body = `
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
       <section class="page-hero section">
         <div class="container">
           <h1 data-animate>Work</h1>
           <p data-animate style="--delay:0.05s">Case studies covering client delivery and ML/edge product work, ordered by business impact priority.</p>
+          <div class="actions" data-animate style="--delay:0.1s">
+            <a class="btn btn-primary" href="/hire/">Hire me</a>
+            <a class="btn btn-secondary" href="/contact/">Send scope</a>
+          </div>
         </div>
       </section>
       <section class="section section-tight" aria-labelledby="work-grid-heading">
@@ -560,18 +575,15 @@ function workPage() {
 function casePage(caseStudy) {
   const isClientCase = caseStudy.type === "client";
   const ndaLead = isClientCase
-    ? "Client details withheld. Implementation proof available under NDA."
+    ? "Proof under NDA: implementation notes, handoff docs, and delivery context are available on request."
     : "Public project details. No client-sensitive data disclosed.";
+  const ndaSupportingNote = isClientCase ? caseStudy.ndaNote || "Client details withheld." : "";
   const caseRole = caseStudy.role || (isClientCase ? "Remote Contract Engineer" : "Product Engineer");
   const caseTimeline = caseStudy.timeline || (isClientCase ? "Scoped delivery sprint" : "Prototype and validation cycle");
   const keyOutcomes = (caseStudy.results || []).slice(0, 3);
-  const caseSnapshotBullets = Array.from(
-    new Set([
-      ...(caseStudy.constraints || []).slice(0, 2),
-      ...(caseStudy.results || []).slice(0, 1),
-      ...(caseStudy.approach || []).slice(0, 1)
-    ].filter(Boolean))
-  ).slice(0, 3);
+  const snapshotProblemLine = caseStudy.problem || caseStudy.shortSummary;
+  const snapshotApproachLine = (caseStudy.approach || [])[0] || caseStudy.shortSummary;
+  const snapshotResultLine = caseStudy.outcome || (caseStudy.results || [])[0] || caseStudy.shortSummary;
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
@@ -589,35 +601,45 @@ function casePage(caseStudy) {
     name: caseStudy.title,
     description: caseStudy.shortSummary,
     dateModified: today,
+    inLanguage: "en-US",
     creator: {
       "@type": "Person",
       name: siteData.site.name,
       url: toAbsoluteUrl("/")
     },
     url: toAbsoluteUrl(caseStudy.route),
+    mainEntityOfPage: toAbsoluteUrl(caseStudy.route),
     about: caseStudy.category,
     keywords: (caseStudy.techStack || []).join(", ")
   };
 
   const body = `
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
       <section class="page-hero section">
         <div class="container">
           <nav class="breadcrumbs" aria-label="Breadcrumb">
             <a href="/">Home</a>
-            <span>/</span>
+            <span aria-hidden="true">/</span>
             <a href="/work/">Work</a>
-            <span>/</span>
-            <span>${escapeHtml(caseStudy.title)}</span>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">${escapeHtml(caseStudy.title)}</span>
           </nav>
           <h1 data-animate>${escapeHtml(caseStudy.title)}</h1>
           <p data-animate style="--delay:0.05s">${escapeHtml(caseStudy.shortSummary)}</p>
           <div class="case-snapshot" data-animate style="--delay:0.1s">
-            <p class="case-snapshot-problem line-clamp line-clamp-3"><strong>Problem:</strong> ${escapeHtml(caseStudy.problem)}</p>
-            <ul class="list-dot case-snapshot-list">
-              ${(caseSnapshotBullets.length ? caseSnapshotBullets : [caseStudy.outcome || caseStudy.shortSummary])
-                .map((item) => `<li class="line-clamp line-clamp-2">${escapeHtml(item)}</li>`)
-                .join("")}
+            <ul class="case-summary case-summary-expanded">
+              <li>
+                <span class="case-summary-label">Problem</span>
+                <p>${escapeHtml(snapshotProblemLine)}</p>
+              </li>
+              <li>
+                <span class="case-summary-label">What I did</span>
+                <p>${escapeHtml(snapshotApproachLine)}</p>
+              </li>
+              <li>
+                <span class="case-summary-label">Result</span>
+                <p>${escapeHtml(snapshotResultLine)}</p>
+              </li>
             </ul>
           </div>
         </div>
@@ -656,6 +678,7 @@ function casePage(caseStudy) {
               </div>
             </dl>
             <p class="nda-note">${escapeHtml(ndaLead)}</p>
+            ${ndaSupportingNote ? `<p class="nda-proof-line">${escapeHtml(ndaSupportingNote)}</p>` : ""}
           </aside>
 
           <article class="card case-detail" data-animate style="--delay:0.06s">
@@ -711,6 +734,8 @@ function casePage(caseStudy) {
     description: caseStudy.shortSummary,
     body,
     ogType: "article",
+    ogImage: `${siteUrl}/assets/images/cases/${caseStudy.slug}.png`,
+    ogImageAlt: `${caseStudy.title} case study preview`,
     jsonLd: [breadcrumbJsonLd, creativeWorkJsonLd]
   };
 }
@@ -719,7 +744,7 @@ function hirePage() {
   const scopeTemplate = (siteData.scopeTemplate || []).join("\n");
 
   const body = `
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
       <section class="page-hero section">
         <div class="container">
           <h1 data-animate>Hire me</h1>
@@ -828,7 +853,7 @@ function hirePage() {
 
 function experiencePage() {
   const body = `
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
       <section class="page-hero section">
         <div class="container">
           <h1 data-animate>Experience</h1>
@@ -917,14 +942,15 @@ function contactPage() {
   }
 
   const body = `
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
       <section class="page-hero section">
         <div class="container">
           <h1 data-animate>Contact</h1>
-          <p data-animate style="--delay:0.05s">Share project scope, timeline, and constraints. ${escapeHtml(siteData.contact.responseTime)}</p>
+          <p data-animate style="--delay:0.05s">Share project scope, timeline, and constraints for a milestone plan.</p>
+          <p class="sla-note" data-animate style="--delay:0.08s"><strong>Response SLA:</strong> ${escapeHtml(siteData.contact.responseTime)}</p>
           <div class="actions" data-animate style="--delay:0.1s">
             <button class="btn btn-secondary" type="button" data-copy-target="contact-scope-template-quick" data-copy-feedback="contact-scope-quick-feedback">Copy scope template</button>
-            <a class="btn btn-secondary" href="${escapeAttribute(scopeMailHref)}">Email scope template</a>
+            <a class="btn btn-primary" href="${escapeAttribute(scopeMailHref)}">Email scope template</a>
           </div>
           <p id="contact-scope-quick-feedback" class="copy-feedback" role="status" aria-live="polite">Paste the template, add details, then send.</p>
           <pre id="contact-scope-template-quick" class="sr-only-copy-source">${escapeHtml(scopeTemplate)}</pre>
@@ -1005,7 +1031,7 @@ function contactPage() {
 
 function notFoundPage() {
   const body = `
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
       <section class="section notice-404">
         <div class="container" data-animate>
           <h1>404 - Page not found</h1>
@@ -1045,7 +1071,7 @@ function folderNotFoundPage() {
 
 function redirectPage(redirect) {
   const body = `
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
       <section class="section notice-404">
         <div class="container" data-animate>
           <h1>${escapeHtml(redirect.title)}</h1>
@@ -1119,16 +1145,22 @@ async function writeCaseVisualAssets(caseStudy) {
   const basePath = path.join("assets", "images", "cases");
   await writeTextFile(path.join(basePath, `${caseStudy.slug}.svg`), svgMarkup);
 
-  if (!workPreviewVisualSlugs.has(caseStudy.slug)) {
-    return;
-  }
-
   const svgBuffer = Buffer.from(svgMarkup, "utf8");
   const resizeConfig = {
     width: 1200,
     height: 675,
     fit: "cover"
   };
+  const pngBuffer = await sharp(svgBuffer, { density: 220 })
+    .resize(resizeConfig)
+    .png({ compressionLevel: 9, adaptiveFiltering: true })
+    .toBuffer();
+
+  await writeBinaryFile(path.join(basePath, `${caseStudy.slug}.png`), pngBuffer);
+
+  if (!workPreviewVisualSlugs.has(caseStudy.slug)) {
+    return;
+  }
 
   const webpBuffer = await sharp(svgBuffer, { density: 220 })
     .resize(resizeConfig)
@@ -1222,6 +1254,22 @@ async function writeBinaryCopy(sourceRelativePath, targetRelativePath) {
   writtenFiles.push(targetRelativePath.replace(/\\/g, "/"));
 }
 
+function minifyCss(css) {
+  return css
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/\s+/g, " ")
+    .replace(/\s*([{}:;,>+~])\s*/g, "$1")
+    .replace(/;}/g, "}")
+    .trim();
+}
+
+async function writeMinifiedStylesheet() {
+  const sourcePath = path.join(rootDir, "assets", "css", "site.css");
+  const sourceCss = await fs.readFile(sourcePath, "utf8");
+  const minifiedCss = minifyCss(sourceCss);
+  await writeTextFile(path.join("assets", "css", "site.min.css"), minifiedCss);
+}
+
 function normalizeFilePathSlashes(value) {
   return value.replace(/\\/g, "/");
 }
@@ -1310,13 +1358,14 @@ async function removeStaleCaseOutput() {
   const keepCaseImages = new Set();
   for (const item of caseStudies) {
     keepCaseImages.add(`${item.slug}.svg`);
+    keepCaseImages.add(`${item.slug}.png`);
     if (workPreviewVisualSlugs.has(item.slug)) {
       keepCaseImages.add(`${item.slug}.webp`);
       keepCaseImages.add(`${item.slug}.avif`);
     }
   }
 
-  const removableExtensions = new Set([".svg", ".webp", ".avif"]);
+  const removableExtensions = new Set([".svg", ".png", ".webp", ".avif"]);
   try {
     const imageEntries = await fs.readdir(path.join(rootDir, "assets", "images", "cases"), {
       withFileTypes: true
@@ -1520,7 +1569,9 @@ async function build() {
       jsonLd: page.jsonLd,
       ogType: page.ogType,
       noIndex: page.noIndex,
-      injectHead: page.injectHead
+      injectHead: page.injectHead,
+      ogImage: page.ogImage,
+      ogImageAlt: page.ogImageAlt
     });
     await writeTextFile(page.filePath, html);
   }
@@ -1528,6 +1579,8 @@ async function build() {
   for (const caseStudy of caseStudies) {
     await writeCaseVisualAssets(caseStudy);
   }
+
+  await writeMinifiedStylesheet();
 
   await removeStaleCaseOutput();
 

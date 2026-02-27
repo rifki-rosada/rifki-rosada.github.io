@@ -1,6 +1,7 @@
 ﻿
 import fs from "node:fs/promises";
 import path from "node:path";
+import sharp from "sharp";
 
 const rootDir = process.cwd();
 const siteDataPath = path.join(rootDir, "content", "site-data.json");
@@ -34,6 +35,7 @@ const caseStudies = caseStudiesInput
     route: `/work/${item.slug}/`
   }))
   .sort((a, b) => (a.priority ?? 999) - (b.priority ?? 999));
+const workPreviewVisualSlugs = new Set(caseStudies.slice(0, 3).map((item) => item.slug));
 
 for (const slug of requiredCaseSlugs) {
   if (!caseStudies.some((item) => item.slug === slug)) {
@@ -286,16 +288,63 @@ function renderServiceCards(items, startingDelay = 0) {
     .join("");
 }
 
-function renderCaseCard(caseStudy, index) {
+function caseCategoryMark(category) {
+  const normalized = String(category || "").toLowerCase();
+  if (normalized.includes("client")) return "CL";
+  if (normalized.includes("ml") || normalized.includes("edge")) return "ML";
+  if (normalized.includes("automation")) return "AU";
+  const words = String(category || "")
+    .split(/[^a-z0-9]+/i)
+    .filter(Boolean);
+  return words
+    .slice(0, 2)
+    .map((word) => word[0].toUpperCase())
+    .join("") || "CS";
+}
+
+function renderCaseVisual(caseStudy) {
+  const slug = escapeAttribute(caseStudy.slug);
+  const title = escapeAttribute(caseStudy.title);
+  const route = escapeAttribute(caseStudy.route);
+  const hasModernFormats = workPreviewVisualSlugs.has(caseStudy.slug);
+
+  if (!hasModernFormats) {
+    return `
+      <a class="case-cover-link" href="${route}" aria-label="Open case study: ${title}">
+        <img src="/assets/images/cases/${slug}.svg" alt="${title} visual" loading="lazy" decoding="async" width="1200" height="675">
+      </a>
+    `;
+  }
+
+  return `
+    <a class="case-cover-link" href="${route}" aria-label="Open case study: ${title}">
+      <picture>
+        <source srcset="/assets/images/cases/${slug}.avif" type="image/avif">
+        <source srcset="/assets/images/cases/${slug}.webp" type="image/webp">
+        <img src="/assets/images/cases/${slug}.svg" alt="${title} visual" loading="lazy" decoding="async" width="1200" height="675">
+      </picture>
+    </a>
+  `;
+}
+
+function renderCaseCategoryVisual(caseStudy) {
+  return `
+    <div class="case-category-visual" aria-hidden="true">
+      <span class="case-category-chip">${escapeHtml(caseStudy.category)}</span>
+      <span class="case-category-mark">${escapeHtml(caseCategoryMark(caseStudy.category))}</span>
+    </div>
+  `;
+}
+
+function renderCaseCard(caseStudy, index, options = {}) {
+  const { showVisual = true } = options;
   const problemLine = caseStudy.problem || caseStudy.shortSummary;
   const approachLine = (caseStudy.approach || [])[0] || caseStudy.shortSummary;
   const resultLine = caseStudy.outcome || (caseStudy.results || [])[0] || caseStudy.shortSummary;
 
   return `
     <article class="card case-card" data-animate style="--delay:${animationDelay(index, 0.04)}">
-      <a class="case-cover-link" href="${escapeAttribute(caseStudy.route)}" aria-label="Open case study: ${escapeAttribute(caseStudy.title)}">
-        <img src="/assets/images/cases/${escapeAttribute(caseStudy.slug)}.svg" alt="${escapeAttribute(caseStudy.title)} visual" loading="lazy" decoding="async" width="1200" height="675">
-      </a>
+      ${showVisual ? renderCaseVisual(caseStudy) : renderCaseCategoryVisual(caseStudy)}
       <div class="case-content">
         <p class="case-kicker">${escapeHtml(caseStudy.category)}</p>
         <h3 class="line-clamp line-clamp-2"><a href="${escapeAttribute(caseStudy.route)}">${escapeHtml(caseStudy.title)}</a></h3>
@@ -410,7 +459,7 @@ function homePage() {
           <h2 id="selected-work-heading">Selected work</h2>
           <p class="section-intro">Client-delivery case studies prioritized by business outcomes.</p>
           <div class="grid case-grid case-grid-featured">
-            ${selectedCases.map((item, index) => renderCaseCard(item, index)).join("")}
+            ${selectedCases.map((item, index) => renderCaseCard(item, index, { showVisual: true })).join("")}
           </div>
           <div class="actions actions-inline">
             <a class="btn btn-secondary" href="/work/">View all work</a>
@@ -482,7 +531,9 @@ function workPage() {
         <div class="container">
           <h2 id="work-grid-heading" class="sr-only">All case studies</h2>
           <div class="grid case-grid case-grid-work">
-            ${caseStudies.map((item, index) => renderCaseCard(item, index)).join("")}
+            ${caseStudies
+              .map((item, index) => renderCaseCard(item, index, { showVisual: index < 3 }))
+              .join("")}
           </div>
         </div>
       </section>
@@ -514,6 +565,13 @@ function casePage(caseStudy) {
   const caseRole = caseStudy.role || (isClientCase ? "Remote Contract Engineer" : "Product Engineer");
   const caseTimeline = caseStudy.timeline || (isClientCase ? "Scoped delivery sprint" : "Prototype and validation cycle");
   const keyOutcomes = (caseStudy.results || []).slice(0, 3);
+  const caseSnapshotBullets = Array.from(
+    new Set([
+      ...(caseStudy.constraints || []).slice(0, 2),
+      ...(caseStudy.results || []).slice(0, 1),
+      ...(caseStudy.approach || []).slice(0, 1)
+    ].filter(Boolean))
+  ).slice(0, 3);
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
@@ -554,6 +612,14 @@ function casePage(caseStudy) {
           </nav>
           <h1 data-animate>${escapeHtml(caseStudy.title)}</h1>
           <p data-animate style="--delay:0.05s">${escapeHtml(caseStudy.shortSummary)}</p>
+          <div class="case-snapshot" data-animate style="--delay:0.1s">
+            <p class="case-snapshot-problem line-clamp line-clamp-3"><strong>Problem:</strong> ${escapeHtml(caseStudy.problem)}</p>
+            <ul class="list-dot case-snapshot-list">
+              ${(caseSnapshotBullets.length ? caseSnapshotBullets : [caseStudy.outcome || caseStudy.shortSummary])
+                .map((item) => `<li class="line-clamp line-clamp-2">${escapeHtml(item)}</li>`)
+                .join("")}
+            </ul>
+          </div>
         </div>
       </section>
 
@@ -1048,6 +1114,35 @@ function caseVisualSvg(caseStudy) {
 </svg>`;
 }
 
+async function writeCaseVisualAssets(caseStudy) {
+  const svgMarkup = caseVisualSvg(caseStudy);
+  const basePath = path.join("assets", "images", "cases");
+  await writeTextFile(path.join(basePath, `${caseStudy.slug}.svg`), svgMarkup);
+
+  if (!workPreviewVisualSlugs.has(caseStudy.slug)) {
+    return;
+  }
+
+  const svgBuffer = Buffer.from(svgMarkup, "utf8");
+  const resizeConfig = {
+    width: 1200,
+    height: 675,
+    fit: "cover"
+  };
+
+  const webpBuffer = await sharp(svgBuffer, { density: 220 })
+    .resize(resizeConfig)
+    .webp({ quality: 78, effort: 5 })
+    .toBuffer();
+  const avifBuffer = await sharp(svgBuffer, { density: 220 })
+    .resize(resizeConfig)
+    .avif({ quality: 58, effort: 6 })
+    .toBuffer();
+
+  await writeBinaryFile(path.join(basePath, `${caseStudy.slug}.webp`), webpBuffer);
+  await writeBinaryFile(path.join(basePath, `${caseStudy.slug}.avif`), avifBuffer);
+}
+
 function sitemapXml(pages) {
   const entries = pages
     .filter((page) => !page.noIndex)
@@ -1109,6 +1204,13 @@ async function writeTextFile(relativePath, content) {
     .join("\n");
   await fs.mkdir(path.dirname(targetPath), { recursive: true });
   await fs.writeFile(targetPath, `${normalized}\n`, "utf8");
+  writtenFiles.push(relativePath.replace(/\\/g, "/"));
+}
+
+async function writeBinaryFile(relativePath, content) {
+  const targetPath = path.join(rootDir, relativePath);
+  await fs.mkdir(path.dirname(targetPath), { recursive: true });
+  await fs.writeFile(targetPath, content);
   writtenFiles.push(relativePath.replace(/\\/g, "/"));
 }
 
@@ -1205,7 +1307,16 @@ async function removeStaleCaseOutput() {
     // ignore
   }
 
-  const keepCaseImages = new Set(caseStudies.map((item) => `${item.slug}.svg`));
+  const keepCaseImages = new Set();
+  for (const item of caseStudies) {
+    keepCaseImages.add(`${item.slug}.svg`);
+    if (workPreviewVisualSlugs.has(item.slug)) {
+      keepCaseImages.add(`${item.slug}.webp`);
+      keepCaseImages.add(`${item.slug}.avif`);
+    }
+  }
+
+  const removableExtensions = new Set([".svg", ".webp", ".avif"]);
   try {
     const imageEntries = await fs.readdir(path.join(rootDir, "assets", "images", "cases"), {
       withFileTypes: true
@@ -1215,7 +1326,7 @@ async function removeStaleCaseOutput() {
         .filter(
           (entry) =>
             entry.isFile() &&
-            entry.name.toLowerCase().endsWith(".svg") &&
+            removableExtensions.has(path.extname(entry.name.toLowerCase())) &&
             !keepCaseImages.has(entry.name)
         )
         .map((entry) =>
@@ -1415,10 +1526,7 @@ async function build() {
   }
 
   for (const caseStudy of caseStudies) {
-    await writeTextFile(
-      path.join("assets", "images", "cases", `${caseStudy.slug}.svg`),
-      caseVisualSvg(caseStudy)
-    );
+    await writeCaseVisualAssets(caseStudy);
   }
 
   await removeStaleCaseOutput();

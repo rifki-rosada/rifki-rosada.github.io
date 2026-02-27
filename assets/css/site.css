@@ -94,6 +94,21 @@ ol {
   outline-offset: 2px;
 }
 
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid rgba(109, 240, 213, 0.85);
+  outline-offset: 3px;
+}
+
+.primary-nav a:focus-visible,
+.mobile-nav a:focus-visible,
+.text-link:focus-visible,
+.footer-links a:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
 .skip-link {
   position: absolute;
   left: 1rem;
@@ -108,7 +123,11 @@ ol {
 }
 
 .skip-link:focus {
-  top: 1rem;
+  top: calc(0.75rem + var(--safe-top));
+}
+
+.skip-link:focus-visible {
+  top: calc(0.75rem + var(--safe-top));
 }
 
 .container {
@@ -501,10 +520,47 @@ main {
   border: 1px solid rgba(109, 240, 213, 0.2);
 }
 
+.case-cover-link picture {
+  display: block;
+}
+
 .case-cover-link img {
   width: 100%;
   aspect-ratio: 16 / 8.5;
   object-fit: cover;
+}
+
+.case-category-visual {
+  border-radius: 12px;
+  border: 1px solid rgba(109, 240, 213, 0.2);
+  background: linear-gradient(150deg, rgba(20, 36, 69, 0.95), rgba(10, 18, 36, 0.95));
+  aspect-ratio: 16 / 8.5;
+  padding: 0.72rem 0.8rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.case-category-chip {
+  width: fit-content;
+  border-radius: 999px;
+  border: 1px solid rgba(77, 166, 255, 0.44);
+  background: rgba(18, 37, 67, 0.88);
+  color: #d8e8ff;
+  font-size: 0.74rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 680;
+  padding: 0.22rem 0.56rem;
+}
+
+.case-category-mark {
+  font-family: "Sora", "Space Grotesk", "Segoe UI", sans-serif;
+  font-size: clamp(1.45rem, 2vw, 1.8rem);
+  letter-spacing: 0.04em;
+  font-weight: 780;
+  color: #9ad1ff;
 }
 
 .case-content {
@@ -648,6 +704,28 @@ main {
 .page-hero {
   padding-top: clamp(2.1rem, 3.8vw, 3.4rem);
   padding-bottom: clamp(0.75rem, 1.8vw, 1.4rem);
+}
+
+.case-snapshot {
+  margin-top: 0.85rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(106, 164, 234, 0.36);
+  background: rgba(15, 30, 58, 0.8);
+  padding: 0.78rem 0.86rem;
+}
+
+.case-snapshot-problem {
+  color: #e6f0ff;
+  font-size: 0.95rem;
+}
+
+.case-snapshot-list {
+  margin-top: 0.62rem;
+  gap: 0.44rem;
+}
+
+.case-snapshot-list li {
+  color: #d2e3ff;
 }
 
 .breadcrumbs {

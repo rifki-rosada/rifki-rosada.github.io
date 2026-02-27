@@ -167,8 +167,7 @@ function renderFooter() {
   const links = [
     { label: "Email", url: `mailto:${siteData.contact.email}` },
     { label: "LinkedIn", url: siteData.contact.linkedin },
-    { label: "GitHub", url: siteData.contact.github },
-    { label: "YouTube", url: siteData.contact.youtube }
+    { label: "GitHub", url: siteData.contact.github }
   ].filter((item) => item.url);
 
   return `
@@ -288,6 +287,10 @@ function renderServiceCards(items, startingDelay = 0) {
 }
 
 function renderCaseCard(caseStudy, index) {
+  const problemLine = caseStudy.problem || caseStudy.shortSummary;
+  const approachLine = (caseStudy.approach || [])[0] || caseStudy.shortSummary;
+  const resultLine = caseStudy.outcome || (caseStudy.results || [])[0] || caseStudy.shortSummary;
+
   return `
     <article class="card case-card" data-animate style="--delay:${animationDelay(index, 0.04)}">
       <a class="case-cover-link" href="${escapeAttribute(caseStudy.route)}" aria-label="Open case study: ${escapeAttribute(caseStudy.title)}">
@@ -295,12 +298,17 @@ function renderCaseCard(caseStudy, index) {
       </a>
       <div class="case-content">
         <p class="case-kicker">${escapeHtml(caseStudy.category)}</p>
-        <h3><a href="${escapeAttribute(caseStudy.route)}">${escapeHtml(caseStudy.title)}</a></h3>
-        <p class="case-outcome">${escapeHtml(caseStudy.outcome || caseStudy.shortSummary)}</p>
+        <h3 class="line-clamp line-clamp-2"><a href="${escapeAttribute(caseStudy.route)}">${escapeHtml(caseStudy.title)}</a></h3>
+        <ul class="case-summary">
+          <li><span class="case-summary-label">Problem</span><p class="line-clamp line-clamp-2">${escapeHtml(problemLine)}</p></li>
+          <li><span class="case-summary-label">What I did</span><p class="line-clamp line-clamp-2">${escapeHtml(approachLine)}</p></li>
+          <li><span class="case-summary-label">Result</span><p class="line-clamp line-clamp-2">${escapeHtml(resultLine)}</p></li>
+        </ul>
+        <p class="case-outcome line-clamp line-clamp-2">${escapeHtml(caseStudy.shortSummary)}</p>
         <ul class="stack-list">
           ${(caseStudy.techStack || []).slice(0, 5).map((tech) => `<li>${escapeHtml(tech)}</li>`).join("")}
         </ul>
-        <a class="text-link" href="${escapeAttribute(caseStudy.route)}">Read case study</a>
+        <a class="btn btn-secondary btn-read" href="${escapeAttribute(caseStudy.route)}">Read case study</a>
       </div>
     </article>
   `;
@@ -310,8 +318,7 @@ function renderContactChannels() {
   const links = [
     { label: `Email (${siteData.contact.email})`, href: `mailto:${siteData.contact.email}` },
     { label: "LinkedIn", href: siteData.contact.linkedin },
-    { label: "GitHub", href: siteData.contact.github },
-    { label: "YouTube", href: siteData.contact.youtube }
+    { label: "GitHub", href: siteData.contact.github }
   ].filter((item) => item.href);
 
   if (siteData.contact.whatsapp) {
@@ -354,7 +361,7 @@ function homePage() {
     url: toAbsoluteUrl("/"),
     jobTitle: siteData.site.title,
     email: `mailto:${siteData.contact.email}`,
-    sameAs: [siteData.contact.linkedin, siteData.contact.github, siteData.contact.youtube].filter(Boolean),
+    sameAs: [siteData.contact.linkedin, siteData.contact.github].filter(Boolean),
     knowsAbout: siteData.site.keywords
   };
 
@@ -402,7 +409,7 @@ function homePage() {
         <div class="container">
           <h2 id="selected-work-heading">Selected work</h2>
           <p class="section-intro">Client-delivery case studies prioritized by business outcomes.</p>
-          <div class="grid grid-2 cards-equal">
+          <div class="grid case-grid case-grid-featured">
             ${selectedCases.map((item, index) => renderCaseCard(item, index)).join("")}
           </div>
           <div class="actions actions-inline">
@@ -474,7 +481,7 @@ function workPage() {
       <section class="section section-tight" aria-labelledby="work-grid-heading">
         <div class="container">
           <h2 id="work-grid-heading" class="sr-only">All case studies</h2>
-          <div class="grid grid-2 cards-equal">
+          <div class="grid case-grid case-grid-work">
             ${caseStudies.map((item, index) => renderCaseCard(item, index)).join("")}
           </div>
         </div>
@@ -501,14 +508,12 @@ function workPage() {
 
 function casePage(caseStudy) {
   const isClientCase = caseStudy.type === "client";
-  const ndaDefault = isClientCase
-    ? "Client details withheld. Details available under NDA."
-    : "Public project details shared with no client-sensitive data.";
-  const ndaLead = caseStudy.ndaNote
-    ? isClientCase && !/details available under nda\.?/i.test(caseStudy.ndaNote)
-      ? `${caseStudy.ndaNote} Details available under NDA.`
-      : caseStudy.ndaNote
-    : ndaDefault;
+  const ndaLead = isClientCase
+    ? "Client details withheld. Implementation proof available under NDA."
+    : "Public project details. No client-sensitive data disclosed.";
+  const caseRole = caseStudy.role || (isClientCase ? "Remote Contract Engineer" : "Product Engineer");
+  const caseTimeline = caseStudy.timeline || (isClientCase ? "Scoped delivery sprint" : "Prototype and validation cycle");
+  const keyOutcomes = (caseStudy.results || []).slice(0, 3);
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
@@ -520,23 +525,19 @@ function casePage(caseStudy) {
     ]
   };
 
-  const articleJsonLd = {
+  const creativeWorkJsonLd = {
     "@context": "https://schema.org",
-    "@type": "Article",
-    headline: caseStudy.title,
+    "@type": "CreativeWork",
+    name: caseStudy.title,
     description: caseStudy.shortSummary,
     dateModified: today,
-    author: {
+    creator: {
       "@type": "Person",
       name: siteData.site.name,
       url: toAbsoluteUrl("/")
     },
-    publisher: {
-      "@type": "Person",
-      name: siteData.site.name
-    },
     url: toAbsoluteUrl(caseStudy.route),
-    articleSection: caseStudy.category,
+    about: caseStudy.category,
     keywords: (caseStudy.techStack || []).join(", ")
   };
 
@@ -558,11 +559,40 @@ function casePage(caseStudy) {
 
       <section class="section section-tight">
         <div class="container case-layout">
-          <article class="card case-detail" data-animate>
-            <figure class="case-visual">
-              <img src="/assets/images/cases/${escapeAttribute(caseStudy.slug)}.svg" alt="${escapeAttribute(caseStudy.title)} architecture diagram" width="1200" height="675" loading="eager" decoding="async">
-              <figcaption>${escapeHtml(caseStudy.visualCaption || "Architecture and implementation flow overview")}</figcaption>
-            </figure>
+          <aside class="card case-glance" data-animate>
+            <h2>At a glance</h2>
+            <dl class="glance-list">
+              <div>
+                <dt>Role</dt>
+                <dd>${escapeHtml(caseRole)}</dd>
+              </div>
+              <div>
+                <dt>Timeline</dt>
+                <dd>${escapeHtml(caseTimeline)}</dd>
+              </div>
+              <div>
+                <dt>Stack</dt>
+                <dd>
+                  <ul class="stack-list">
+                    ${(caseStudy.techStack || []).map((tech) => `<li>${escapeHtml(tech)}</li>`).join("")}
+                  </ul>
+                </dd>
+              </div>
+              <div>
+                <dt>Key outcomes</dt>
+                <dd>
+                  <ul class="list-dot">
+                    ${(keyOutcomes.length ? keyOutcomes : [caseStudy.outcome || caseStudy.shortSummary])
+                      .map((item) => `<li>${escapeHtml(item)}</li>`)
+                      .join("")}
+                  </ul>
+                </dd>
+              </div>
+            </dl>
+            <p class="nda-note">${escapeHtml(ndaLead)}</p>
+          </aside>
+
+          <article class="card case-detail" data-animate style="--delay:0.06s">
             <section>
               <h2>Problem</h2>
               <p>${escapeHtml(caseStudy.problem)}</p>
@@ -591,9 +621,6 @@ function casePage(caseStudy) {
                 ${(caseStudy.techStack || []).map((tech) => `<li>${escapeHtml(tech)}</li>`).join("")}
               </ul>
             </section>
-            <section class="note-row">
-              <p>${escapeHtml(ndaLead)}</p>
-            </section>
           </article>
         </div>
       </section>
@@ -618,7 +645,7 @@ function casePage(caseStudy) {
     description: caseStudy.shortSummary,
     body,
     ogType: "article",
-    jsonLd: [breadcrumbJsonLd, articleJsonLd]
+    jsonLd: [breadcrumbJsonLd, creativeWorkJsonLd]
   };
 }
 function hirePage() {
@@ -679,7 +706,7 @@ function hirePage() {
             <article class="card copy-card" data-animate>
               <h3>Intro message</h3>
               <pre id="intro-message">${escapeHtml(introTemplate)}</pre>
-              <button class="btn btn-primary" type="button" data-copy-target="intro-message" data-copy-feedback="intro-feedback">Copy intro message</button>
+              <button class="btn btn-secondary" type="button" data-copy-target="intro-message" data-copy-feedback="intro-feedback">Copy intro message</button>
               <p id="intro-feedback" class="copy-feedback" role="status" aria-live="polite">Copy and customize this intro before sending.</p>
             </article>
             <article class="card copy-card" data-animate style="--delay:0.08s">
@@ -698,8 +725,8 @@ function hirePage() {
           <p>${escapeHtml(siteData.contact.responseTime)}</p>
           ${renderContactChannels()}
           <div class="actions">
-            <a class="btn btn-primary" href="mailto:${escapeAttribute(siteData.contact.email)}">Email now</a>
-            <a class="btn btn-secondary" href="${escapeAttribute(siteData.contact.linkedin)}" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a class="btn btn-primary" href="/contact/">Hire me</a>
+            <a class="btn btn-secondary" href="mailto:${escapeAttribute(siteData.contact.email)}">Email scope</a>
           </div>
         </div>
       </section>
@@ -798,12 +825,25 @@ function experiencePage() {
 function contactPage() {
   const introTemplate = (siteData.introTemplate || []).join("\n");
   const scopeTemplate = (siteData.scopeTemplate || []).join("\n");
+  const scopeMailSubject = "Project scope inquiry";
+  const scopeMailBody = [
+    "Hi Rifki,",
+    "",
+    "I would like to discuss this project:",
+    "",
+    ...(siteData.scopeTemplate || []),
+    "",
+    "Target launch date:",
+    "Budget range:",
+    "",
+    "Best,"
+  ].join("\n");
+  const scopeMailHref = `mailto:${siteData.contact.email}?subject=${encodeURIComponent(scopeMailSubject)}&body=${encodeURIComponent(scopeMailBody)}`;
 
   const channelCards = [
     { label: "Email", value: siteData.contact.email, href: `mailto:${siteData.contact.email}` },
     { label: "LinkedIn", value: "Open profile", href: siteData.contact.linkedin },
-    { label: "GitHub", value: "View repositories", href: siteData.contact.github },
-    { label: "YouTube", value: "Watch clips", href: siteData.contact.youtube }
+    { label: "GitHub", value: "View repositories", href: siteData.contact.github }
   ];
 
   if (siteData.contact.whatsapp) {
@@ -816,6 +856,12 @@ function contactPage() {
         <div class="container">
           <h1 data-animate>Contact</h1>
           <p data-animate style="--delay:0.05s">Share project scope, timeline, and constraints. ${escapeHtml(siteData.contact.responseTime)}</p>
+          <div class="actions" data-animate style="--delay:0.1s">
+            <button class="btn btn-secondary" type="button" data-copy-target="contact-scope-template-quick" data-copy-feedback="contact-scope-quick-feedback">Copy scope template</button>
+            <a class="btn btn-secondary" href="${escapeAttribute(scopeMailHref)}">Email scope template</a>
+          </div>
+          <p id="contact-scope-quick-feedback" class="copy-feedback" role="status" aria-live="polite">Paste the template, add details, then send.</p>
+          <pre id="contact-scope-template-quick" class="sr-only-copy-source">${escapeHtml(scopeTemplate)}</pre>
         </div>
       </section>
 
@@ -848,7 +894,7 @@ function contactPage() {
             <article class="card copy-card" data-animate>
               <h3>Intro message</h3>
               <pre id="contact-intro-template">${escapeHtml(introTemplate)}</pre>
-              <button class="btn btn-primary" type="button" data-copy-target="contact-intro-template" data-copy-feedback="contact-intro-feedback">Copy intro message</button>
+              <button class="btn btn-secondary" type="button" data-copy-target="contact-intro-template" data-copy-feedback="contact-intro-feedback">Copy intro message</button>
               <p id="contact-intro-feedback" class="copy-feedback" role="status" aria-live="polite">This format helps me return a faster first response.</p>
             </article>
             <article class="card copy-card" data-animate style="--delay:0.08s">
@@ -867,7 +913,7 @@ function contactPage() {
           <p>For scoped contract work, the fastest path is sharing your requirements through email or LinkedIn.</p>
           <div class="actions">
             <a class="btn btn-primary" href="/hire/">Hire me</a>
-            <a class="btn btn-secondary" href="mailto:${escapeAttribute(siteData.contact.email)}">Send email</a>
+            <a class="btn btn-secondary" href="${escapeAttribute(scopeMailHref)}">Send scoped email</a>
           </div>
         </div>
       </section>
@@ -899,7 +945,7 @@ function notFoundPage() {
           <h1>404 - Page not found</h1>
           <p>This page is unavailable. Use navigation or jump to work and hiring details.</p>
           <div class="actions actions-center">
-            <a class="btn btn-primary" href="/">Go home</a>
+            <a class="btn btn-secondary" href="/">Go home</a>
             <a class="btn btn-secondary" href="/work/">View work</a>
           </div>
         </div>
@@ -939,7 +985,7 @@ function redirectPage(redirect) {
           <h1>${escapeHtml(redirect.title)}</h1>
           <p>This path has moved. Continue to the updated page.</p>
           <div class="actions actions-center">
-            <a class="btn btn-primary" href="${escapeAttribute(redirect.to)}">Open updated page</a>
+            <a class="btn btn-secondary" href="${escapeAttribute(redirect.to)}">Open updated page</a>
           </div>
         </div>
       </section>

@@ -8,6 +8,8 @@
     "type": "client",
     "featured": true,
     "priority": 1,
+    "role": "Lead Full-Stack Engineer",
+    "timeline": "6 weeks",
     "problem": "Sales pipeline updates and performance reporting lived across disconnected files, causing slow reviews and unclear ownership.",
     "constraints": [
       "Had to fit active sales operations with minimal disruption",
@@ -44,6 +46,8 @@
     "type": "client",
     "featured": true,
     "priority": 2,
+    "role": "Android AI UX Engineer",
+    "timeline": "3 weeks",
     "problem": "Users lacked a clear transition from AI chat prompts to meaningful search actions, and state sync issues reduced UX reliability.",
     "constraints": [
       "AI entry needed to integrate through an existing WebView pathway",
@@ -79,6 +83,8 @@
     "type": "client",
     "featured": true,
     "priority": 3,
+    "role": "Automation Engineer",
+    "timeline": "2 weeks",
     "problem": "Inbound orders and chat updates were copied manually into spreadsheets, producing inconsistent records and delayed follow-up.",
     "constraints": [
       "Needed to remain usable for non-technical operations users",
@@ -114,6 +120,8 @@
     "type": "client",
     "featured": true,
     "priority": 4,
+    "role": "Monorepo Platform Engineer",
+    "timeline": "4 weeks",
     "problem": "Separate repositories for related surfaces caused dependency drift and slower coordinated releases.",
     "constraints": [
       "Needed isolated app ownership with shared engineering standards",
@@ -149,6 +157,8 @@
     "type": "client",
     "featured": true,
     "priority": 5,
+    "role": "Frontend Engineer",
+    "timeline": "2 weeks",
     "problem": "Social cards had uneven spacing and hierarchy, reducing clarity in dense feed views.",
     "constraints": [
       "Changes had to fit current design language",
@@ -182,6 +192,8 @@
     "type": "public",
     "featured": false,
     "priority": 6,
+    "role": "ML Prototype Engineer",
+    "timeline": "5-week prototype",
     "problem": "Manual quality checks required repeated visual comparison and lacked a fast digital workflow.",
     "constraints": [
       "Needed to run with limited connectivity",
@@ -216,6 +228,8 @@
     "type": "public",
     "featured": false,
     "priority": 7,
+    "role": "Mobile Computer Vision Engineer",
+    "timeline": "4-week prototype",
     "problem": "The workflow needed rapid classification support in environments with unstable connectivity.",
     "constraints": [
       "Inference latency needed to remain acceptable on-device",
@@ -250,6 +264,8 @@
     "type": "public",
     "featured": false,
     "priority": 8,
+    "role": "Android Product Engineer",
+    "timeline": "6-week build and release",
     "problem": "Users needed OCR extraction with stronger privacy guarantees and no network dependency.",
     "constraints": [
       "All processing needed to stay on-device",

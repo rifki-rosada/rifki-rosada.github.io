@@ -68,7 +68,12 @@ const navItems = [
   { label: "Contact", href: "/contact/" }
 ];
 
-const footerNavItems = [...navItems, { label: "Experience", href: "/experience/" }];
+const footerNavItems = [
+  { label: "Home", href: "/" },
+  { label: "Work", href: "/work/" },
+  { label: "Hire", href: "/hire/" },
+  { label: "Contact", href: "/contact/" }
+];
 const writtenFiles = [];
 const checkMismatches = new Set();
 
@@ -191,7 +196,15 @@ function renderNavLinks(currentRoute, mobile = false) {
 }
 
 function renderFooterNavLinks() {
-  return footerNavItems.map((item) => `<a href="${escapeAttribute(item.href)}">${escapeHtml(item.label)}</a>`).join("");
+  return footerNavItems
+    .map(
+      (item) => `
+        <li>
+          <a class="footer-nav-link" href="${escapeAttribute(item.href)}">${escapeHtml(item.label)}</a>
+        </li>
+      `
+    )
+    .join("");
 }
 
 function renderHeader(currentRoute) {
@@ -245,11 +258,13 @@ function renderFooter() {
               .join("")}
           </div>
         </div>
-        <div>
+        <div class="footer-nav-block">
           <p class="footer-title">Explore</p>
-          <div class="footer-nav">
-            ${renderFooterNavLinks()}
-          </div>
+          <nav class="footer-nav" aria-label="Footer explore">
+            <ul class="footer-nav-list">
+              ${renderFooterNavLinks()}
+            </ul>
+          </nav>
         </div>
       </div>
       <div class="container footer-bottom">

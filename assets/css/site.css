@@ -718,20 +718,57 @@ main {
 }
 
 .profile-links,
-.footer-links,
-.footer-nav {
+.footer-links {
   display: flex;
   flex-wrap: wrap;
   gap: 0.56rem;
 }
 
 .profile-links a,
-.footer-nav a {
+.footer-nav-link {
   border-radius: 999px;
   border: 1px solid rgba(133, 184, 255, 0.24);
   padding: 0.35rem 0.72rem;
   color: #e4efff;
   font-weight: 650;
+}
+
+.footer-nav-block {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 0.7rem;
+  min-width: 11rem;
+}
+
+.footer-nav {
+  width: 100%;
+}
+
+.footer-nav-list {
+  display: grid;
+  gap: 0.55rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.footer-nav-list li {
+  display: block;
+}
+
+.footer-nav-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.25rem;
+  background: rgba(20, 34, 60, 0.8);
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.footer-nav-link:hover {
+  border-color: rgba(142, 240, 220, 0.36);
+  background: rgba(24, 40, 70, 0.94);
+  color: #ffffff;
 }
 
 .cta-panel {
@@ -904,6 +941,7 @@ main {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  align-items: start;
   gap: 1.1rem;
 }
 

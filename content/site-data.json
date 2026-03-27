@@ -2,28 +2,32 @@
   "site": {
     "name": "Rifki Rosada",
     "url": "https://rifkirosada.com",
-    "title": "Android + AI Engineer",
-    "tagline": "Production-ready AI chat/search UX and automation systems for remote teams.",
-    "heroHeadline": "Android + AI Engineer building production-ready AI chat/search UX and automation/internal tools that reduce manual work.",
-    "heroSubheadline": "I help remote teams ship reliable product workflows across Android, full-stack web systems, and automation pipelines.",
+    "title": "AI Workflow & Product Engineer",
+    "tagline": "Remote contract engineer for AI-enabled workflows, internal tools, automation systems, and Android AI delivery.",
+    "heroEyebrow": "Rifki Rosada | Remote contract engineer",
+    "heroHeadline": "I build AI-enabled workflows, internal tools, and product systems that reduce manual work.",
+    "heroSubheadline": "Remote product engineer for founders, operators, and serious teams who need reliable delivery across automation, full-stack web, and Android AI surfaces.",
     "heroPrimaryCta": {
-      "label": "Hire me",
-      "href": "/hire/"
+      "label": "Share your scope",
+      "href": "/contact/"
     },
     "heroSecondaryCta": {
-      "label": "View work",
+      "label": "Review relevant work",
       "href": "/work/"
     },
     "keywords": [
+      "AI Workflow Engineer",
+      "Internal Tools Engineer",
+      "Automation Engineer",
       "Android Engineer",
       "AI Engineer",
-      "Automation Engineer",
+      "CRM Developer",
+      "Full-Stack Product Engineer",
+      "Remote Contract Engineer",
       "Laravel",
       "Next.js",
       "Kotlin",
-      "n8n",
-      "Google Apps Script",
-      "Remote Contract Engineer"
+      "n8n"
     ],
     "themeColor": "#0a0f1e"
   },
@@ -35,82 +39,136 @@
     "responseTime": "Usually replies within 24 hours on weekdays."
   },
   "proofStrip": [
-    "Shipped AI chat/search UX in a live Android app",
-    "Delivered a full-stack CRM pipeline system end-to-end",
-    "Built automation workflows that centralize inbound leads into a single source of truth"
+    "Built a custom CRM that replaced fragmented spreadsheet reporting with one operational workflow.",
+    "Shipped Android AI chat/search UX improvements in a live product environment.",
+    "Delivered automation pipelines that turned manual lead logging into a shared source of truth."
   ],
   "services": [
     {
-      "name": "AI Chat/Search UX Delivery",
-      "timeline": "1-3 weeks",
-      "startingPrice": "USD 3,500+",
+      "name": "AI Workflow & Internal Tool Sprint",
+      "timeline": "Typical sprint: 2-6 weeks",
+      "bestFor": "Best for: internal workflow cleanup, ops tooling, team visibility",
+      "summary": "Design and ship the system that removes manual steps, clarifies ownership, and gives teams a cleaner operating baseline.",
       "deliverables": [
-        "Flow map for chat entry, suggestion states, and search handoff",
-        "Implementation in existing Android/web architecture",
-        "Stability checklist and post-release adjustments"
+        "Workflow mapping, data shape, and role-aware delivery plan",
+        "Implementation across backend, dashboard, and supporting product surfaces",
+        "Handoff notes for rollout, maintenance, and next-step iteration"
+      ],
+      "proofSlugs": [
+        "enterprise-crm-sales-pipeline-performance-system",
+        "automation-workflows-n8n-gas-api-integrations",
+        "multi-surface-monorepo-nextjs-nestjs-platform"
       ]
     },
     {
-      "name": "Custom CRM and Internal Tool Sprint",
-      "timeline": "2-5 weeks",
-      "startingPrice": "USD 6,000+",
+      "name": "Automation & Ops Clarity Sprint",
+      "timeline": "Typical sprint: 1-3 weeks",
+      "bestFor": "Best for: lead routing, reporting handoffs, manual admin reduction",
+      "summary": "Build automation layers that move data between tools, reduce repetitive work, and make operational state easier to trust.",
       "deliverables": [
-        "Data model and role-based workflow design",
-        "Backend + dashboard implementation",
-        "Deployment-ready handoff docs"
+        "Workflow implementation across APIs, n8n, Apps Script, and operational sheets",
+        "Validation, fallback handling, and traceability checks",
+        "Lightweight operating notes for non-technical team members"
+      ],
+      "proofSlugs": [
+        "automation-workflows-n8n-gas-api-integrations",
+        "enterprise-crm-sales-pipeline-performance-system"
       ]
     },
     {
-      "name": "Automation Workflow Build",
-      "timeline": "1-2 weeks",
-      "startingPrice": "USD 2,500+",
+      "name": "Android + AI Product Delivery",
+      "timeline": "Typical sprint: 2-4 weeks",
+      "bestFor": "Best for: AI chat/search UX, offline-first flows, Android product improvements",
+      "summary": "Ship Android features and AI-assisted product flows that need careful state handling, usability work, and production-minded implementation.",
       "deliverables": [
-        "n8n/GAS flow implementation with API integrations",
-        "Validation and fallback handling",
-        "Ops-ready logging and monitoring notes"
+        "Flow review for user entry points, state changes, and edge cases",
+        "Implementation inside the existing Android architecture",
+        "Release-ready notes for QA, follow-up fixes, and future iteration"
+      ],
+      "proofSlugs": [
+        "media-app-android-ai-chat-search-ux",
+        "offscan-ai-offline-ocr-android"
       ]
     }
   ],
   "retainer": {
-    "name": "Engineering Retainer",
-    "timeline": "Monthly",
-    "startingPrice": "USD 2,000+/month",
+    "name": "Embedded Product Engineering",
+    "timeline": "Ongoing remote contract support",
+    "bestFor": "Best for: active roadmaps, reliability work, multi-surface delivery",
+    "summary": "Plug into an existing product team for scoped delivery blocks, technical cleanup, and async-first execution.",
     "deliverables": [
-      "Planned engineering blocks each week",
-      "Priority bug fixes and optimizations",
-      "Async status updates + next-step recommendations"
+      "Planned delivery blocks against the active roadmap",
+      "Implementation ownership with clear blockers and handoff notes",
+      "Stability fixes, follow-up improvements, and scope recommendations"
+    ],
+    "proofSlugs": [
+      "enterprise-crm-sales-pipeline-performance-system",
+      "multi-surface-monorepo-nextjs-nestjs-platform",
+      "media-app-android-ai-chat-search-ux"
     ]
   },
   "workProcess": [
     {
-      "title": "Scope and Milestones",
-      "detail": "You send goals and constraints, then I return a milestone plan with delivery order."
+      "title": "Scope before code",
+      "detail": "I start by clarifying the workflow, constraints, and definition of done so the build solves the right operational problem."
     },
     {
-      "title": "Execution",
-      "detail": "Each milestone ships with clear commits, implementation notes, and test coverage where applicable."
+      "title": "Milestone-based delivery",
+      "detail": "Work is broken into scoped milestones with visible progress, implementation notes, and practical rollout context."
     },
     {
-      "title": "Communication",
-      "detail": "Async-first updates with blockers, decisions, and what is next."
+      "title": "Async-first communication",
+      "detail": "Remote updates stay concise and useful: what shipped, what is blocked, and what decision matters next."
     },
     {
-      "title": "Definition of Done",
-      "detail": "A milestone closes only when acceptance criteria, deployment notes, and handoff context are complete."
+      "title": "Clean handoff",
+      "detail": "A milestone closes with implementation context, operational notes, and a clear path for follow-up work."
+    }
+  ],
+  "hireFit": {
+    "goodFit": [
+      "Teams losing time to spreadsheet sprawl, manual routing, or fragmented internal workflows",
+      "Founders or operators who need a reliable engineer to own a scoped delivery sprint",
+      "Product teams that need Android + AI support alongside backend or web implementation"
+    ],
+    "workingStyle": [
+      "Comfortable shipping inside existing codebases and active product constraints",
+      "Focused on clear ownership, practical tradeoffs, and low-drama delivery",
+      "Best suited to scoped remote contract work where decisions and handoff quality matter"
+    ]
+  },
+  "hireFaqs": [
+    {
+      "question": "What is the best way to start?",
+      "answer": "Send the current workflow, blockers, target outcome, and timeline. I will turn that into a milestone suggestion or the next most useful starting scope."
+    },
+    {
+      "question": "Can you work inside an existing product and codebase?",
+      "answer": "Yes. Most of the work shown here was delivered inside existing systems with constraints, active stakeholders, and handoff requirements."
+    },
+    {
+      "question": "Do you only work on Android?",
+      "answer": "No. Android + AI is a strong secondary specialization, but the main wedge is AI-enabled workflows, internal tools, automation systems, and product delivery across web and backend surfaces."
+    },
+    {
+      "question": "How do you handle remote collaboration?",
+      "answer": "Async-first updates, scoped milestones, clear blockers, and delivery notes so teams can keep moving without constant meetings."
     }
   ],
   "introTemplate": [
     "Hi Rifki,",
-    "I need help with [project type] for [company/team].",
-    "Main goal: [business outcome].",
-    "Current blockers: [top constraints].",
+    "I need help with [workflow / product area].",
+    "Team or company: [name].",
+    "Main outcome: [what needs to improve].",
+    "Current blockers: [manual work / reliability issue / delivery constraint].",
     "Timeline: [target date].",
-    "Can you propose milestones and estimate?"
+    "Can you suggest the best starting scope?"
   ],
   "scopeTemplate": [
-    "Project name:",
-    "Business goal:",
-    "Current workflow and pain points:",
+    "Project or team:",
+    "Business outcome:",
+    "Current workflow or product issue:",
+    "What is manual, unclear, or fragile today:",
     "Required deliverables:",
     "Preferred timeline:",
     "Stakeholders and communication channel:",
@@ -122,6 +180,7 @@
       "Laravel",
       "Next.js",
       "NestJS",
+      "Android",
       "Kotlin",
       "PostgreSQL",
       "Docker",
@@ -129,9 +188,9 @@
       "Google Apps Script"
     ],
     "credibility": [
-      "Shipped production CRM, Android AI UX, and automation systems used in live operations.",
-      "Contract and internship delivery across web/mobile teams with direct stakeholder communication.",
-      "Proof artifacts for client engagements are available under NDA."
+      "Shipped client systems across CRM, automation, Android AI UX, and platform delivery.",
+      "Worked directly with stakeholders on scope, delivery order, and handoff context.",
+      "NDA-safe proof stays factual: live environments, shipped systems, and clear ownership."
     ],
     "profiles": [
       {
@@ -142,36 +201,40 @@
         "label": "LinkedIn",
         "url": "https://www.linkedin.com/in/rifkirosada/"
       }
+    ],
+    "workingStyle": [
+      "Scopes are broken into milestones with clear delivery order and acceptance criteria.",
+      "I work comfortably inside existing products, not just greenfield builds.",
+      "Handoff quality matters as much as implementation speed."
     ]
   },
   "experience": [
     {
       "title": "Remote Contract Engineer",
-      "period": "Recent",
-      "description": "Built delivery-focused systems for client operations, product UX, and internal tooling.",
+      "period": "Recent client delivery",
+      "description": "Owned scoped delivery across CRM, automation, Android AI UX, and supporting product systems.",
       "highlights": [
-        "Implemented CRM, Android AI UX, and operations automation projects",
+        "Delivered systems used in real operational workflows",
         "Worked directly with stakeholders on milestones and rollout decisions",
-        "Delivered handoff documentation for maintenance continuity"
+        "Provided handoff notes so work could continue after delivery"
       ]
     },
     {
       "title": "Software Engineering Internship",
-      "period": "Internship",
-      "description": "Supported production feature delivery and quality stabilization in team environments.",
+      "period": "Earlier team experience",
+      "description": "Built shipping discipline inside collaborative product teams before moving into more independent delivery work.",
       "highlights": [
-        "Contributed to production web features and issue resolution",
-        "Collaborated with team review and testing workflows",
-        "Built practical engineering habits for reliable shipping"
+        "Contributed to production feature work and issue resolution",
+        "Worked within review, QA, and team communication loops",
+        "Built habits around reliability, iteration, and practical delivery"
       ]
     }
   ],
   "featuredCaseSlugs": [
     "enterprise-crm-sales-pipeline-performance-system",
-    "media-app-android-ai-chat-search-ux",
     "automation-workflows-n8n-gas-api-integrations",
-    "multi-surface-monorepo-nextjs-nestjs-platform",
-    "social-feed-ui-fixes-cards-polish"
+    "media-app-android-ai-chat-search-ux",
+    "multi-surface-monorepo-nextjs-nestjs-platform"
   ],
   "legacyRedirects": [
     {

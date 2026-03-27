@@ -1,29 +1,14 @@
 (function () {
-  function normalizePath(pathname) {
-    if (!pathname) return "/";
-    const clean = pathname.endsWith("/") ? pathname : pathname + "/";
-    return clean.replace(/\/index\.html$/i, "/");
-  }
-
-  const currentPath = normalizePath(window.location.pathname);
-
-  document.querySelectorAll("a[data-nav-link]").forEach((link) => {
-    if (link.getAttribute("aria-current") === "page") return;
-    const href = link.getAttribute("href");
-    if (!href || !href.startsWith("/")) return;
-    const normalized = normalizePath(href);
-    if ((normalized === "/" && currentPath === "/") || (normalized !== "/" && currentPath.startsWith(normalized))) {
-      link.setAttribute("aria-current", "page");
-    }
-  });
-
   const navToggle = document.querySelector("[data-nav-toggle]");
   const mobileNav = document.querySelector("[data-mobile-nav]");
 
   function setMenuState(open) {
     if (!navToggle || !mobileNav) return;
+
     navToggle.setAttribute("aria-expanded", String(open));
+    navToggle.setAttribute("aria-label", open ? "Close navigation menu" : "Open navigation menu");
     mobileNav.setAttribute("aria-hidden", String(!open));
+    mobileNav.hidden = !open;
   }
 
   if (navToggle && mobileNav) {
@@ -48,9 +33,7 @@
 
     document.addEventListener("click", function (event) {
       if (!(event.target instanceof Element)) return;
-      const clickInsideMenu = mobileNav.contains(event.target);
-      const clickToggle = navToggle.contains(event.target);
-      if (!clickInsideMenu && !clickToggle) {
+      if (!mobileNav.contains(event.target) && !navToggle.contains(event.target)) {
         setMenuState(false);
       }
     });
@@ -82,13 +65,12 @@
       const feedback = feedbackId ? document.getElementById(feedbackId) : null;
 
       if (!source) return;
-      const text = source.innerText.trim();
 
       try {
-        const ok = await copyText(text);
+        const ok = await copyText(source.innerText.trim());
         if (feedback) {
           feedback.textContent = ok
-            ? "Copied. Paste and edit before sending."
+            ? "Copied. Edit the message before sending."
             : "Copy failed in this browser. Please copy manually.";
         }
       } catch {
@@ -97,9 +79,5 @@
         }
       }
     });
-  });
-
-  document.querySelectorAll("[data-year]").forEach((node) => {
-    node.textContent = String(new Date().getFullYear());
   });
 })();

@@ -1,4 +1,3 @@
-﻿
 import fs from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
@@ -29,13 +28,24 @@ if (!siteUrl.startsWith("https://")) {
   throw new Error("content/site-data.json must include an https site.url value.");
 }
 
+const buildDate = await latestModifiedDate([
+  siteDataPath,
+  caseStudiesPath,
+  path.join(rootDir, "scripts", "build-site.mjs"),
+  path.join(rootDir, "assets", "css", "site.css"),
+  path.join(rootDir, "assets", "js", "site.js")
+]);
+
 const caseStudies = caseStudiesInput
   .map((item) => ({
     ...item,
     route: `/work/${item.slug}/`
   }))
   .sort((a, b) => (a.priority ?? 999) - (b.priority ?? 999));
-const workPreviewVisualSlugs = new Set(caseStudies.slice(0, 3).map((item) => item.slug));
+
+const clientCaseStudies = caseStudies.filter((item) => item.type === "client");
+const publicCaseStudies = caseStudies.filter((item) => item.type === "public");
+const workPreviewVisualSlugs = new Set(caseStudies.map((item) => item.slug));
 
 for (const slug of requiredCaseSlugs) {
   if (!caseStudies.some((item) => item.slug === slug)) {
@@ -55,12 +65,12 @@ const navItems = [
   { label: "Home", href: "/" },
   { label: "Work", href: "/work/" },
   { label: "Hire", href: "/hire/" },
-  { label: "Experience", href: "/experience/" },
   { label: "Contact", href: "/contact/" }
 ];
 
-const today = new Date().toISOString().slice(0, 10);
+const footerNavItems = [...navItems, { label: "Experience", href: "/experience/" }];
 const writtenFiles = [];
+const checkMismatches = new Set();
 
 function ensureTrailingSlash(route) {
   if (route === "/") return "/";
@@ -68,8 +78,7 @@ function ensureTrailingSlash(route) {
 }
 
 function toAbsoluteUrl(route) {
-  const normalized = ensureTrailingSlash(route);
-  return `${siteUrl}${normalized}`;
+  return `${siteUrl}${ensureTrailingSlash(route)}`;
 }
 
 function normalizeRoute(route) {
@@ -84,7 +93,7 @@ function escapeHtml(value) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
+    .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 }
 
@@ -97,12 +106,12 @@ function escapeXml(value) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
+    .replace(/"/g, "&quot;")
     .replace(/'/g, "&apos;");
 }
 
 function truncate(value, max) {
-  const text = String(value);
+  const text = String(value || "");
   return text.length > max ? `${text.slice(0, max - 1)}...` : text;
 }
 
@@ -125,16 +134,64 @@ function isActiveNavLink(currentRoute, href) {
   return current.startsWith(target);
 }
 
+function externalLinkAttributes(url) {
+  return String(url).startsWith("http") ? ' target="_blank" rel="noopener noreferrer"' : "";
+}
+
+function scopeMailHref() {
+  const subject = "Project scope inquiry";
+  const body = [
+    "Hi Rifki,",
+    "",
+    "I would like to discuss this project:",
+    "",
+    ...(siteData.scopeTemplate || []),
+    "",
+    "Timeline:",
+    "",
+    "Best,"
+  ].join("\n");
+
+  return `mailto:${siteData.contact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+function emailProjectBriefHref() {
+  return `mailto:${siteData.contact.email}`;
+}
+
+function findCaseStudy(slug) {
+  return caseStudies.find((item) => item.slug === slug) || null;
+}
+
+function resolveRelatedCases(caseStudy) {
+  const explicit = (caseStudy.relatedSlugs || [])
+    .map((slug) => findCaseStudy(slug))
+    .filter(Boolean)
+    .slice(0, 3);
+
+  if (explicit.length > 0) {
+    return explicit;
+  }
+
+  return caseStudies
+    .filter((item) => item.slug !== caseStudy.slug && item.type === caseStudy.type)
+    .slice(0, 3);
+}
+
 function renderNavLinks(currentRoute, mobile = false) {
   return navItems
     .map((item) => {
       const active = isActiveNavLink(currentRoute, item.href) ? ' aria-current="page"' : "";
       if (mobile) {
-        return `<li><a data-nav-link href="${escapeAttribute(item.href)}"${active}>${escapeHtml(item.label)}</a></li>`;
+        return `<li><a href="${escapeAttribute(item.href)}"${active}>${escapeHtml(item.label)}</a></li>`;
       }
-      return `<a data-nav-link href="${escapeAttribute(item.href)}"${active}>${escapeHtml(item.label)}</a>`;
+      return `<a href="${escapeAttribute(item.href)}"${active}>${escapeHtml(item.label)}</a>`;
     })
     .join("");
+}
+
+function renderFooterNavLinks() {
+  return footerNavItems.map((item) => `<a href="${escapeAttribute(item.href)}">${escapeHtml(item.label)}</a>`).join("");
 }
 
 function renderHeader(currentRoute) {
@@ -150,11 +207,11 @@ function renderHeader(currentRoute) {
           ${renderNavLinks(currentRoute)}
         </nav>
         <div class="header-actions">
-          <a class="btn btn-primary btn-sm" href="/hire/">Hire me</a>
+          <a class="btn btn-primary btn-sm" href="${escapeAttribute(siteData.site.heroPrimaryCta.href)}">${escapeHtml(siteData.site.heroPrimaryCta.label)}</a>
           <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open navigation menu">Menu</button>
         </div>
       </div>
-      <div id="mobile-nav" class="mobile-nav" data-mobile-nav aria-hidden="true">
+      <div id="mobile-nav" class="mobile-nav" data-mobile-nav aria-hidden="true" hidden>
         <nav aria-label="Mobile navigation">
           <ul>
             ${renderNavLinks(currentRoute, true)}
@@ -166,8 +223,8 @@ function renderHeader(currentRoute) {
 }
 
 function renderFooter() {
-  const links = [
-    { label: "Email", url: `mailto:${siteData.contact.email}` },
+  const contactLinks = [
+    { label: "Email", url: emailProjectBriefHref() },
     { label: "LinkedIn", url: siteData.contact.linkedin },
     { label: "GitHub", url: siteData.contact.github }
   ].filter((item) => item.url);
@@ -175,26 +232,29 @@ function renderFooter() {
   return `
     <footer class="site-footer">
       <div class="container footer-grid">
-        <div>
+        <div class="footer-brand-block">
           <p class="footer-title">${escapeHtml(siteData.site.name)}</p>
-          <p class="footer-copy">${escapeHtml(siteData.site.heroHeadline)}</p>
+          <p class="footer-copy">${escapeHtml(siteData.site.tagline)}</p>
           <p class="footer-note">${escapeHtml(siteData.contact.responseTime)}</p>
+          <div class="footer-links" aria-label="Footer contact links">
+            ${contactLinks
+              .map(
+                (item) =>
+                  `<a href="${escapeAttribute(item.url)}"${externalLinkAttributes(item.url)}>${escapeHtml(item.label)}</a>`
+              )
+              .join("")}
+          </div>
         </div>
         <div>
-          <p class="footer-title">Contact</p>
-          <div class="footer-links" aria-label="Footer links">
-            ${links
-              .map((item) => {
-                const external = item.url.startsWith("http");
-                const attrs = external ? ' target="_blank" rel="noopener noreferrer"' : "";
-                return `<a href="${escapeAttribute(item.url)}"${attrs}>${escapeHtml(item.label)}</a>`;
-              })
-              .join("")}
+          <p class="footer-title">Explore</p>
+          <div class="footer-nav">
+            ${renderFooterNavLinks()}
           </div>
         </div>
       </div>
       <div class="container footer-bottom">
-        <p>(c) <span data-year>${new Date().getFullYear()}</span> ${escapeHtml(siteData.site.name)}. All rights reserved.</p>
+        <p>(c) ${new Date(buildDate).getUTCFullYear()} ${escapeHtml(siteData.site.name)}. All rights reserved.</p>
+        <p>Remote contract engineering for internal tools, automation systems, and Android + AI product delivery.</p>
       </div>
     </footer>
   `;
@@ -214,7 +274,6 @@ function renderDocument({
 }) {
   const canonical = toAbsoluteUrl(route);
   const robots = noIndex ? "noindex, nofollow" : "index, follow";
-  const keywords = Array.isArray(siteData.site.keywords) ? siteData.site.keywords.join(", ") : "";
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -223,7 +282,6 @@ function renderDocument({
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="${escapeAttribute(siteData.site.themeColor || "#0a0f1e")}">
   <meta name="description" content="${escapeAttribute(description)}">
-  <meta name="keywords" content="${escapeAttribute(keywords)}">
   <meta name="author" content="${escapeAttribute(siteData.site.name)}">
   <meta name="robots" content="${robots}">
   <link rel="canonical" href="${escapeAttribute(canonical)}">
@@ -234,6 +292,7 @@ function renderDocument({
   <meta property="og:url" content="${escapeAttribute(canonical)}">
   <meta property="og:site_name" content="${escapeAttribute(siteData.site.name)}">
   <meta property="og:image" content="${escapeAttribute(ogImage)}">
+  <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="${escapeAttribute(ogImageAlt)}">
@@ -242,6 +301,7 @@ function renderDocument({
   <meta name="twitter:title" content="${escapeAttribute(title)}">
   <meta name="twitter:description" content="${escapeAttribute(description)}">
   <meta name="twitter:image" content="${escapeAttribute(ogImage)}">
+  <meta name="twitter:image:alt" content="${escapeAttribute(ogImageAlt)}">
   <title>${escapeHtml(title)}</title>
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16">
@@ -274,18 +334,39 @@ function renderProofStrip(items) {
     .join("");
 }
 
+function renderProofLinks(slugs, label = "Relevant proof") {
+  const items = (slugs || []).map((slug) => findCaseStudy(slug)).filter(Boolean);
+  if (items.length === 0) {
+    return "";
+  }
+
+  return `
+    <div class="proof-links-block">
+      <p class="mini-label">${escapeHtml(label)}</p>
+      <div class="inline-links">
+        ${items
+          .map((item) => `<a href="${escapeAttribute(item.route)}">${escapeHtml(item.title)}</a>`)
+          .join("")}
+      </div>
+    </div>
+  `;
+}
+
 function renderServiceCards(items, startingDelay = 0) {
   return items
     .map(
       (item, index) => `
       <article class="card service-card" data-animate style="--delay:${animationDelay(index, 0.05, startingDelay)}">
-        <header>
+        <header class="service-header">
           <h3>${escapeHtml(item.name)}</h3>
-          <p class="service-meta"><span>${escapeHtml(item.timeline)}</span><span>Starting at ${escapeHtml(item.startingPrice)}</span></p>
+          <p class="service-summary">${escapeHtml(item.summary)}</p>
         </header>
+        <p class="service-timeline">${escapeHtml(item.timeline)}</p>
+        <p class="service-fit">${escapeHtml(item.bestFor)}</p>
         <ul class="list-dot">
           ${(item.deliverables || []).map((deliverable) => `<li>${escapeHtml(deliverable)}</li>`).join("")}
         </ul>
+        ${renderProofLinks(item.proofSlugs)}
       </article>
     `
     )
@@ -294,40 +375,31 @@ function renderServiceCards(items, startingDelay = 0) {
 
 function caseCategoryMark(category) {
   const normalized = String(category || "").toLowerCase();
-  if (normalized.includes("client")) return "CL";
-  if (normalized.includes("ml") || normalized.includes("edge")) return "ML";
+  if (normalized.includes("android")) return "AA";
   if (normalized.includes("automation")) return "AU";
+  if (normalized.includes("platform")) return "PF";
+  if (normalized.includes("supporting")) return "SD";
+  if (normalized.includes("client")) return "CL";
+
   const words = String(category || "")
     .split(/[^a-z0-9]+/i)
     .filter(Boolean);
+
   return words
     .slice(0, 2)
     .map((word) => word[0].toUpperCase())
     .join("") || "CS";
 }
 
-function renderCaseVisual(caseStudy) {
+function renderCaseVisual(caseStudy, loading = "lazy") {
   const slug = escapeAttribute(caseStudy.slug);
-  const title = escapeAttribute(caseStudy.title);
-  const route = escapeAttribute(caseStudy.route);
-  const hasModernFormats = workPreviewVisualSlugs.has(caseStudy.slug);
-
-  if (!hasModernFormats) {
-    return `
-      <a class="case-cover-link" href="${route}" aria-label="Open case study: ${title}">
-        <img src="/assets/images/cases/${slug}.svg" alt="${title} visual" loading="lazy" decoding="async" width="1200" height="675">
-      </a>
-    `;
-  }
 
   return `
-    <a class="case-cover-link" href="${route}" aria-label="Open case study: ${title}">
-      <picture>
-        <source srcset="/assets/images/cases/${slug}.avif" type="image/avif">
-        <source srcset="/assets/images/cases/${slug}.webp" type="image/webp">
-        <img src="/assets/images/cases/${slug}.svg" alt="${title} visual" loading="lazy" decoding="async" width="1200" height="675">
-      </picture>
-    </a>
+    <picture>
+      <source srcset="/assets/images/cases/${slug}.avif" type="image/avif">
+      <source srcset="/assets/images/cases/${slug}.webp" type="image/webp">
+      <img src="/assets/images/cases/${slug}.png" alt="" loading="${escapeAttribute(loading)}" decoding="async" width="1200" height="675">
+    </picture>
   `;
 }
 
@@ -341,27 +413,32 @@ function renderCaseCategoryVisual(caseStudy) {
 }
 
 function renderCaseCard(caseStudy, index, options = {}) {
-  const { showVisual = true } = options;
+  const { showVisual = true, compact = false } = options;
   const problemLine = caseStudy.problem || caseStudy.shortSummary;
   const approachLine = (caseStudy.approach || [])[0] || caseStudy.shortSummary;
   const resultLine = caseStudy.outcome || (caseStudy.results || [])[0] || caseStudy.shortSummary;
-  const ndaProof = caseStudy.type === "client" ? '<p class="case-proof-nda">Proof under NDA</p>' : "";
+  const proofLabel = caseStudy.type === "client" ? "Client delivery" : "Public build";
+  const proofClass = caseStudy.type === "client" ? "case-proof-nda" : "case-proof-nda case-proof-public";
+  const topStack = (caseStudy.techStack || []).slice(0, compact ? 3 : 5);
 
   return `
-    <article class="card case-card" data-animate style="--delay:${animationDelay(index, 0.04)}">
-      ${showVisual ? renderCaseVisual(caseStudy) : renderCaseCategoryVisual(caseStudy)}
+    <article class="card case-card${compact ? " case-card-compact" : ""}" data-animate style="--delay:${animationDelay(index, 0.04)}">
+      ${showVisual ? `<div class="case-cover">${renderCaseVisual(caseStudy)}</div>` : renderCaseCategoryVisual(caseStudy)}
       <div class="case-content">
-        <p class="case-kicker">${escapeHtml(caseStudy.category)}</p>
-        ${ndaProof}
-        <h3 class="line-clamp line-clamp-2"><a href="${escapeAttribute(caseStudy.route)}">${escapeHtml(caseStudy.title)}</a></h3>
+        <div class="case-topline">
+          <p class="case-kicker">${escapeHtml(caseStudy.category)}</p>
+          <p class="${proofClass}">${escapeHtml(proofLabel)}</p>
+        </div>
+        <h3 class="line-clamp line-clamp-2">${escapeHtml(caseStudy.title)}</h3>
+        <p class="case-role">${escapeHtml(caseStudy.role)}<span aria-hidden="true"> | </span>${escapeHtml(caseStudy.timeline)}</p>
+        <p class="case-outcome">${escapeHtml(caseStudy.outcome || caseStudy.shortSummary)}</p>
         <ul class="case-summary">
           <li><span class="case-summary-label">Problem</span><p class="line-clamp line-clamp-2">${escapeHtml(problemLine)}</p></li>
-          <li><span class="case-summary-label">What I did</span><p class="line-clamp line-clamp-2">${escapeHtml(approachLine)}</p></li>
+          <li><span class="case-summary-label">My scope</span><p class="line-clamp line-clamp-2">${escapeHtml(approachLine)}</p></li>
           <li><span class="case-summary-label">Result</span><p class="line-clamp line-clamp-2">${escapeHtml(resultLine)}</p></li>
         </ul>
-        <p class="case-outcome line-clamp line-clamp-2">${escapeHtml(caseStudy.shortSummary)}</p>
         <ul class="stack-list">
-          ${(caseStudy.techStack || []).slice(0, 5).map((tech) => `<li>${escapeHtml(tech)}</li>`).join("")}
+          ${topStack.map((tech) => `<li>${escapeHtml(tech)}</li>`).join("")}
         </ul>
         <a class="btn btn-secondary btn-read" href="${escapeAttribute(caseStudy.route)}">Read case study</a>
       </div>
@@ -369,9 +446,30 @@ function renderCaseCard(caseStudy, index, options = {}) {
   `;
 }
 
+function renderRelatedCaseCards(caseStudy) {
+  const relatedCases = resolveRelatedCases(caseStudy);
+  if (relatedCases.length === 0) {
+    return "";
+  }
+
+  return `
+    <section class="section" aria-labelledby="related-work-heading">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="related-work-heading">More relevant work</h2>
+          <p>Related delivery proof across internal tools, automation, Android + AI, and supporting product systems.</p>
+        </div>
+        <div class="grid case-grid">
+          ${relatedCases.map((item, index) => renderCaseCard(item, index, { showVisual: false, compact: true })).join("")}
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 function renderContactChannels() {
   const links = [
-    { label: `Email (${siteData.contact.email})`, href: `mailto:${siteData.contact.email}` },
+    { label: `Email (${siteData.contact.email})`, href: emailProjectBriefHref() },
     { label: "LinkedIn", href: siteData.contact.linkedin },
     { label: "GitHub", href: siteData.contact.github }
   ].filter((item) => item.href);
@@ -383,22 +481,52 @@ function renderContactChannels() {
   return `
     <ul class="contact-list">
       ${links
-        .map((item) => {
-          const external = item.href.startsWith("http");
-          const attrs = external ? ' target="_blank" rel="noopener noreferrer"' : "";
-          return `<li><a href="${escapeAttribute(item.href)}"${attrs}>${escapeHtml(item.label)}</a></li>`;
-        })
+        .map((item) => `<li><a href="${escapeAttribute(item.href)}"${externalLinkAttributes(item.href)}>${escapeHtml(item.label)}</a></li>`)
         .join("")}
     </ul>
   `;
 }
+
+function renderProcessCards(items) {
+  return (items || [])
+    .map(
+      (item, index) => `
+      <li class="card" data-animate style="--delay:${animationDelay(index, 0.05)}">
+        <h3>${escapeHtml(item.title)}</h3>
+        <p>${escapeHtml(item.detail)}</p>
+      </li>
+    `
+    )
+    .join("");
+}
+
+function renderFaqCards(items) {
+  return (items || [])
+    .map(
+      (item, index) => `
+      <article class="card faq-card" data-animate style="--delay:${animationDelay(index, 0.05)}">
+        <h3>${escapeHtml(item.question)}</h3>
+        <p>${escapeHtml(item.answer)}</p>
+      </article>
+    `
+    )
+    .join("");
+}
+
+function renderProfileLinks() {
+  return (siteData.trust?.profiles || [])
+    .map(
+      (item) =>
+        `<a href="${escapeAttribute(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.label)}</a>`
+    )
+    .join("");
+}
+
 function homePage() {
   const featuredCases = (siteData.featuredCaseSlugs || [])
-    .map((slug) => caseStudies.find((item) => item.slug === slug))
+    .map((slug) => findCaseStudy(slug))
     .filter(Boolean)
-    .slice(0, 5);
-
-  const selectedCases = featuredCases.length > 0 ? featuredCases : caseStudies.slice(0, 5);
+    .slice(0, 4);
 
   const websiteJsonLd = {
     "@context": "https://schema.org",
@@ -420,30 +548,55 @@ function homePage() {
     knowsAbout: siteData.site.keywords
   };
 
+  const serviceJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Remote contract engineering for AI-enabled workflows and product systems",
+    provider: {
+      "@type": "Person",
+      name: siteData.site.name,
+      url: toAbsoluteUrl("/")
+    },
+    serviceType: "Software engineering",
+    areaServed: "Remote",
+    description: siteData.site.tagline
+  };
+
   const body = `
     <main id="main-content" tabindex="-1">
       <section class="hero section">
         <div class="container hero-grid">
           <div class="hero-main" data-animate>
-            <p class="eyebrow">Remote Contract Engineer</p>
+            <p class="eyebrow">${escapeHtml(siteData.site.heroEyebrow)}</p>
             <h1>${escapeHtml(siteData.site.heroHeadline)}</h1>
             <p class="lead">${escapeHtml(siteData.site.heroSubheadline)}</p>
             <div class="actions">
               <a class="btn btn-primary" href="${escapeAttribute(siteData.site.heroPrimaryCta.href)}">${escapeHtml(siteData.site.heroPrimaryCta.label)}</a>
               <a class="btn btn-secondary" href="${escapeAttribute(siteData.site.heroSecondaryCta.href)}">${escapeHtml(siteData.site.heroSecondaryCta.label)}</a>
             </div>
+            <div class="hero-links">
+              <a class="text-link" href="${escapeAttribute(emailProjectBriefHref())}">Email project brief</a>
+              <a class="text-link" href="/hire/">See engagement options</a>
+            </div>
           </div>
           <aside class="hero-panel" data-animate style="--delay:0.08s" aria-label="Positioning and proof summary">
-            <h2>Outcome-first engineering</h2>
-            <p>I focus on shipping systems that reduce manual work, stabilize UX, and support clear operational decisions.</p>
-            <p class="mini-proof">${escapeHtml(siteData.contact.responseTime)}</p>
+            <p class="eyebrow eyebrow-muted">Primary focus</p>
+            <h2>Internal tools, automation, and reliable remote delivery</h2>
+            <ul class="list-dot list-dot-tight">
+              <li>Best fit for workflow-heavy teams that need clearer operating systems.</li>
+              <li>Android + AI stays visible as a secondary specialization, not the whole story.</li>
+              <li>${escapeHtml(siteData.contact.responseTime)}</li>
+            </ul>
           </aside>
         </div>
       </section>
 
       <section class="section section-tight" aria-labelledby="proof-heading">
-        <div class="container panel">
-          <h2 id="proof-heading">Proof of delivery</h2>
+        <div class="container panel panel-highlight">
+          <div class="section-head">
+            <h2 id="proof-heading">Commercial proof</h2>
+            <p>CRM, automation, Android AI UX, and multi-surface delivery kept at the center of the portfolio.</p>
+          </div>
           <ul class="proof-strip">
             ${renderProofStrip(siteData.proofStrip || [])}
           </ul>
@@ -452,28 +605,32 @@ function homePage() {
 
       <section class="section" aria-labelledby="services-heading">
         <div class="container">
-          <h2 id="services-heading">Services</h2>
-          <p class="section-intro">Productized offers with clear deliverables, timeline, and starting price range.</p>
-          <div class="grid grid-3 cards-equal">
+          <div class="section-head">
+            <h2 id="services-heading">How I help</h2>
+            <p>Outcome-first engagement options for teams that need delivery, not generic freelance coverage.</p>
+          </div>
+          <div class="grid grid-3">
             ${renderServiceCards(siteData.services || [])}
           </div>
           <div class="actions actions-inline">
-            <a class="btn btn-primary" href="/hire/">Hire me</a>
-            <a class="btn btn-secondary" href="/contact/">Send scope</a>
+            <a class="btn btn-primary" href="/hire/">See engagement options</a>
+            <a class="btn btn-secondary" href="/contact/">Share your scope</a>
           </div>
         </div>
       </section>
 
       <section class="section" aria-labelledby="selected-work-heading">
         <div class="container">
-          <h2 id="selected-work-heading">Selected work</h2>
-          <p class="section-intro">Client-delivery case studies prioritized by business outcomes.</p>
+          <div class="section-head">
+            <h2 id="selected-work-heading">Selected systems and product delivery</h2>
+            <p>Highest-fit proof for internal tools, automation, platform delivery, and Android + AI execution.</p>
+          </div>
           <div class="grid case-grid case-grid-featured">
-            ${selectedCases.map((item, index) => renderCaseCard(item, index, { showVisual: true })).join("")}
+            ${featuredCases.map((item, index) => renderCaseCard(item, index, { showVisual: true })).join("")}
           </div>
           <div class="actions actions-inline">
-            <a class="btn btn-primary" href="/hire/">Hire me</a>
-            <a class="btn btn-secondary" href="/work/">View all work</a>
+            <a class="btn btn-primary" href="/work/">Review relevant work</a>
+            <a class="btn btn-secondary" href="/contact/">Share your scope</a>
           </div>
         </div>
       </section>
@@ -481,24 +638,27 @@ function homePage() {
       <section class="section" aria-labelledby="trust-heading">
         <div class="container trust-grid">
           <div class="card" data-animate>
-            <h2 id="trust-heading">Trust and credibility</h2>
+            <h2 id="trust-heading">Why teams bring me in</h2>
             <ul class="list-dot">
               ${(siteData.trust?.credibility || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
             </ul>
+            <h3 class="links-title">Good fit</h3>
+            <ul class="list-dot">
+              ${(siteData.hireFit?.goodFit || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+            </ul>
           </div>
           <div class="card" data-animate style="--delay:0.06s">
-            <h3>Core stack</h3>
+            <h3>Working style</h3>
+            <ul class="list-dot">
+              ${(siteData.trust?.workingStyle || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+            </ul>
+            <h3 class="links-title">Core stack</h3>
             <ul class="stack-list large">
               ${(siteData.trust?.stack || []).map((stack) => `<li>${escapeHtml(stack)}</li>`).join("")}
             </ul>
             <h3 class="links-title">Profiles</h3>
             <div class="profile-links">
-              ${(siteData.trust?.profiles || [])
-                .map(
-                  (item) =>
-                    `<a href="${escapeAttribute(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.label)}</a>`
-                )
-                .join("")}
+              ${renderProfileLinks()}
             </div>
           </div>
         </div>
@@ -506,12 +666,13 @@ function homePage() {
 
       <section class="section">
         <div class="container cta-panel" data-animate>
-          <h2>Need a reliable engineer for your remote build?</h2>
-          <p>Send scope and constraints. I will reply with a milestone plan you can execute immediately.</p>
+          <p class="eyebrow">Remote contract engineering</p>
+          <h2>Need a reliable engineer for an active workflow or product build?</h2>
+          <p>Share the current process, blockers, and timeline. I will reply with the best starting scope.</p>
           ${renderContactChannels()}
           <div class="actions">
-            <a class="btn btn-primary" href="/hire/">Hire me</a>
-            <a class="btn btn-secondary" href="mailto:${escapeAttribute(siteData.contact.email)}">Email direct</a>
+            <a class="btn btn-primary" href="/contact/">Share your scope</a>
+            <a class="btn btn-secondary" href="${escapeAttribute(emailProjectBriefHref())}">Email project brief</a>
           </div>
         </div>
       </section>
@@ -521,34 +682,80 @@ function homePage() {
   return {
     route: "/",
     filePath: "index.html",
-    title: `${siteData.site.name} | ${siteData.site.title}`,
+    title: `${siteData.site.name} | Remote Contract AI Workflow & Product Engineer`,
     description:
-      "Android + AI engineer portfolio focused on production AI chat/search UX, custom CRM systems, and automation workflows for remote contracts.",
+      "Remote contract engineer building AI-enabled workflows, internal tools, automation systems, and Android + AI product delivery.",
     body,
-    jsonLd: [websiteJsonLd, personJsonLd]
+    jsonLd: [websiteJsonLd, personJsonLd, serviceJsonLd]
   };
 }
 
 function workPage() {
+  const itemListJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Selected work by Rifki Rosada",
+    itemListElement: caseStudies.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.title,
+      url: toAbsoluteUrl(item.route)
+    }))
+  };
+
+  const collectionJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Selected work",
+    url: toAbsoluteUrl("/work/"),
+    isPartOf: toAbsoluteUrl("/")
+  };
+
   const body = `
     <main id="main-content" tabindex="-1">
       <section class="page-hero section">
         <div class="container">
-          <h1 data-animate>Work</h1>
-          <p data-animate style="--delay:0.05s">Case studies covering client delivery and ML/edge product work, ordered by business impact priority.</p>
-          <div class="actions" data-animate style="--delay:0.1s">
-            <a class="btn btn-primary" href="/hire/">Hire me</a>
-            <a class="btn btn-secondary" href="/contact/">Send scope</a>
+          <p class="eyebrow" data-animate>${escapeHtml(siteData.site.heroEyebrow)}</p>
+          <h1 data-animate style="--delay:0.04s">Selected work</h1>
+          <p data-animate style="--delay:0.08s">Case studies covering client systems, automation delivery, Android AI UX, and public Android + AI product work.</p>
+          <div class="actions" data-animate style="--delay:0.12s">
+            <a class="btn btn-primary" href="/contact/">Share your scope</a>
+            <a class="btn btn-secondary" href="/hire/">See engagement options</a>
           </div>
         </div>
       </section>
-      <section class="section section-tight" aria-labelledby="work-grid-heading">
+
+      <section class="section section-tight" aria-labelledby="client-work-heading">
         <div class="container">
-          <h2 id="work-grid-heading" class="sr-only">All case studies</h2>
+          <div class="section-head">
+            <h2 id="client-work-heading">Client systems and delivery</h2>
+            <p>Primary commercial proof across CRM, automation, Android + AI UX, platform delivery, and supporting product work.</p>
+          </div>
           <div class="grid case-grid case-grid-work">
-            ${caseStudies
-              .map((item, index) => renderCaseCard(item, index, { showVisual: index < 3 }))
-              .join("")}
+            ${clientCaseStudies.map((item, index) => renderCaseCard(item, index, { showVisual: true })).join("")}
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="public-work-heading">
+        <div class="container">
+          <div class="section-head">
+            <h2 id="public-work-heading">Public Android + AI products</h2>
+            <p>Secondary proof through public Android, offline AI, and edge ML builds that stay relevant to product delivery.</p>
+          </div>
+          <div class="grid case-grid">
+            ${publicCaseStudies.map((item, index) => renderCaseCard(item, index, { showVisual: true })).join("")}
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container cta-panel" data-animate>
+          <h2>Have a workflow, internal tool, or Android AI feature to ship?</h2>
+          <p>Share the current state and target outcome. I will reply with the best next step for a scoped remote contract.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="/contact/">Share your scope</a>
+            <a class="btn btn-secondary" href="${escapeAttribute(emailProjectBriefHref())}">Email project brief</a>
           </div>
         </div>
       </section>
@@ -558,32 +765,19 @@ function workPage() {
   return {
     route: "/work/",
     filePath: path.join("work", "index.html"),
-    title: `Work | ${siteData.site.name}`,
+    title: `Selected Work | ${siteData.site.name}`,
     description:
-      "Case studies: custom CRM delivery, Android AI chat/search UX, automation workflows, monorepo architecture, UI fixes, and ML/edge builds.",
+      "Case studies in CRM delivery, automation systems, Android AI UX, platform delivery, and public Android + AI product work.",
     body,
-    jsonLd: {
-      "@context": "https://schema.org",
-      "@type": "CollectionPage",
-      name: "Work case studies",
-      url: toAbsoluteUrl("/work/"),
-      isPartOf: toAbsoluteUrl("/")
-    }
+    jsonLd: [collectionJsonLd, itemListJsonLd]
   };
 }
 
 function casePage(caseStudy) {
   const isClientCase = caseStudy.type === "client";
   const ndaLead = isClientCase
-    ? "Proof under NDA: implementation notes, handoff docs, and delivery context are available on request."
-    : "Public project details. No client-sensitive data disclosed.";
-  const ndaSupportingNote = isClientCase ? caseStudy.ndaNote || "Client details withheld." : "";
-  const caseRole = caseStudy.role || (isClientCase ? "Remote Contract Engineer" : "Product Engineer");
-  const caseTimeline = caseStudy.timeline || (isClientCase ? "Scoped delivery sprint" : "Prototype and validation cycle");
-  const keyOutcomes = (caseStudy.results || []).slice(0, 3);
-  const snapshotProblemLine = caseStudy.problem || caseStudy.shortSummary;
-  const snapshotApproachLine = (caseStudy.approach || [])[0] || caseStudy.shortSummary;
-  const snapshotResultLine = caseStudy.outcome || (caseStudy.results || [])[0] || caseStudy.shortSummary;
+    ? "Client details remain NDA-safe. The proof here stays factual and focused on delivery scope, constraints, and outcomes."
+    : "Public product details only. No client-sensitive information is disclosed.";
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
@@ -595,23 +789,25 @@ function casePage(caseStudy) {
     ]
   };
 
-  const creativeWorkJsonLd = {
+  const articleJsonLd = {
     "@context": "https://schema.org",
-    "@type": "CreativeWork",
-    name: caseStudy.title,
+    "@type": "Article",
+    headline: caseStudy.title,
     description: caseStudy.shortSummary,
-    dateModified: today,
+    dateModified: buildDate,
     inLanguage: "en-US",
-    creator: {
+    author: {
       "@type": "Person",
       name: siteData.site.name,
       url: toAbsoluteUrl("/")
     },
     url: toAbsoluteUrl(caseStudy.route),
     mainEntityOfPage: toAbsoluteUrl(caseStudy.route),
-    about: caseStudy.category,
+    articleSection: caseStudy.category,
     keywords: (caseStudy.techStack || []).join(", ")
   };
+
+  const keyOutcomes = (caseStudy.results || []).slice(0, 3);
 
   const body = `
     <main id="main-content" tabindex="-1">
@@ -624,21 +820,27 @@ function casePage(caseStudy) {
             <span aria-hidden="true">/</span>
             <span aria-current="page">${escapeHtml(caseStudy.title)}</span>
           </nav>
-          <h1 data-animate>${escapeHtml(caseStudy.title)}</h1>
-          <p data-animate style="--delay:0.05s">${escapeHtml(caseStudy.shortSummary)}</p>
-          <div class="case-snapshot" data-animate style="--delay:0.1s">
+          <p class="eyebrow" data-animate>${escapeHtml(siteData.site.name)} | ${escapeHtml(caseStudy.category)}</p>
+          <h1 data-animate style="--delay:0.04s">${escapeHtml(caseStudy.title)}</h1>
+          <p data-animate style="--delay:0.08s">${escapeHtml(caseStudy.shortSummary)}</p>
+          <div class="meta-badges" data-animate style="--delay:0.12s">
+            <span>${escapeHtml(caseStudy.role)}</span>
+            <span>${escapeHtml(caseStudy.timeline)}</span>
+            <span>${escapeHtml(caseStudy.type === "client" ? "Remote contract delivery" : "Public product build")}</span>
+          </div>
+          <div class="case-snapshot" data-animate style="--delay:0.16s">
             <ul class="case-summary case-summary-expanded">
               <li>
                 <span class="case-summary-label">Problem</span>
-                <p>${escapeHtml(snapshotProblemLine)}</p>
+                <p>${escapeHtml(caseStudy.problem || caseStudy.shortSummary)}</p>
               </li>
               <li>
-                <span class="case-summary-label">What I did</span>
-                <p>${escapeHtml(snapshotApproachLine)}</p>
+                <span class="case-summary-label">My scope</span>
+                <p>${escapeHtml((caseStudy.approach || [])[0] || caseStudy.shortSummary)}</p>
               </li>
               <li>
                 <span class="case-summary-label">Result</span>
-                <p>${escapeHtml(snapshotResultLine)}</p>
+                <p>${escapeHtml(caseStudy.outcome || (caseStudy.results || [])[0] || caseStudy.shortSummary)}</p>
               </li>
             </ul>
           </div>
@@ -648,15 +850,19 @@ function casePage(caseStudy) {
       <section class="section section-tight">
         <div class="container case-layout">
           <aside class="card case-glance" data-animate>
-            <h2>At a glance</h2>
+            <h2>Delivery snapshot</h2>
             <dl class="glance-list">
               <div>
+                <dt>Context</dt>
+                <dd>${escapeHtml(caseStudy.category)}</dd>
+              </div>
+              <div>
                 <dt>Role</dt>
-                <dd>${escapeHtml(caseRole)}</dd>
+                <dd>${escapeHtml(caseStudy.role)}</dd>
               </div>
               <div>
                 <dt>Timeline</dt>
-                <dd>${escapeHtml(caseTimeline)}</dd>
+                <dd>${escapeHtml(caseStudy.timeline)}</dd>
               </div>
               <div>
                 <dt>Stack</dt>
@@ -670,15 +876,13 @@ function casePage(caseStudy) {
                 <dt>Key outcomes</dt>
                 <dd>
                   <ul class="list-dot">
-                    ${(keyOutcomes.length ? keyOutcomes : [caseStudy.outcome || caseStudy.shortSummary])
-                      .map((item) => `<li>${escapeHtml(item)}</li>`)
-                      .join("")}
+                    ${keyOutcomes.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
                   </ul>
                 </dd>
               </div>
             </dl>
             <p class="nda-note">${escapeHtml(ndaLead)}</p>
-            ${ndaSupportingNote ? `<p class="nda-proof-line">${escapeHtml(ndaSupportingNote)}</p>` : ""}
+            ${caseStudy.ndaNote ? `<p class="nda-proof-line">${escapeHtml(caseStudy.ndaNote)}</p>` : ""}
           </aside>
 
           <article class="card case-detail" data-animate style="--delay:0.06s">
@@ -693,13 +897,13 @@ function casePage(caseStudy) {
               </ul>
             </section>
             <section>
-              <h2>Approach</h2>
+              <h2>Delivery</h2>
               <ul class="list-dot">
                 ${(caseStudy.approach || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
               </ul>
             </section>
             <section>
-              <h2>Results</h2>
+              <h2>Result</h2>
               <ul class="list-dot">
                 ${(caseStudy.results || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
               </ul>
@@ -714,13 +918,15 @@ function casePage(caseStudy) {
         </div>
       </section>
 
+      ${renderRelatedCaseCards(caseStudy)}
+
       <section class="section">
         <div class="container cta-panel" data-animate>
-          <h2>Planning a similar project?</h2>
-          <p>Share your goals, constraints, and timeline. I will return a practical milestone proposal.</p>
+          <h2>Planning a similar build?</h2>
+          <p>Share the workflow, delivery risk, and timeline. I will reply with the best starting scope.</p>
           <div class="actions">
-            <a class="btn btn-primary" href="/hire/">Hire me</a>
-            <a class="btn btn-secondary" href="mailto:${escapeAttribute(siteData.contact.email)}">Email direct</a>
+            <a class="btn btn-primary" href="/contact/">Share your scope</a>
+            <a class="btn btn-secondary" href="${escapeAttribute(emailProjectBriefHref())}">Email project brief</a>
           </div>
         </div>
       </section>
@@ -730,94 +936,126 @@ function casePage(caseStudy) {
   return {
     route: caseStudy.route,
     filePath: path.join("work", caseStudy.slug, "index.html"),
-    title: `${caseStudy.title} | ${siteData.site.name}`,
+    title: `${caseStudy.title} Case Study | ${siteData.site.name}`,
     description: caseStudy.shortSummary,
     body,
     ogType: "article",
     ogImage: `${siteUrl}/assets/images/cases/${caseStudy.slug}.png`,
     ogImageAlt: `${caseStudy.title} case study preview`,
-    jsonLd: [breadcrumbJsonLd, creativeWorkJsonLd]
+    jsonLd: [breadcrumbJsonLd, articleJsonLd]
   };
 }
+
 function hirePage() {
-  const introTemplate = (siteData.introTemplate || []).join("\n");
-  const scopeTemplate = (siteData.scopeTemplate || []).join("\n");
+  const packages = [...(siteData.services || []), siteData.retainer].filter(Boolean);
+
+  const serviceJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Remote contract engineering",
+    provider: {
+      "@type": "Person",
+      name: siteData.site.name,
+      url: toAbsoluteUrl("/")
+    },
+    serviceType: "Software engineering",
+    areaServed: "Remote",
+    description:
+      "Remote contract engineering for AI-enabled workflows, internal tools, automation systems, and Android + AI product delivery.",
+    availableChannel: {
+      "@type": "ServiceChannel",
+      serviceUrl: toAbsoluteUrl("/hire/"),
+      availableLanguage: "English"
+    }
+  };
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: (siteData.hireFaqs || []).map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer
+      }
+    }))
+  };
 
   const body = `
     <main id="main-content" tabindex="-1">
       <section class="page-hero section">
         <div class="container">
-          <h1 data-animate>Hire me</h1>
-          <p data-animate style="--delay:0.05s">Packages, milestones, and communication designed for high-trust remote contracts.</p>
+          <p class="eyebrow" data-animate>${escapeHtml(siteData.site.heroEyebrow)}</p>
+          <h1 data-animate style="--delay:0.04s">Hire ${escapeHtml(siteData.site.name)}</h1>
+          <p data-animate style="--delay:0.08s">Remote contract support for AI-enabled workflows, internal tools, automation systems, and Android + AI product delivery.</p>
+          <div class="actions" data-animate style="--delay:0.12s">
+            <a class="btn btn-primary" href="/contact/">Share your scope</a>
+            <a class="btn btn-secondary" href="${escapeAttribute(emailProjectBriefHref())}">Email project brief</a>
+          </div>
         </div>
       </section>
 
       <section class="section section-tight" aria-labelledby="packages-heading">
         <div class="container">
-          <h2 id="packages-heading">Packages</h2>
-          <p class="section-intro">Same productized services from home, plus a retainer option for ongoing execution.</p>
-          <div class="grid grid-2 cards-equal">
-            ${renderServiceCards(siteData.services || [])}
-            <article class="card service-card" data-animate style="--delay:0.22s">
-              <header>
-                <h3>${escapeHtml(siteData.retainer.name)}</h3>
-                <p class="service-meta"><span>${escapeHtml(siteData.retainer.timeline)}</span><span>Starting at ${escapeHtml(siteData.retainer.startingPrice)}</span></p>
-              </header>
-              <ul class="list-dot">
-                ${(siteData.retainer.deliverables || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
-              </ul>
-            </article>
+          <div class="section-head">
+            <h2 id="packages-heading">Engagement options</h2>
+            <p>Clear paths for internal tools, automation systems, Android + AI delivery, and ongoing remote execution.</p>
+          </div>
+          <div class="grid grid-2">
+            ${renderServiceCards(packages)}
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="fit-heading">
+        <div class="container trust-grid">
+          <div class="card" data-animate>
+            <h2 id="fit-heading">Good fit</h2>
+            <ul class="list-dot">
+              ${(siteData.hireFit?.goodFit || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+            </ul>
+          </div>
+          <div class="card" data-animate style="--delay:0.06s">
+            <h3>Working style</h3>
+            <ul class="list-dot">
+              ${(siteData.hireFit?.workingStyle || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+            </ul>
           </div>
         </div>
       </section>
 
       <section class="section" aria-labelledby="process-heading">
         <div class="container">
-          <h2 id="process-heading">How I work</h2>
+          <div class="section-head">
+            <h2 id="process-heading">How the work runs</h2>
+            <p>Scope-first delivery with clear milestones, concise remote updates, and clean handoff context.</p>
+          </div>
           <ul class="process-grid">
-            ${(siteData.workProcess || [])
-              .map(
-                (item, index) => `
-                <li class="card" data-animate style="--delay:${animationDelay(index, 0.05)}">
-                  <h3>${escapeHtml(item.title)}</h3>
-                  <p>${escapeHtml(item.detail)}</p>
-                </li>
-              `
-              )
-              .join("")}
+            ${renderProcessCards(siteData.workProcess || [])}
           </ul>
         </div>
       </section>
 
-      <section class="section" aria-labelledby="copy-tools-heading">
+      <section class="section" aria-labelledby="faq-heading">
         <div class="container">
-          <h2 id="copy-tools-heading">Fast-start copy tools</h2>
-          <p class="section-intro">Use these templates so we can scope quickly.</p>
-          <div class="grid grid-2 copy-grid">
-            <article class="card copy-card" data-animate>
-              <h3>Intro message</h3>
-              <pre id="intro-message">${escapeHtml(introTemplate)}</pre>
-              <button class="btn btn-secondary" type="button" data-copy-target="intro-message" data-copy-feedback="intro-feedback">Copy intro message</button>
-              <p id="intro-feedback" class="copy-feedback" role="status" aria-live="polite">Copy and customize this intro before sending.</p>
-            </article>
-            <article class="card copy-card" data-animate style="--delay:0.08s">
-              <h3>Scope template</h3>
-              <pre id="scope-template">${escapeHtml(scopeTemplate)}</pre>
-              <button class="btn btn-secondary" type="button" data-copy-target="scope-template" data-copy-feedback="scope-feedback">Copy scope template</button>
-              <p id="scope-feedback" class="copy-feedback" role="status" aria-live="polite">Fill each line to speed up scoping and estimation.</p>
-            </article>
+          <div class="section-head">
+            <h2 id="faq-heading">Questions I usually get</h2>
+            <p>Practical answers about fit, remote collaboration, and where Android sits in the overall offer.</p>
+          </div>
+          <div class="grid grid-2 faq-grid">
+            ${renderFaqCards(siteData.hireFaqs || [])}
           </div>
         </div>
       </section>
 
       <section class="section">
         <div class="container cta-panel" data-animate>
-          <h2>Contact</h2>
-          <p>${escapeHtml(siteData.contact.responseTime)}</p>
-          ${renderContactChannels()}
+          <h2>Need a scoped delivery partner?</h2>
+          <p>Send the current workflow, blockers, and target outcome. I will respond with the best first milestone.</p>
           <div class="actions">
-            <a class="btn btn-primary" href="/contact/">Hire me</a>
-            <a class="btn btn-secondary" href="mailto:${escapeAttribute(siteData.contact.email)}">Email scope</a>
+            <a class="btn btn-primary" href="/contact/">Share your scope</a>
+            <a class="btn btn-secondary" href="/work/">Review relevant work</a>
           </div>
         </div>
       </section>
@@ -827,27 +1065,11 @@ function hirePage() {
   return {
     route: "/hire/",
     filePath: path.join("hire", "index.html"),
-    title: `Hire ${siteData.site.name} | ${siteData.site.title}`,
+    title: `Hire ${siteData.site.name} | Remote Contract Product Engineer`,
     description:
-      "Hire an Android + AI engineer for AI chat/search UX, CRM/internal tools, and automation workflows with milestone-based delivery.",
+      "Hire Rifki Rosada for remote contract work across internal tools, automation systems, AI-enabled workflows, and Android + AI product delivery.",
     body,
-    jsonLd: {
-      "@context": "https://schema.org",
-      "@type": "Service",
-      name: "Remote contract engineering",
-      provider: {
-        "@type": "Person",
-        name: siteData.site.name,
-        url: toAbsoluteUrl("/")
-      },
-      serviceType: "Software engineering",
-      areaServed: "Remote",
-      availableChannel: {
-        "@type": "ServiceChannel",
-        serviceUrl: toAbsoluteUrl("/hire/"),
-        availableLanguage: "English"
-      }
-    }
+    jsonLd: [serviceJsonLd, faqJsonLd]
   };
 }
 
@@ -856,15 +1078,19 @@ function experiencePage() {
     <main id="main-content" tabindex="-1">
       <section class="page-hero section">
         <div class="container">
-          <h1 data-animate>Experience</h1>
-          <p data-animate style="--delay:0.05s">Hands-on delivery across internships and remote contracts, focused on practical shipping and reliability.</p>
+          <p class="eyebrow" data-animate>${escapeHtml(siteData.site.name)} | Delivery background</p>
+          <h1 data-animate style="--delay:0.04s">Experience</h1>
+          <p data-animate style="--delay:0.08s">Supporting context behind the case studies: remote contract delivery first, earlier team experience second.</p>
         </div>
       </section>
 
       <section class="section section-tight" aria-labelledby="experience-list-heading">
         <div class="container">
-          <h2 id="experience-list-heading">Roles and highlights</h2>
-          <div class="grid grid-2 cards-equal">
+          <div class="section-head">
+            <h2 id="experience-list-heading">Roles and highlights</h2>
+            <p>The strongest proof still lives in the work pages. This page stays as supporting background.</p>
+          </div>
+          <div class="grid grid-2">
             ${(siteData.experience || [])
               .map(
                 (item, index) => `
@@ -885,11 +1111,11 @@ function experiencePage() {
 
       <section class="section">
         <div class="container cta-panel" data-animate>
-          <h2>Need execution support for an active roadmap?</h2>
-          <p>I can slot into scoped milestones and ship with clear handoff docs.</p>
+          <h2>Want the strongest proof first?</h2>
+          <p>Start with the case studies, then send scope if the work looks aligned.</p>
           <div class="actions">
-            <a class="btn btn-primary" href="/hire/">Hire me</a>
-            <a class="btn btn-secondary" href="/work/">Review case studies</a>
+            <a class="btn btn-primary" href="/work/">Review relevant work</a>
+            <a class="btn btn-secondary" href="/contact/">Share your scope</a>
           </div>
         </div>
       </section>
@@ -901,7 +1127,7 @@ function experiencePage() {
     filePath: path.join("experience", "index.html"),
     title: `Experience | ${siteData.site.name}`,
     description:
-      "Experience summary: internship and remote contract work across Android, AI UX, full-stack systems, and automation delivery.",
+      "Delivery background across remote contract work, client systems, automation, Android AI UX, and earlier team experience.",
     body,
     jsonLd: {
       "@context": "https://schema.org",
@@ -916,41 +1142,31 @@ function experiencePage() {
 function contactPage() {
   const introTemplate = (siteData.introTemplate || []).join("\n");
   const scopeTemplate = (siteData.scopeTemplate || []).join("\n");
-  const scopeMailSubject = "Project scope inquiry";
-  const scopeMailBody = [
-    "Hi Rifki,",
-    "",
-    "I would like to discuss this project:",
-    "",
-    ...(siteData.scopeTemplate || []),
-    "",
-    "Target launch date:",
-    "Budget range:",
-    "",
-    "Best,"
-  ].join("\n");
-  const scopeMailHref = `mailto:${siteData.contact.email}?subject=${encodeURIComponent(scopeMailSubject)}&body=${encodeURIComponent(scopeMailBody)}`;
-
-  const channelCards = [
-    { label: "Email", value: siteData.contact.email, href: `mailto:${siteData.contact.email}` },
+  const channels = [
+    { label: "Email", value: siteData.contact.email, href: emailProjectBriefHref() },
     { label: "LinkedIn", value: "Open profile", href: siteData.contact.linkedin },
     { label: "GitHub", value: "View repositories", href: siteData.contact.github }
   ];
 
   if (siteData.contact.whatsapp) {
-    channelCards.splice(1, 0, { label: "WhatsApp", value: "Open chat", href: siteData.contact.whatsapp });
+    channels.splice(1, 0, { label: "WhatsApp", value: "Open chat", href: siteData.contact.whatsapp });
   }
 
   const body = `
     <main id="main-content" tabindex="-1">
       <section class="page-hero section">
         <div class="container">
-          <h1 data-animate>Contact</h1>
-          <p data-animate style="--delay:0.05s">Share project scope, timeline, and constraints for a milestone plan.</p>
-          <p class="sla-note" data-animate style="--delay:0.08s"><strong>Response SLA:</strong> ${escapeHtml(siteData.contact.responseTime)}</p>
-          <div class="actions" data-animate style="--delay:0.1s">
+          <p class="eyebrow" data-animate>${escapeHtml(siteData.site.heroEyebrow)}</p>
+          <h1 data-animate style="--delay:0.04s">Share your scope</h1>
+          <p data-animate style="--delay:0.08s">Send the project brief, blockers, and timeline. I will reply with the best starting scope for the work.</p>
+          <p class="sla-note" data-animate style="--delay:0.12s"><strong>Response:</strong> ${escapeHtml(siteData.contact.responseTime)}</p>
+          <div class="actions" data-animate style="--delay:0.16s">
+            <a class="btn btn-primary" href="${escapeAttribute(scopeMailHref())}">Email project brief</a>
             <button class="btn btn-secondary" type="button" data-copy-target="contact-scope-template-quick" data-copy-feedback="contact-scope-quick-feedback">Copy scope template</button>
-            <a class="btn btn-primary" href="${escapeAttribute(scopeMailHref)}">Email scope template</a>
+          </div>
+          <div class="hero-links" data-animate style="--delay:0.2s">
+            <a class="text-link" href="/hire/">See engagement options</a>
+            <a class="text-link" href="/work/">Review relevant work</a>
           </div>
           <p id="contact-scope-quick-feedback" class="copy-feedback" role="status" aria-live="polite">Paste the template, add details, then send.</p>
           <pre id="contact-scope-template-quick" class="sr-only-copy-source">${escapeHtml(scopeTemplate)}</pre>
@@ -959,20 +1175,21 @@ function contactPage() {
 
       <section class="section section-tight" aria-labelledby="channel-heading">
         <div class="container">
-          <h2 id="channel-heading">Direct channels</h2>
-          <div class="grid grid-2 cards-equal">
-            ${channelCards
-              .map((item, index) => {
-                const external = item.href.startsWith("http");
-                const attrs = external ? ' target="_blank" rel="noopener noreferrer"' : "";
-                return `
-                <article class="card" data-animate style="--delay:${animationDelay(index, 0.05)}">
+          <div class="section-head">
+            <h2 id="channel-heading">Direct channels</h2>
+            <p>Low-friction contact stays visible. Email is the fastest route for scoped work.</p>
+          </div>
+          <div class="grid grid-2">
+            ${channels
+              .map(
+                (item, index) => `
+                <article class="card channel-card" data-animate style="--delay:${animationDelay(index, 0.05)}">
                   <h3>${escapeHtml(item.label)}</h3>
                   <p>${escapeHtml(item.value)}</p>
-                  <a class="text-link" href="${escapeAttribute(item.href)}"${attrs}>Open ${escapeHtml(item.label)}</a>
+                  <a class="text-link" href="${escapeAttribute(item.href)}"${externalLinkAttributes(item.href)}>Open ${escapeHtml(item.label)}</a>
                 </article>
-              `;
-              })
+              `
+              )
               .join("")}
           </div>
         </div>
@@ -980,20 +1197,22 @@ function contactPage() {
 
       <section class="section" aria-labelledby="contact-template-heading">
         <div class="container">
-          <h2 id="contact-template-heading">Scope template and response flow</h2>
-          <p class="section-intro">Use one of these templates. Scope-first messages are prioritized.</p>
+          <div class="section-head">
+            <h2 id="contact-template-heading">Project brief templates</h2>
+            <p>Use one of these if you want a faster first response and a cleaner handoff into milestones.</p>
+          </div>
           <div class="grid grid-2 copy-grid">
             <article class="card copy-card" data-animate>
               <h3>Intro message</h3>
               <pre id="contact-intro-template">${escapeHtml(introTemplate)}</pre>
               <button class="btn btn-secondary" type="button" data-copy-target="contact-intro-template" data-copy-feedback="contact-intro-feedback">Copy intro message</button>
-              <p id="contact-intro-feedback" class="copy-feedback" role="status" aria-live="polite">This format helps me return a faster first response.</p>
+              <p id="contact-intro-feedback" class="copy-feedback" role="status" aria-live="polite">Customize before sending so I can respond with better context.</p>
             </article>
             <article class="card copy-card" data-animate style="--delay:0.08s">
               <h3>Scope template</h3>
               <pre id="contact-scope-template">${escapeHtml(scopeTemplate)}</pre>
               <button class="btn btn-secondary" type="button" data-copy-target="contact-scope-template" data-copy-feedback="contact-scope-feedback">Copy scope template</button>
-              <p id="contact-scope-feedback" class="copy-feedback" role="status" aria-live="polite">Include timeline + definition of done for an accurate proposal.</p>
+              <p id="contact-scope-feedback" class="copy-feedback" role="status" aria-live="polite">Include timeline and definition of done for the most useful reply.</p>
             </article>
           </div>
         </div>
@@ -1001,11 +1220,11 @@ function contactPage() {
 
       <section class="section">
         <div class="container cta-panel" data-animate>
-          <h2>Ready to start?</h2>
-          <p>For scoped contract work, the fastest path is sharing your requirements through email or LinkedIn.</p>
+          <h2>Prefer to keep it simple?</h2>
+          <p>Email the project brief directly, or review the engagement options first if you want to see how the work is usually scoped.</p>
           <div class="actions">
-            <a class="btn btn-primary" href="/hire/">Hire me</a>
-            <a class="btn btn-secondary" href="${escapeAttribute(scopeMailHref)}">Send scoped email</a>
+            <a class="btn btn-primary" href="${escapeAttribute(scopeMailHref())}">Email project brief</a>
+            <a class="btn btn-secondary" href="/hire/">See engagement options</a>
           </div>
         </div>
       </section>
@@ -1015,9 +1234,9 @@ function contactPage() {
   return {
     route: "/contact/",
     filePath: path.join("contact", "index.html"),
-    title: `Contact | ${siteData.site.name}`,
+    title: `Share Your Scope | ${siteData.site.name}`,
     description:
-      "Contact page with direct channels, response time, and copy-ready templates for project scoping.",
+      "Share project scope, blockers, and timeline with Rifki Rosada for remote contract engineering support.",
     body,
     jsonLd: {
       "@context": "https://schema.org",
@@ -1035,10 +1254,10 @@ function notFoundPage() {
       <section class="section notice-404">
         <div class="container" data-animate>
           <h1>404 - Page not found</h1>
-          <p>This page is unavailable. Use navigation or jump to work and hiring details.</p>
+          <p>This page is unavailable. Jump back to the main portfolio paths below.</p>
           <div class="actions actions-center">
             <a class="btn btn-secondary" href="/">Go home</a>
-            <a class="btn btn-secondary" href="/work/">View work</a>
+            <a class="btn btn-secondary" href="/work/">Review work</a>
           </div>
         </div>
       </section>
@@ -1103,7 +1322,7 @@ function redirectPage(redirect) {
 }
 
 function caseVisualSvg(caseStudy) {
-  const title = truncate(caseStudy.title, 44);
+  const title = truncate(caseStudy.title, 42);
   const outcome = truncate(caseStudy.outcome || caseStudy.shortSummary, 88);
   const techLine = truncate((caseStudy.techStack || []).slice(0, 4).join(" | "), 72);
 
@@ -1113,30 +1332,64 @@ function caseVisualSvg(caseStudy) {
   <desc id="desc">${escapeXml(caseStudy.visualCaption || "Case study visual")}</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0f172f"/>
-      <stop offset="50%" stop-color="#111a36"/>
-      <stop offset="100%" stop-color="#0a1024"/>
+      <stop offset="0%" stop-color="#081120"/>
+      <stop offset="55%" stop-color="#0d1830"/>
+      <stop offset="100%" stop-color="#121f3f"/>
     </linearGradient>
     <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#44d2ff"/>
-      <stop offset="100%" stop-color="#7d7bff"/>
+      <stop offset="0%" stop-color="#79c4ff"/>
+      <stop offset="100%" stop-color="#8ef0dc"/>
     </linearGradient>
   </defs>
 
   <rect width="1200" height="675" fill="url(#bg)"/>
-  <rect x="72" y="70" width="1056" height="535" rx="22" fill="none" stroke="rgba(127,163,255,0.32)" stroke-width="2"/>
+  <circle cx="1020" cy="120" r="180" fill="rgba(120,196,255,0.08)"/>
+  <circle cx="190" cy="560" r="220" fill="rgba(142,240,220,0.08)"/>
+  <rect x="72" y="70" width="1056" height="535" rx="24" fill="none" stroke="rgba(130,175,255,0.28)" stroke-width="2"/>
 
-  <rect x="120" y="148" width="380" height="160" rx="16" fill="rgba(31,52,94,0.72)" stroke="rgba(116,162,255,0.55)"/>
-  <rect x="540" y="148" width="230" height="160" rx="16" fill="rgba(27,69,95,0.72)" stroke="rgba(116,162,255,0.55)"/>
-  <rect x="820" y="148" width="260" height="160" rx="16" fill="rgba(34,67,120,0.72)" stroke="rgba(116,162,255,0.55)"/>
+  <rect x="120" y="148" width="400" height="160" rx="18" fill="rgba(20,36,67,0.78)" stroke="rgba(130,175,255,0.32)"/>
+  <rect x="565" y="148" width="220" height="160" rx="18" fill="rgba(18,43,74,0.78)" stroke="rgba(130,175,255,0.32)"/>
+  <rect x="830" y="148" width="250" height="160" rx="18" fill="rgba(14,33,60,0.78)" stroke="rgba(130,175,255,0.32)"/>
+  <path d="M520 228h45" stroke="url(#accent)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M785 228h45" stroke="url(#accent)" stroke-width="5" stroke-linecap="round"/>
 
-  <path d="M500 228h40" stroke="url(#accent)" stroke-width="5" stroke-linecap="round"/>
-  <path d="M770 228h50" stroke="url(#accent)" stroke-width="5" stroke-linecap="round"/>
+  <text x="120" y="380" fill="#8ef0dc" font-size="24" font-family="'Segoe UI', Tahoma, sans-serif">${escapeXml(caseStudy.category)}</text>
+  <text x="120" y="432" fill="#f0f5ff" font-size="42" font-family="'Segoe UI', Tahoma, sans-serif" font-weight="700">${escapeXml(title)}</text>
+  <text x="120" y="486" fill="#c0d0ed" font-size="24" font-family="'Segoe UI', Tahoma, sans-serif">${escapeXml(outcome)}</text>
+  <text x="120" y="540" fill="#9bc7ff" font-size="22" font-family="'Segoe UI', Tahoma, sans-serif">${escapeXml(techLine)}</text>
+</svg>`;
+}
 
-  <text x="120" y="380" fill="#7dd7ff" font-size="24" font-family="'Segoe UI', Tahoma, sans-serif">${escapeXml(caseStudy.category)}</text>
-  <text x="120" y="430" fill="#f0f5ff" font-size="42" font-family="'Segoe UI', Tahoma, sans-serif" font-weight="700">${escapeXml(title)}</text>
-  <text x="120" y="480" fill="#b8c7e8" font-size="24" font-family="'Segoe UI', Tahoma, sans-serif">${escapeXml(outcome)}</text>
-  <text x="120" y="534" fill="#8fb7ff" font-size="22" font-family="'Segoe UI', Tahoma, sans-serif">${escapeXml(techLine)}</text>
+function sitePreviewSvg() {
+  const name = truncate(siteData.site.name, 28);
+  const title = truncate(siteData.site.title, 44);
+  const tagline = truncate(siteData.site.tagline, 92);
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">${escapeXml(siteData.site.name)} portfolio preview</title>
+  <desc id="desc">${escapeXml(siteData.site.tagline)}</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#08101f"/>
+      <stop offset="60%" stop-color="#0c1630"/>
+      <stop offset="100%" stop-color="#111f40"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7bc5ff"/>
+      <stop offset="100%" stop-color="#8ef0dc"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="985" cy="92" r="180" fill="rgba(123,197,255,0.12)"/>
+  <circle cx="170" cy="560" r="210" fill="rgba(142,240,220,0.08)"/>
+  <rect x="72" y="62" width="1056" height="506" rx="28" fill="none" stroke="rgba(130,175,255,0.28)" stroke-width="2"/>
+  <text x="120" y="170" fill="#8ef0dc" font-size="28" font-family="'Segoe UI', Tahoma, sans-serif">${escapeXml("Rifki Rosada | Remote contract engineer")}</text>
+  <text x="120" y="275" fill="#f2f7ff" font-size="66" font-family="'Segoe UI', Tahoma, sans-serif" font-weight="700">${escapeXml(name)}</text>
+  <text x="120" y="355" fill="#9ac9ff" font-size="38" font-family="'Segoe UI', Tahoma, sans-serif">${escapeXml(title)}</text>
+  <rect x="120" y="396" width="360" height="6" rx="3" fill="url(#accent)"/>
+  <text x="120" y="472" fill="#c6d6f3" font-size="28" font-family="'Segoe UI', Tahoma, sans-serif">${escapeXml(tagline)}</text>
 </svg>`;
 }
 
@@ -1146,41 +1399,41 @@ async function writeCaseVisualAssets(caseStudy) {
   await writeTextFile(path.join(basePath, `${caseStudy.slug}.svg`), svgMarkup);
 
   const svgBuffer = Buffer.from(svgMarkup, "utf8");
-  const resizeConfig = {
-    width: 1200,
-    height: 675,
-    fit: "cover"
-  };
+  const resizeConfig = { width: 1200, height: 675, fit: "cover" };
+
   const pngBuffer = await sharp(svgBuffer, { density: 220 })
     .resize(resizeConfig)
     .png({ compressionLevel: 9, adaptiveFiltering: true })
     .toBuffer();
-
-  await writeBinaryFile(path.join(basePath, `${caseStudy.slug}.png`), pngBuffer);
-
-  if (!workPreviewVisualSlugs.has(caseStudy.slug)) {
-    return;
-  }
-
   const webpBuffer = await sharp(svgBuffer, { density: 220 })
     .resize(resizeConfig)
-    .webp({ quality: 78, effort: 5 })
+    .webp({ quality: 76, effort: 5 })
     .toBuffer();
   const avifBuffer = await sharp(svgBuffer, { density: 220 })
     .resize(resizeConfig)
-    .avif({ quality: 58, effort: 6 })
+    .avif({ quality: 56, effort: 6 })
     .toBuffer();
 
+  await writeBinaryFile(path.join(basePath, `${caseStudy.slug}.png`), pngBuffer);
   await writeBinaryFile(path.join(basePath, `${caseStudy.slug}.webp`), webpBuffer);
   await writeBinaryFile(path.join(basePath, `${caseStudy.slug}.avif`), avifBuffer);
+}
+
+async function writeSitePreviewAsset() {
+  const svgMarkup = sitePreviewSvg();
+  const svgBuffer = Buffer.from(svgMarkup, "utf8");
+  const pngBuffer = await sharp(svgBuffer, { density: 220 })
+    .resize({ width: 1200, height: 630, fit: "cover" })
+    .png({ compressionLevel: 9, adaptiveFiltering: true })
+    .toBuffer();
+
+  await writeBinaryFile("og-image.png", pngBuffer);
 }
 
 function sitemapXml(pages) {
   const entries = pages
     .filter((page) => !page.noIndex)
-    .map(
-      (page) => `  <url>\n    <loc>${toAbsoluteUrl(page.route)}</loc>\n    <lastmod>${today}</lastmod>\n  </url>`
-    )
+    .map((page) => `  <url>\n    <loc>${toAbsoluteUrl(page.route)}</loc>\n    <lastmod>${buildDate}</lastmod>\n  </url>`)
     .join("\n");
 
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -1206,7 +1459,7 @@ function webManifest() {
       description: siteData.site.tagline,
       start_url: "/",
       display: "standalone",
-      background_color: "#070b18",
+      background_color: "#08101f",
       theme_color: siteData.site.themeColor || "#0a0f1e",
       icons: [
         {
@@ -1226,32 +1479,57 @@ function webManifest() {
   );
 }
 
-async function writeTextFile(relativePath, content) {
-  const targetPath = path.join(rootDir, relativePath);
-  const normalized = content
+function normalizeTextContent(content) {
+  return String(content)
     .trim()
     .replace(/\r\n/g, "\n")
     .split("\n")
     .map((line) => line.replace(/[ \t]+$/g, ""))
     .join("\n");
+}
+
+function normalizeFilePathSlashes(value) {
+  return value.replace(/\\/g, "/");
+}
+
+function buffersEqual(a, b) {
+  return a.length === b.length && Buffer.compare(a, b) === 0;
+}
+
+async function writeOutputBuffer(relativePath, buffer) {
+  const targetPath = path.join(rootDir, relativePath);
+  const normalizedPath = normalizeFilePathSlashes(relativePath);
+
+  if (isCheckMode) {
+    try {
+      const current = await fs.readFile(targetPath);
+      if (!buffersEqual(current, buffer)) {
+        checkMismatches.add(`Mismatch: ${normalizedPath}`);
+      }
+    } catch {
+      checkMismatches.add(`Missing: ${normalizedPath}`);
+    }
+    return;
+  }
+
   await fs.mkdir(path.dirname(targetPath), { recursive: true });
-  await fs.writeFile(targetPath, `${normalized}\n`, "utf8");
-  writtenFiles.push(relativePath.replace(/\\/g, "/"));
+  await fs.writeFile(targetPath, buffer);
+  writtenFiles.push(normalizedPath);
+}
+
+async function writeTextFile(relativePath, content) {
+  const normalized = `${normalizeTextContent(content)}\n`;
+  await writeOutputBuffer(relativePath, Buffer.from(normalized, "utf8"));
 }
 
 async function writeBinaryFile(relativePath, content) {
-  const targetPath = path.join(rootDir, relativePath);
-  await fs.mkdir(path.dirname(targetPath), { recursive: true });
-  await fs.writeFile(targetPath, content);
-  writtenFiles.push(relativePath.replace(/\\/g, "/"));
+  await writeOutputBuffer(relativePath, content);
 }
 
 async function writeBinaryCopy(sourceRelativePath, targetRelativePath) {
   const source = path.join(rootDir, sourceRelativePath);
-  const target = path.join(rootDir, targetRelativePath);
-  await fs.mkdir(path.dirname(target), { recursive: true });
-  await fs.copyFile(source, target);
-  writtenFiles.push(targetRelativePath.replace(/\\/g, "/"));
+  const buffer = await fs.readFile(source);
+  await writeBinaryFile(targetRelativePath, buffer);
 }
 
 function minifyCss(css) {
@@ -1270,11 +1548,9 @@ async function writeMinifiedStylesheet() {
   await writeTextFile(path.join("assets", "css", "site.min.css"), minifiedCss);
 }
 
-function normalizeFilePathSlashes(value) {
-  return value.replace(/\\/g, "/");
-}
-
 async function removeLegacyTextArtifacts() {
+  if (isCheckMode) return;
+
   const candidates = [
     "index.txt",
     "__next._full.txt",
@@ -1313,9 +1589,8 @@ async function removeLegacyTextArtifacts() {
 
   await Promise.all(
     candidates.map(async (candidate) => {
-      const target = path.join(rootDir, candidate.replace(/\//g, path.sep));
       try {
-        await fs.rm(target, { force: true });
+        await fs.rm(path.join(rootDir, candidate.replace(/\//g, path.sep)), { force: true });
       } catch {
         // ignore
       }
@@ -1331,6 +1606,8 @@ function routeToWorkSlug(route) {
 }
 
 async function removeStaleCaseOutput() {
+  if (isCheckMode) return;
+
   const keepWorkDirectories = new Set(caseStudies.map((item) => item.slug));
   for (const redirect of siteData.legacyRedirects || []) {
     const legacySlug = routeToWorkSlug(redirect.from);
@@ -1344,12 +1621,7 @@ async function removeStaleCaseOutput() {
     await Promise.all(
       workEntries
         .filter((entry) => entry.isDirectory() && !keepWorkDirectories.has(entry.name))
-        .map((entry) =>
-          fs.rm(path.join(rootDir, "work", entry.name), {
-            recursive: true,
-            force: true
-          })
-        )
+        .map((entry) => fs.rm(path.join(rootDir, "work", entry.name), { recursive: true, force: true }))
     );
   } catch {
     // ignore
@@ -1359,13 +1631,10 @@ async function removeStaleCaseOutput() {
   for (const item of caseStudies) {
     keepCaseImages.add(`${item.slug}.svg`);
     keepCaseImages.add(`${item.slug}.png`);
-    if (workPreviewVisualSlugs.has(item.slug)) {
-      keepCaseImages.add(`${item.slug}.webp`);
-      keepCaseImages.add(`${item.slug}.avif`);
-    }
+    keepCaseImages.add(`${item.slug}.webp`);
+    keepCaseImages.add(`${item.slug}.avif`);
   }
 
-  const removableExtensions = new Set([".svg", ".png", ".webp", ".avif"]);
   try {
     const imageEntries = await fs.readdir(path.join(rootDir, "assets", "images", "cases"), {
       withFileTypes: true
@@ -1375,12 +1644,10 @@ async function removeStaleCaseOutput() {
         .filter(
           (entry) =>
             entry.isFile() &&
-            removableExtensions.has(path.extname(entry.name.toLowerCase())) &&
+            [".svg", ".png", ".webp", ".avif"].includes(path.extname(entry.name).toLowerCase()) &&
             !keepCaseImages.has(entry.name)
         )
-        .map((entry) =>
-          fs.rm(path.join(rootDir, "assets", "images", "cases", entry.name), { force: true })
-        )
+        .map((entry) => fs.rm(path.join(rootDir, "assets", "images", "cases", entry.name), { force: true }))
     );
   } catch {
     // ignore
@@ -1388,6 +1655,8 @@ async function removeStaleCaseOutput() {
 }
 
 async function removeLegacyDirectories() {
+  if (isCheckMode) return;
+
   const directories = ["_not-found"];
   await Promise.all(
     directories.map(async (directory) => {
@@ -1428,7 +1697,7 @@ async function ensureOffscanSupportFiles() {
       file: `${appRoot}/support.html`,
       title: "OffScan AI Support",
       description: "Support information for OffScan AI.",
-      body: `<p>For help with OffScan AI, contact: <a href=\"mailto:${escapeAttribute(siteData.contact.email)}\">${escapeHtml(siteData.contact.email)}</a></p><p>Include your device model, Android version, and issue summary for faster troubleshooting.</p>`
+      body: `<p>For help with OffScan AI, contact: <a href="mailto:${escapeAttribute(siteData.contact.email)}">${escapeHtml(siteData.contact.email)}</a></p><p>Include your device model, Android version, and issue summary for faster troubleshooting.</p>`
     }
   ];
 
@@ -1443,11 +1712,11 @@ async function ensureOffscanSupportFiles() {
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="${escapeAttribute(`${siteUrl}/${page.file}`)}">
   <style>
-    body { margin: 0; font-family: Segoe UI, Arial, sans-serif; background: #060b17; color: #e6ecff; }
-    main { max-width: 740px; margin: 0 auto; padding: 3rem 1rem 4rem; line-height: 1.6; }
-    a { color: #7dcfff; }
+    body { margin: 0; font-family: "Segoe UI", Arial, sans-serif; background: #08101f; color: #e8efff; }
+    main { max-width: 740px; margin: 0 auto; padding: 3rem 1rem 4rem; line-height: 1.7; }
+    a { color: #8fd1ff; }
     h1 { line-height: 1.2; margin-top: 0; }
-    .back { margin-top: 2rem; display: inline-flex; color: #9ac3ff; }
+    .back { margin-top: 2rem; display: inline-flex; color: #b4d8ff; }
   </style>
 </head>
 <body>
@@ -1466,7 +1735,8 @@ async function ensureOffscanSupportFiles() {
 async function collectHtmlFiles(startDir, list = []) {
   const entries = await fs.readdir(startDir, { withFileTypes: true });
   for (const entry of entries) {
-    if (entry.name === ".git") continue;
+    if ([".git", "node_modules", "_next", "tmp-chrome-lh"].includes(entry.name)) continue;
+
     const absolutePath = path.join(startDir, entry.name);
     if (entry.isDirectory()) {
       await collectHtmlFiles(absolutePath, list);
@@ -1488,7 +1758,7 @@ async function fileExists(filePath) {
 
 function resolveLinkCandidates(targetPath) {
   const hasExtension = /\.[a-z0-9]+$/i.test(targetPath);
-  if (targetPath.endsWith("/")) {
+  if (targetPath.endsWith(path.sep)) {
     return [path.join(targetPath, "index.html")];
   }
   if (hasExtension) {
@@ -1504,7 +1774,7 @@ async function validateInternalLinks() {
   for (const absoluteHtmlPath of htmlFiles) {
     const relativeHtmlPath = normalizeFilePathSlashes(path.relative(rootDir, absoluteHtmlPath));
     const source = await fs.readFile(absoluteHtmlPath, "utf8");
-    const matches = source.matchAll(/(?:href|src)=\"([^\"]+)\"/g);
+    const matches = source.matchAll(/(?:href|src)="([^"]+)"/g);
 
     for (const match of matches) {
       const raw = match[1];
@@ -1547,6 +1817,12 @@ async function validateInternalLinks() {
   }
 }
 
+async function latestModifiedDate(paths) {
+  const stats = await Promise.all(paths.map((filePath) => fs.stat(filePath)));
+  const newest = Math.max(...stats.map((item) => item.mtimeMs));
+  return new Date(newest).toISOString().slice(0, 10);
+}
+
 async function build() {
   const pages = [
     homePage(),
@@ -1580,25 +1856,34 @@ async function build() {
     await writeCaseVisualAssets(caseStudy);
   }
 
+  await writeSitePreviewAsset();
   await writeMinifiedStylesheet();
-
-  await removeStaleCaseOutput();
-
   await writeTextFile("sitemap.xml", sitemapXml(pages));
   await writeTextFile("robots.txt", robotsTxt());
   await writeTextFile("site.webmanifest", webManifest());
 
   await ensureOffscanSupportFiles();
-  await removeLegacyTextArtifacts();
-  await removeLegacyDirectories();
+
+  if (!isCheckMode) {
+    await removeStaleCaseOutput();
+    await removeLegacyTextArtifacts();
+    await removeLegacyDirectories();
+  }
+
   await validateInternalLinks();
+
+  if (checkMismatches.size > 0) {
+    const report = [...checkMismatches].map((line) => `- ${line}`).join("\n");
+    throw new Error(`Generated output differs from files on disk:\n${report}`);
+  }
 
   if (!isCheckMode) {
     console.log(`Generated ${pages.length} HTML pages.`);
     console.log(`Wrote ${writtenFiles.length} files.`);
     console.log(`Custom domain target: ${siteUrl}`);
+  } else {
+    console.log(`Validated ${pages.length} HTML pages with no output diffs.`);
   }
 }
 
 await build();
-

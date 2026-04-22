@@ -406,15 +406,98 @@ function caseCategoryMark(category) {
     .join("") || "CS";
 }
 
+function caseCoverConfig(caseStudy) {
+  const configs = {
+    "enterprise-crm-sales-pipeline-performance-system": {
+      accent: "#56b7ff",
+      background: "linear-gradient(145deg,#08172e 0%,#0d2847 55%,#091e38 100%)",
+      tag: "Sales Pipeline & CRM",
+      headline: "Pipeline clarity from lead to close",
+      motif: `<svg class="cc-motif" width="80" height="56" viewBox="0 0 80 56" fill="none" aria-hidden="true"><rect x="1" y="1" width="20" height="7" rx="2" fill="white"/><rect x="1" y="12" width="20" height="7" rx="2" fill="white"/><rect x="1" y="23" width="20" height="7" rx="2" fill="white"/><rect x="1" y="34" width="20" height="7" rx="2" fill="white"/><rect x="30" y="1" width="20" height="7" rx="2" fill="white"/><rect x="30" y="12" width="20" height="7" rx="2" fill="white"/><rect x="30" y="23" width="20" height="7" rx="2" fill="white"/><rect x="59" y="1" width="20" height="7" rx="2" fill="white"/><rect x="59" y="12" width="20" height="7" rx="2" fill="white"/></svg>`
+    },
+    "automation-workflows-n8n-gas-api-integrations": {
+      accent: "#5de6c6",
+      background: "linear-gradient(145deg,#061e1a 0%,#0a2e27 55%,#071f1b 100%)",
+      tag: "Order & Lead Ops",
+      headline: "Manual ops replaced with zero-touch flow",
+      motif: `<svg class="cc-motif" width="96" height="44" viewBox="0 0 96 44" fill="none" aria-hidden="true"><circle cx="10" cy="22" r="8" stroke="white" stroke-width="1.5"/><line x1="18" y1="22" x2="34" y2="22" stroke="white" stroke-width="1.5"/><polygon points="33,18 41,22 33,26" fill="white"/><rect x="41" y="12" width="20" height="20" rx="3" stroke="white" stroke-width="1.5"/><line x1="61" y1="22" x2="72" y2="12" stroke="white" stroke-width="1.5"/><line x1="61" y1="22" x2="72" y2="32" stroke="white" stroke-width="1.5"/><circle cx="80" cy="8" r="7" stroke="white" stroke-width="1.5"/><circle cx="80" cy="36" r="7" stroke="white" stroke-width="1.5"/></svg>`
+    },
+    "media-app-android-ai-chat-search-ux": {
+      accent: "#a78bfa",
+      background: "linear-gradient(145deg,#110e28 0%,#1a1340 55%,#130f2c 100%)",
+      tag: "AI Chat + Search",
+      headline: "AI chat and search shipped into production",
+      motif: `<svg class="cc-motif" width="76" height="54" viewBox="0 0 76 54" fill="none" aria-hidden="true"><rect x="0" y="0" width="50" height="20" rx="10" fill="white"/><polygon points="6,20 2,30 18,20" fill="white"/><rect x="26" y="26" width="50" height="20" rx="10" fill="white"/><polygon points="70,46 74,52 58,46" fill="white"/></svg>`
+    },
+    "multi-surface-monorepo-nextjs-nestjs-platform": {
+      accent: "#fb923c",
+      background: "linear-gradient(145deg,#1a0e04 0%,#2a1a08 55%,#1c1005 100%)",
+      tag: "Multi-Surface Platform",
+      headline: "Web, mobile, and API from a single repo",
+      motif: `<svg class="cc-motif" width="80" height="56" viewBox="0 0 80 56" fill="none" aria-hidden="true"><rect x="28" y="0" width="24" height="14" rx="3" stroke="white" stroke-width="1.5"/><line x1="40" y1="14" x2="40" y2="22" stroke="white" stroke-width="1.5"/><line x1="14" y1="22" x2="66" y2="22" stroke="white" stroke-width="1.5"/><line x1="14" y1="22" x2="14" y2="28" stroke="white" stroke-width="1.5"/><line x1="40" y1="22" x2="40" y2="28" stroke="white" stroke-width="1.5"/><line x1="66" y1="22" x2="66" y2="28" stroke="white" stroke-width="1.5"/><rect x="2" y="28" width="24" height="14" rx="3" stroke="white" stroke-width="1.5"/><rect x="28" y="28" width="24" height="14" rx="3" stroke="white" stroke-width="1.5"/><rect x="54" y="28" width="24" height="14" rx="3" stroke="white" stroke-width="1.5"/><line x1="14" y1="42" x2="14" y2="46" stroke="white" stroke-width="1.5"/><line x1="6" y1="46" x2="22" y2="46" stroke="white" stroke-width="1.5"/><line x1="6" y1="46" x2="6" y2="52" stroke="white" stroke-width="1.5"/><line x1="22" y1="46" x2="22" y2="52" stroke="white" stroke-width="1.5"/></svg>`
+    },
+    "social-feed-ui-fixes-cards-polish": {
+      accent: "#f472b6",
+      background: "linear-gradient(145deg,#1e0c17 0%,#2e1222 55%,#200e19 100%)",
+      tag: "Feed UI & Cards",
+      headline: "Feed cards fixed, zero regressions shipped",
+      motif: `<svg class="cc-motif" width="64" height="56" viewBox="0 0 64 56" fill="none" aria-hidden="true"><rect x="8" y="0" width="56" height="14" rx="4" stroke="white" stroke-width="1.5"/><line x1="16" y1="7" x2="52" y2="7" stroke="white" stroke-width="1"/><rect x="4" y="20" width="56" height="14" rx="4" stroke="white" stroke-width="1.5"/><line x1="12" y1="27" x2="48" y2="27" stroke="white" stroke-width="1"/><rect x="0" y="40" width="56" height="14" rx="4" stroke="white" stroke-width="1.5"/><line x1="8" y1="47" x2="44" y2="47" stroke="white" stroke-width="1"/></svg>`
+    },
+    "offscan-ai-offline-ocr-android": {
+      accent: "#22d3ee",
+      background: "linear-gradient(145deg,#041921 0%,#07293a 55%,#051d27 100%)",
+      tag: "Offline OCR Engine",
+      headline: "OCR that works with no signal, no cloud",
+      motif: `<svg class="cc-motif" width="60" height="60" viewBox="0 0 60 60" fill="none" aria-hidden="true"><path d="M4 0 L40 0 L56 16 L56 60 L4 60 Z" stroke="white" stroke-width="1.5" fill="none"/><path d="M40 0 L40 16 L56 16" stroke="white" stroke-width="1.5" fill="none"/><line x1="12" y1="26" x2="48" y2="26" stroke="white" stroke-width="1"/><line x1="12" y1="34" x2="48" y2="34" stroke="white" stroke-width="2"/><line x1="12" y1="42" x2="48" y2="42" stroke="white" stroke-width="1"/></svg>`
+    },
+    "i-scantea-edge-ml-grading-prototype": {
+      accent: "#4ade80",
+      background: "linear-gradient(145deg,#061508 0%,#0d2410 55%,#081709 100%)",
+      tag: "Edge ML Classifier",
+      headline: "Field-grade ML classifier running on-device",
+      motif: `<svg class="cc-motif" width="72" height="52" viewBox="0 0 72 52" fill="none" aria-hidden="true"><rect x="0" y="4" width="58" height="8" rx="3" fill="white"/><rect x="0" y="18" width="42" height="8" rx="3" fill="white"/><rect x="0" y="32" width="52" height="8" rx="3" fill="white"/><rect x="0" y="46" width="28" height="8" rx="3" fill="white"/><line x1="60" y1="8" x2="72" y2="8" stroke="white" stroke-width="1.5"/><line x1="44" y1="22" x2="72" y2="22" stroke="white" stroke-width="1.5"/><line x1="54" y1="36" x2="72" y2="36" stroke="white" stroke-width="1.5"/><line x1="30" y1="50" x2="72" y2="50" stroke="white" stroke-width="1.5"/></svg>`
+    },
+    "scanberry-mobile-vision-prototype": {
+      accent: "#c084fc",
+      background: "linear-gradient(145deg,#140a22 0%,#1f1036 55%,#170c27 100%)",
+      tag: "Mobile Vision Scan",
+      headline: "Offline-first scan and classify, no network needed",
+      motif: `<svg class="cc-motif" width="64" height="56" viewBox="0 0 64 56" fill="none" aria-hidden="true"><path d="M4 16 L4 4 L16 4" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M48 4 L60 4 L60 16" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M4 40 L4 52 L16 52" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M48 52 L60 52 L60 40" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="32" cy="28" r="8" stroke="white" stroke-width="1.5"/><line x1="32" y1="16" x2="32" y2="22" stroke="white" stroke-width="1.5"/><line x1="32" y1="34" x2="32" y2="40" stroke="white" stroke-width="1.5"/><line x1="20" y1="28" x2="26" y2="28" stroke="white" stroke-width="1.5"/><line x1="38" y1="28" x2="44" y2="28" stroke="white" stroke-width="1.5"/></svg>`
+    }
+  };
+
+  return configs[caseStudy.slug] || {
+    accent: "#8fd1ff",
+    background: "linear-gradient(145deg,#081120 0%,#0d1830 55%,#121f3f 100%)",
+    tag: caseStudy.category || "Case Study",
+    headline: caseStudy.outcome || caseStudy.shortSummary,
+    motif: ""
+  };
+}
+
+function timelineBadge(timeline) {
+  const match = String(timeline || "").match(/(\d+)-week/i);
+  return match ? `${match[1]} wks` : "Delivery";
+}
+
 function renderCaseVisual(caseStudy, loading = "lazy") {
-  const slug = escapeAttribute(caseStudy.slug);
+  void loading;
+  const config = caseCoverConfig(caseStudy);
+  const stackLine = (caseStudy.techStack || []).slice(0, 3).join(" | ");
 
   return `
-    <picture>
-      <source srcset="/assets/images/cases/${slug}.avif" type="image/avif">
-      <source srcset="/assets/images/cases/${slug}.webp" type="image/webp">
-      <img src="/assets/images/cases/${slug}.png" alt="" loading="${escapeAttribute(loading)}" decoding="async" width="1200" height="675">
-    </picture>
+    <div class="case-cover-styled" style="--cc-accent:${escapeAttribute(config.accent)};background:${escapeAttribute(config.background)}" aria-hidden="true">
+      <div class="cc-top">
+        <span class="cc-category-tag">${escapeHtml(config.tag)}</span>
+        <span class="cc-duration">${escapeHtml(timelineBadge(caseStudy.timeline))}</span>
+      </div>
+      <div class="cc-body">
+        <div class="cc-accent-bar"></div>
+        <p class="cc-headline">${escapeHtml(config.headline)}</p>
+        <p class="cc-stack-line">${escapeHtml(stackLine)}</p>
+      </div>
+      ${config.motif}
+    </div>
   `;
 }
 

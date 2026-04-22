@@ -213,14 +213,14 @@ function renderHeader(currentRoute) {
     <header class="site-header" role="banner">
       <div class="container header-inner">
         <a class="brand" href="/" aria-label="${escapeAttribute(siteData.site.name)} home">
-          <span class="brand-mark" aria-hidden="true"></span>
+          <span class="brand-mark" aria-hidden="true">RR</span>
           <span class="brand-name">${escapeHtml(siteData.site.name)}</span>
         </a>
         <nav class="primary-nav" aria-label="Primary navigation">
           ${renderNavLinks(currentRoute)}
         </nav>
         <div class="header-actions">
-          <a class="btn btn-primary btn-sm" href="${escapeAttribute(siteData.site.heroPrimaryCta.href)}">${escapeHtml(siteData.site.heroPrimaryCta.label)}</a>
+          <a class="btn btn-primary btn-sm" href="${escapeAttribute(siteData.site.heroPrimaryCta.href)}">Share your scope</a>
           <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open navigation menu">Menu</button>
         </div>
       </div>
@@ -268,7 +268,7 @@ function renderFooter() {
         </div>
       </div>
       <div class="container footer-bottom">
-        <p>(c) ${new Date(buildDate).getUTCFullYear()} ${escapeHtml(siteData.site.name)}. All rights reserved.</p>
+        <p>&copy; ${new Date(buildDate).getUTCFullYear()} ${escapeHtml(siteData.site.name)}. All rights reserved.</p>
         <p>Remote contract engineering for internal tools, automation systems, and Android + AI product delivery.</p>
       </div>
     </footer>
@@ -537,6 +537,39 @@ function renderProfileLinks() {
     .join("");
 }
 
+function renderTestimonials() {
+  const testimonials = siteData.testimonials || [];
+  if (testimonials.length === 0) {
+    return "";
+  }
+
+  return `
+      <section class="section" aria-labelledby="testimonials-heading">
+        <div class="container">
+          <div class="section-head">
+            <h2 id="testimonials-heading">What clients say</h2>
+            <p>Anonymized per NDA. Verified project engagements - full context available on request.</p>
+          </div>
+          <div class="testimonials-grid">
+            ${testimonials
+              .map(
+                (item, index) => `
+            <div class="testimonial-card" data-animate style="--delay:${animationDelay(index, 0.05)}">
+              <p class="testimonial-quote">${escapeHtml(item.quote)}</p>
+              <div class="testimonial-attr">
+                <p class="testimonial-role">${escapeHtml(item.role)} &mdash; ${escapeHtml(item.context)}</p>
+                <p class="testimonial-nda">${escapeHtml(item.note)}</p>
+              </div>
+            </div>
+          `
+              )
+              .join("")}
+          </div>
+        </div>
+      </section>
+  `;
+}
+
 function homePage() {
   const featuredCases = (siteData.featuredCaseSlugs || [])
     .map((slug) => findCaseStudy(slug))
@@ -595,12 +628,19 @@ function homePage() {
             </div>
           </div>
           <aside class="hero-panel" data-animate style="--delay:0.08s" aria-label="Positioning and proof summary">
-            <p class="eyebrow eyebrow-muted">Primary focus</p>
+            <div class="profile-photo-wrap">
+              <picture>
+                <source srcset="/assets/images/profile.webp" type="image/webp">
+                <img class="profile-photo" src="/assets/images/profile.jpg" alt="${escapeAttribute(siteData.site.name)}" width="96" height="96" loading="eager" decoding="async">
+              </picture>
+            </div>
+            <div class="avail-badge"><span class="avail-dot" aria-hidden="true"></span>Open to new projects</div>
+            <p class="eyebrow eyebrow-muted" style="margin-top:0.9rem">Primary focus</p>
             <h2>Internal tools, automation, and reliable remote delivery</h2>
             <ul class="list-dot list-dot-tight">
               <li>Best fit for workflow-heavy teams that need clearer operating systems.</li>
               <li>Android + AI stays visible as a secondary specialization, not the whole story.</li>
-              <li>${escapeHtml(siteData.contact.responseTime)}</li>
+              <li>Replies within 24 hours on weekdays.</li>
             </ul>
           </aside>
         </div>
@@ -650,6 +690,8 @@ function homePage() {
         </div>
       </section>
 
+      ${renderTestimonials()}
+
       <section class="section" aria-labelledby="trust-heading">
         <div class="container trust-grid">
           <div class="card" data-animate>
@@ -682,8 +724,8 @@ function homePage() {
       <section class="section">
         <div class="container cta-panel" data-animate>
           <p class="eyebrow">Remote contract engineering</p>
-          <h2>Need a reliable engineer for an active workflow or product build?</h2>
-          <p>Share the current process, blockers, and timeline. I will reply with the best starting scope.</p>
+          <h2>Ready to stop patching the same workflow every quarter?</h2>
+          <p>Share the current process, blockers, and timeline. I will reply with the best starting scope within 24 hours.</p>
           ${renderContactChannels()}
           <div class="actions">
             <a class="btn btn-primary" href="/contact/">Share your scope</a>
@@ -1004,8 +1046,9 @@ function hirePage() {
           <p class="eyebrow" data-animate>${escapeHtml(siteData.site.heroEyebrow)}</p>
           <h1 data-animate style="--delay:0.04s">Hire ${escapeHtml(siteData.site.name)}</h1>
           <p data-animate style="--delay:0.08s">Remote contract support for AI-enabled workflows, internal tools, automation systems, and Android + AI product delivery.</p>
-          <div class="actions" data-animate style="--delay:0.12s">
-            <a class="btn btn-primary" href="/contact/">Share your scope</a>
+          <div class="avail-badge" data-animate style="--delay:0.10s;margin-top:0.8rem"><span class="avail-dot" aria-hidden="true"></span>Currently open to new projects</div>
+          <div class="actions" data-animate style="--delay:0.14s">
+            <a class="btn btn-primary" href="/contact/">Send the current problem</a>
             <a class="btn btn-secondary" href="${escapeAttribute(emailProjectBriefHref())}">Email project brief</a>
           </div>
         </div>
@@ -1016,6 +1059,7 @@ function hirePage() {
           <div class="section-head">
             <h2 id="packages-heading">Engagement options</h2>
             <p>Clear paths for internal tools, automation systems, Android + AI delivery, and ongoing remote execution.</p>
+            <p class="pricing-note"><strong>Scope-based pricing.</strong> Send the brief and I will return a milestone estimate within 24 hours. Short automation sprints typically start from a few hundred dollars. Full CRM or platform builds are scoped per delivery plan. No retainer required to start.</p>
           </div>
           <div class="grid grid-2">
             ${renderServiceCards(packages)}
@@ -1174,7 +1218,7 @@ function contactPage() {
           <p class="eyebrow" data-animate>${escapeHtml(siteData.site.heroEyebrow)}</p>
           <h1 data-animate style="--delay:0.04s">Share your scope</h1>
           <p data-animate style="--delay:0.08s">Send the project brief, blockers, and timeline. I will reply with the best starting scope for the work.</p>
-          <p class="sla-note" data-animate style="--delay:0.12s"><strong>Response:</strong> ${escapeHtml(siteData.contact.responseTime)}</p>
+          <div class="avail-badge" data-animate style="--delay:0.10s;margin-top:0.6rem"><span class="avail-dot" aria-hidden="true"></span>Open to new projects &mdash; replies within 24h on weekdays</div>
           <div class="actions" data-animate style="--delay:0.16s">
             <a class="btn btn-primary" href="${escapeAttribute(scopeMailHref())}">Email project brief</a>
             <button class="btn btn-secondary" type="button" data-copy-target="contact-scope-template-quick" data-copy-feedback="contact-scope-quick-feedback">Copy scope template</button>

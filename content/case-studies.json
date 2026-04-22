@@ -44,7 +44,7 @@
   },
   {
     "slug": "automation-workflows-n8n-gas-api-integrations",
-    "title": "Automation Workflows",
+    "title": "Inbound Order & Lead Ops Automation",
     "shortSummary": "Built automation pipelines that moved orders and chat updates into a shared ops workflow with less manual logging.",
     "outcome": "Reduced repetitive copy-paste work and improved visibility across inbound operations.",
     "category": "Automation Systems",

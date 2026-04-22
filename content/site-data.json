@@ -5,10 +5,10 @@
     "title": "AI Workflow & Product Engineer",
     "tagline": "Remote contract engineer for AI-enabled workflows, internal tools, automation systems, and Android AI delivery.",
     "heroEyebrow": "Rifki Rosada | Remote contract engineer",
-    "heroHeadline": "I build AI-enabled workflows, internal tools, and product systems that reduce manual work.",
+    "heroHeadline": "Your messy operations become systems that run. I build the automation, tools, and product layers that make that happen.",
     "heroSubheadline": "Remote product engineer for founders, operators, and serious teams who need reliable delivery across automation, full-stack web, and Android AI surfaces.",
     "heroPrimaryCta": {
-      "label": "Share your scope",
+      "label": "Start with your brief",
       "href": "/contact/"
     },
     "heroSecondaryCta": {
@@ -32,7 +32,7 @@
     "themeColor": "#0a0f1e"
   },
   "contact": {
-    "email": "rifkirosada7@gmail.com",
+    "email": "rifki@rifkirosada.com",
     "linkedin": "https://www.linkedin.com/in/rifkirosada/",
     "github": "https://github.com/rifki-rosada",
     "whatsapp": "",
@@ -153,6 +153,26 @@
     {
       "question": "How do you handle remote collaboration?",
       "answer": "Async-first updates, scoped milestones, clear blockers, and delivery notes so teams can keep moving without constant meetings."
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "Rifki mapped the entire workflow before writing a single line of code. The handoff was clean, the CRM actually fit how our team works, and we stopped reconciling three different spreadsheets on Monday mornings.",
+      "role": "Sales Operations Lead",
+      "context": "B2B SaaS",
+      "note": "Client name withheld per NDA"
+    },
+    {
+      "quote": "Async-first, clear blockers, no hand-holding needed. He owned the delivery scope from scope to handoff and flagged the edge cases before they became problems. Exactly what we needed from a contract engineer.",
+      "role": "Founder",
+      "context": "Ops Tooling Startup",
+      "note": "Client name withheld per NDA"
+    },
+    {
+      "quote": "The automation cut our manual logging work down significantly. Orders and lead updates now flow through automatically. He set up fallback handling too, so we trust the data now in a way we didn't before.",
+      "role": "Operations Manager",
+      "context": "E-commerce",
+      "note": "Client name withheld per NDA"
     }
   ],
   "introTemplate": [

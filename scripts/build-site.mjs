@@ -5,15 +5,19 @@ import sharp from "sharp";
 const rootDir = process.cwd();
 const siteDataPath = path.join(rootDir, "content", "site-data.json");
 const caseStudiesPath = path.join(rootDir, "content", "case-studies.json");
+const notesPath = path.join(rootDir, "content", "notes.json");
 const isCheckMode = process.argv.includes("--check");
 
-const [siteDataRaw, caseStudiesRaw] = await Promise.all([
+const [siteDataRaw, caseStudiesRaw, notesRaw] = await Promise.all([
   fs.readFile(siteDataPath, "utf8"),
-  fs.readFile(caseStudiesPath, "utf8")
+  fs.readFile(caseStudiesPath, "utf8"),
+  fs.readFile(notesPath, "utf8").catch(() => null)
 ]);
 
 const siteData = JSON.parse(siteDataRaw.replace(/^\uFEFF/, ""));
 const caseStudiesInput = JSON.parse(caseStudiesRaw.replace(/^\uFEFF/, ""));
+const notesData = notesRaw ? JSON.parse(notesRaw.replace(/^\uFEFF/, "")) : { posts: [] };
+const notes = (notesData.posts || []).slice().sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
 
 const requiredCaseSlugs = [
   "enterprise-crm-sales-pipeline-performance-system",
@@ -64,6 +68,7 @@ for (const item of caseStudies) {
 const navItems = [
   { label: "Home", href: "/" },
   { label: "Work", href: "/work/" },
+  { label: "Writing", href: "/writing/" },
   { label: "Hire", href: "/hire/" },
   { label: "Contact", href: "/contact/" }
 ];
@@ -71,6 +76,7 @@ const navItems = [
 const footerNavItems = [
   { label: "Home", href: "/" },
   { label: "Work", href: "/work/" },
+  { label: "Writing", href: "/writing/" },
   { label: "Hire", href: "/hire/" },
   { label: "Contact", href: "/contact/" }
 ];
@@ -833,6 +839,145 @@ function homePage() {
       "Remote contract engineer building AI-enabled workflows, internal tools, automation systems, and Android + AI product delivery.",
     body,
     jsonLd: [websiteJsonLd, personJsonLd, serviceJsonLd]
+  };
+}
+
+function formatPostDate(dateString) {
+  if (!dateString) return "";
+  const d = new Date(dateString);
+  if (Number.isNaN(d.getTime())) return dateString;
+  return d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+}
+
+function writingIndexPage() {
+  const collectionJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: notesData.indexTitle || "Writing",
+    url: toAbsoluteUrl("/writing/"),
+    isPartOf: toAbsoluteUrl("/")
+  };
+
+  const postsHtml = notes.length
+    ? notes.map((post, index) => `
+        <article class="card writing-card" data-animate style="--delay:${animationDelay(index, 0.05)}">
+          <header class="writing-card-head">
+            <p class="writing-meta">${escapeHtml(formatPostDate(post.date))}${post.tags && post.tags.length ? ` &middot; ${post.tags.map(escapeHtml).join(" &middot; ")}` : ""}</p>
+            <h3><a href="/writing/${escapeAttribute(post.slug)}/">${escapeHtml(post.title)}</a></h3>
+            <p class="writing-summary">${escapeHtml(post.summary || "")}</p>
+          </header>
+          <div class="writing-card-foot">
+            <a class="text-link" href="/writing/${escapeAttribute(post.slug)}/">Read note &rarr;</a>
+          </div>
+        </article>
+      `).join("")
+    : `<p class="lead">First post coming soon.</p>`;
+
+  const body = `
+    <main id="main-content" tabindex="-1">
+      <section class="page-hero section">
+        <div class="container">
+          <p class="eyebrow" data-animate>${escapeHtml(notesData.indexEyebrow || "Writing")}</p>
+          <h1 data-animate style="--delay:0.04s">${escapeHtml(notesData.indexTitle || "Writing")}</h1>
+          <p data-animate style="--delay:0.08s">${escapeHtml(notesData.indexLead || "")}</p>
+        </div>
+      </section>
+
+      <section class="section section-tight">
+        <div class="container">
+          <div class="grid writing-grid">
+            ${postsHtml}
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container cta-panel" data-animate>
+          <h2>Working on something I should write about next?</h2>
+          <p>Most of these notes come out of active client work. If you have a project in mind, share the scope and I will reply with the best starting point.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="/contact/">Share your scope</a>
+            <a class="btn btn-secondary" href="/work/">Review relevant work</a>
+          </div>
+        </div>
+      </section>
+    </main>
+  `;
+
+  return {
+    route: "/writing/",
+    filePath: path.join("writing", "index.html"),
+    title: `Writing | ${siteData.site.name}`,
+    description: notesData.indexLead || "Notes on real client builds — architecture, tradeoffs, and what shipped.",
+    body,
+    jsonLd: [collectionJsonLd]
+  };
+}
+
+function writingPostPage(post) {
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    datePublished: post.date,
+    dateModified: post.date,
+    author: { "@type": "Person", name: siteData.site.name, url: siteUrl + "/" },
+    url: toAbsoluteUrl(`/writing/${post.slug}/`),
+    description: post.summary || "",
+    inLanguage: "en-US"
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: toAbsoluteUrl("/") },
+      { "@type": "ListItem", position: 2, name: "Writing", item: toAbsoluteUrl("/writing/") },
+      { "@type": "ListItem", position: 3, name: post.title, item: toAbsoluteUrl(`/writing/${post.slug}/`) }
+    ]
+  };
+
+  const bodyParagraphs = (post.body || []).map((para) => `<p>${escapeHtml(para)}</p>`).join("");
+
+  const body = `
+    <main id="main-content" tabindex="-1">
+      <article class="section">
+        <div class="container container-narrow">
+          <nav class="breadcrumb" data-animate>
+            <a href="/writing/">&larr; Writing</a>
+          </nav>
+          <header class="writing-post-head" data-animate style="--delay:0.04s">
+            <p class="writing-meta">${escapeHtml(formatPostDate(post.date))}${post.tags && post.tags.length ? ` &middot; ${post.tags.map(escapeHtml).join(" &middot; ")}` : ""}</p>
+            <h1>${escapeHtml(post.title)}</h1>
+            ${post.summary ? `<p class="lead">${escapeHtml(post.summary)}</p>` : ""}
+          </header>
+          <div class="writing-post-body" data-animate style="--delay:0.08s">
+            ${bodyParagraphs}
+          </div>
+        </div>
+      </article>
+
+      <section class="section">
+        <div class="container cta-panel" data-animate>
+          <h2>Have a similar workflow to ship?</h2>
+          <p>Most notes here come from real client builds. If you are running into something similar, share the current state and target outcome.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="/contact/">Share your scope</a>
+            <a class="btn btn-secondary" href="/work/">Review relevant work</a>
+          </div>
+        </div>
+      </section>
+    </main>
+  `;
+
+  return {
+    route: `/writing/${post.slug}/`,
+    filePath: path.join("writing", post.slug, "index.html"),
+    title: `${post.title} | ${siteData.site.name}`,
+    description: post.summary || post.title,
+    body,
+    jsonLd: [breadcrumbJsonLd, articleJsonLd],
+    ogType: "article"
   };
 }
 
@@ -1975,12 +2120,14 @@ async function build() {
   const pages = [
     homePage(),
     workPage(),
+    writingIndexPage(),
     hirePage(),
     experiencePage(),
     contactPage(),
     notFoundPage(),
     folderNotFoundPage(),
     ...caseStudies.map((caseStudy) => casePage(caseStudy)),
+    ...notes.map((post) => writingPostPage(post)),
     ...(siteData.legacyRedirects || []).map((item) => redirectPage(item))
   ];
 

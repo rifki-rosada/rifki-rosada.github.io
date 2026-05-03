@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0f1e">
+  <meta name="description" content="Six weeks of work that replaced three spreadsheets and led to a returning engagement in a different vertical. What I built, what I&#39;d skip next time.">
+  <meta name="author" content="Rifki Rosada">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://rifkirosada.com/writing/building-a-crm-for-multi-business-operator/">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:title" content="Building a CRM for a multi-business operator | Rifki Rosada">
+  <meta property="og:description" content="Six weeks of work that replaced three spreadsheets and led to a returning engagement in a different vertical. What I built, what I&#39;d skip next time.">
+  <meta property="og:url" content="https://rifkirosada.com/writing/building-a-crm-for-multi-business-operator/">
+  <meta property="og:site_name" content="Rifki Rosada">
+  <meta property="og:image" content="https://rifkirosada.com/og-image.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Rifki Rosada portfolio preview">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://rifkirosada.com/writing/building-a-crm-for-multi-business-operator/">
+  <meta name="twitter:title" content="Building a CRM for a multi-business operator | Rifki Rosada">
+  <meta name="twitter:description" content="Six weeks of work that replaced three spreadsheets and led to a returning engagement in a different vertical. What I built, what I&#39;d skip next time.">
+  <meta name="twitter:image" content="https://rifkirosada.com/og-image.png">
+  <meta name="twitter:image:alt" content="Rifki Rosada portfolio preview">
+  <title>Building a CRM for a multi-business operator | Rifki Rosada</title>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16">
+  <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/favicon-192.png" sizes="192x192">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="stylesheet" href="/assets/css/site.min.css">
+  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://rifkirosada.com/"},{"@type":"ListItem","position":2,"name":"Writing","item":"https://rifkirosada.com/writing/"},{"@type":"ListItem","position":3,"name":"Building a CRM for a multi-business operator","item":"https://rifkirosada.com/writing/building-a-crm-for-multi-business-operator/"}]},{"@context":"https://schema.org","@type":"Article","headline":"Building a CRM for a multi-business operator","datePublished":"2026-04-28","dateModified":"2026-04-28","author":{"@type":"Person","name":"Rifki Rosada","url":"https://rifkirosada.com/"},"url":"https://rifkirosada.com/writing/building-a-crm-for-multi-business-operator/","description":"Six weeks of work that replaced three spreadsheets and led to a returning engagement in a different vertical. What I built, what I'd skip next time.","inLanguage":"en-US"}]</script>
+
+</head>
+<body>
+
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header" role="banner">
+      <div class="container header-inner">
+        <a class="brand" href="/" aria-label="Rifki Rosada home">
+          <span class="brand-mark" aria-hidden="true">RR</span>
+          <span class="brand-name">Rifki Rosada</span>
+        </a>
+        <nav class="primary-nav" aria-label="Primary navigation">
+          <a href="/">Home</a><a href="/work/">Work</a><a href="/writing/" aria-current="page">Writing</a><a href="/hire/">Hire</a><a href="/contact/">Contact</a>
+        </nav>
+        <div class="header-actions">
+          <a class="btn btn-primary btn-sm" href="/contact/">Share your scope</a>
+          <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open navigation menu">Menu</button>
+        </div>
+      </div>
+      <div id="mobile-nav" class="mobile-nav" data-mobile-nav aria-hidden="true" hidden>
+        <nav aria-label="Mobile navigation">
+          <ul>
+            <li><a href="/">Home</a></li><li><a href="/work/">Work</a></li><li><a href="/writing/" aria-current="page">Writing</a></li><li><a href="/hire/">Hire</a></li><li><a href="/contact/">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+
+    <main id="main-content" tabindex="-1">
+      <article class="section">
+        <div class="container container-narrow">
+          <nav class="breadcrumb" data-animate>
+            <a href="/writing/">&larr; Writing</a>
+          </nav>
+          <header class="writing-post-head" data-animate style="--delay:0.04s">
+            <p class="writing-meta">April 28, 2026 &middot; CRM &middot; Laravel &middot; Next.js &middot; Client Work</p>
+            <h1>Building a CRM for a multi-business operator</h1>
+            <p class="lead">Six weeks of work that replaced three spreadsheets and led to a returning engagement in a different vertical. What I built, what I&#39;d skip next time.</p>
+          </header>
+          <div class="writing-post-body" data-animate style="--delay:0.08s">
+            <p>Late last year I shipped a CRM build for a client operating multiple businesses across travel and service verticals. Six weeks of work, replaced three separate spreadsheets the team had been running for years.</p><p>The brief from the client was simple: stop reconciling sheets every Monday. What that actually meant once we mapped the workflow: a sales pipeline any operator could update with one click, a pricing engine that handled multi-tier service quotes, a proposal PDF generator so the team stopped manually formatting every quote, role-based access so reps could see their own pipeline and managers could see everything, and a hotel/vendor database so reused references didn&#39;t keep getting re-entered.</p><p>The architecture was straightforward. Laravel on the backend for services and rollups, PostgreSQL for the data layer, Next.js for the operator interface, Docker + Nginx for deployment on a VPS. Nothing exotic, nothing trendy. The exotic stack is what makes maintenance miserable two years later.</p><p>The first week was entirely workflow mapping. No code, no schema. Just sitting with the team understanding how they actually operated, what was breaking, what was duplicate, what mattered. That week is the part most CRM builds skip, and the part you pay for later when the schema doesn&#39;t fit how the team actually works.</p><p>The result the client cared about: weekly review dropped from roughly 2 days of manual reconciliation to about 15 minutes. New ops staff onboarding dropped from 2 weeks of &#39;which sheet do I update&#39; training to a couple of days. A few months after the CRM shipped, the same client came back with a completely different business in a completely different vertical and asked for a follow-up project. That second engagement is the part I&#39;m most proud of — not the technical build, the trust that triggered the second contract.</p><p>Lessons that carried into later work: scope is everything, workflow comes before schema, and a good handoff document is worth more than a clever architecture. Speed of delivery matters less than whether the team can maintain the system after I&#39;m gone.</p>
+          </div>
+        </div>
+      </article>
+
+      <section class="section">
+        <div class="container cta-panel" data-animate>
+          <h2>Have a similar workflow to ship?</h2>
+          <p>Most notes here come from real client builds. If you are running into something similar, share the current state and target outcome.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="/contact/">Share your scope</a>
+            <a class="btn btn-secondary" href="/work/">Review relevant work</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div class="footer-brand-block">
+          <p class="footer-title">Rifki Rosada</p>
+          <p class="footer-copy">Remote contract engineer for AI-enabled workflows, internal tools, automation systems, and Android AI delivery.</p>
+          <p class="footer-note">Usually replies within 24 hours on weekdays.</p>
+          <div class="footer-links" aria-label="Footer contact links">
+            <a href="mailto:rifki@rifkirosada.com">Email</a><a href="https://www.linkedin.com/in/rifkirosada/" target="_blank" rel="noopener noreferrer">LinkedIn</a><a href="https://github.com/rifki-rosada" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </div>
+        </div>
+        <div class="footer-nav-block">
+          <p class="footer-title">Explore</p>
+          <nav class="footer-nav" aria-label="Footer explore">
+            <ul class="footer-nav-list">
+
+        <li>
+          <a class="footer-nav-link" href="/">Home</a>
+        </li>
+
+        <li>
+          <a class="footer-nav-link" href="/work/">Work</a>
+        </li>
+
+        <li>
+          <a class="footer-nav-link" href="/writing/">Writing</a>
+        </li>
+
+        <li>
+          <a class="footer-nav-link" href="/hire/">Hire</a>
+        </li>
+
+        <li>
+          <a class="footer-nav-link" href="/contact/">Contact</a>
+        </li>
+
+            </ul>
+          </nav>
+        </div>
+      </div>
+      <div class="container footer-bottom">
+        <p>&copy; 2026 Rifki Rosada. All rights reserved.</p>
+        <p>Remote contract engineering for internal tools, automation systems, and Android + AI product delivery.</p>
+      </div>
+    </footer>
+
+  <script src="/assets/js/site.js" defer></script>
+</body>
+</html>

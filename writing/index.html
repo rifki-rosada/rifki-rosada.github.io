@@ -4,15 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0a0f1e">
-  <meta name="description" content="Page not found.">
+  <meta name="description" content="Short notes on real client builds — architecture, tradeoffs, what shipped, what I&#39;d do differently. Updated when something is worth writing down.">
   <meta name="author" content="Rifki Rosada">
-  <meta name="robots" content="noindex, nofollow">
-  <link rel="canonical" href="https://rifkirosada.com/404/">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://rifkirosada.com/writing/">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="en_US">
-  <meta property="og:title" content="404 | Rifki Rosada">
-  <meta property="og:description" content="Page not found.">
-  <meta property="og:url" content="https://rifkirosada.com/404/">
+  <meta property="og:title" content="Writing | Rifki Rosada">
+  <meta property="og:description" content="Short notes on real client builds — architecture, tradeoffs, what shipped, what I&#39;d do differently. Updated when something is worth writing down.">
+  <meta property="og:url" content="https://rifkirosada.com/writing/">
   <meta property="og:site_name" content="Rifki Rosada">
   <meta property="og:image" content="https://rifkirosada.com/og-image.png">
   <meta property="og:image:type" content="image/png">
@@ -20,19 +20,19 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Rifki Rosada portfolio preview">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:url" content="https://rifkirosada.com/404/">
-  <meta name="twitter:title" content="404 | Rifki Rosada">
-  <meta name="twitter:description" content="Page not found.">
+  <meta name="twitter:url" content="https://rifkirosada.com/writing/">
+  <meta name="twitter:title" content="Writing | Rifki Rosada">
+  <meta name="twitter:description" content="Short notes on real client builds — architecture, tradeoffs, what shipped, what I&#39;d do differently. Updated when something is worth writing down.">
   <meta name="twitter:image" content="https://rifkirosada.com/og-image.png">
   <meta name="twitter:image:alt" content="Rifki Rosada portfolio preview">
-  <title>404 | Rifki Rosada</title>
+  <title>Writing | Rifki Rosada</title>
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16">
   <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32">
   <link rel="apple-touch-icon" href="/favicon-192.png" sizes="192x192">
   <link rel="manifest" href="/site.webmanifest">
   <link rel="stylesheet" href="/assets/css/site.min.css">
-  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"WebPage","name":"404","isPartOf":"https://rifkirosada.com/"}]</script>
+  <script type="application/ld+json">[{"@context":"https://schema.org","@type":"CollectionPage","name":"Writing","url":"https://rifkirosada.com/writing/","isPartOf":"https://rifkirosada.com/"}]</script>
 
 </head>
 <body>
@@ -45,7 +45,7 @@
           <span class="brand-name">Rifki Rosada</span>
         </a>
         <nav class="primary-nav" aria-label="Primary navigation">
-          <a href="/">Home</a><a href="/work/">Work</a><a href="/writing/">Writing</a><a href="/hire/">Hire</a><a href="/contact/">Contact</a>
+          <a href="/">Home</a><a href="/work/">Work</a><a href="/writing/" aria-current="page">Writing</a><a href="/hire/">Hire</a><a href="/contact/">Contact</a>
         </nav>
         <div class="header-actions">
           <a class="btn btn-primary btn-sm" href="/contact/">Share your scope</a>
@@ -55,7 +55,7 @@
       <div id="mobile-nav" class="mobile-nav" data-mobile-nav aria-hidden="true" hidden>
         <nav aria-label="Mobile navigation">
           <ul>
-            <li><a href="/">Home</a></li><li><a href="/work/">Work</a></li><li><a href="/writing/">Writing</a></li><li><a href="/hire/">Hire</a></li><li><a href="/contact/">Contact</a></li>
+            <li><a href="/">Home</a></li><li><a href="/work/">Work</a></li><li><a href="/writing/" aria-current="page">Writing</a></li><li><a href="/hire/">Hire</a></li><li><a href="/contact/">Contact</a></li>
           </ul>
         </nav>
       </div>
@@ -63,13 +63,40 @@
 
 
     <main id="main-content" tabindex="-1">
-      <section class="section notice-404">
-        <div class="container" data-animate>
-          <h1>404 - Page not found</h1>
-          <p>This page is unavailable. Jump back to the main portfolio paths below.</p>
-          <div class="actions actions-center">
-            <a class="btn btn-secondary" href="/">Go home</a>
-            <a class="btn btn-secondary" href="/work/">Review work</a>
+      <section class="page-hero section">
+        <div class="container">
+          <p class="eyebrow" data-animate>Notes from active client work</p>
+          <h1 data-animate style="--delay:0.04s">Writing</h1>
+          <p data-animate style="--delay:0.08s">Short notes on real client builds — architecture, tradeoffs, what shipped, what I&#39;d do differently. Updated when something is worth writing down.</p>
+        </div>
+      </section>
+
+      <section class="section section-tight">
+        <div class="container">
+          <div class="grid writing-grid">
+
+        <article class="card writing-card" data-animate style="--delay:0.05s">
+          <header class="writing-card-head">
+            <p class="writing-meta">April 28, 2026 &middot; CRM &middot; Laravel &middot; Next.js &middot; Client Work</p>
+            <h3><a href="/writing/building-a-crm-for-multi-business-operator/">Building a CRM for a multi-business operator</a></h3>
+            <p class="writing-summary">Six weeks of work that replaced three spreadsheets and led to a returning engagement in a different vertical. What I built, what I&#39;d skip next time.</p>
+          </header>
+          <div class="writing-card-foot">
+            <a class="text-link" href="/writing/building-a-crm-for-multi-business-operator/">Read note &rarr;</a>
+          </div>
+        </article>
+
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container cta-panel" data-animate>
+          <h2>Working on something I should write about next?</h2>
+          <p>Most of these notes come out of active client work. If you have a project in mind, share the scope and I will reply with the best starting point.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="/contact/">Share your scope</a>
+            <a class="btn btn-secondary" href="/work/">Review relevant work</a>
           </div>
         </div>
       </section>

@@ -1,0 +1,22 @@
+{
+  "indexTitle": "Writing",
+  "indexEyebrow": "Notes from active client work",
+  "indexLead": "Short notes on real client builds — architecture, tradeoffs, what shipped, what I'd do differently. Updated when something is worth writing down.",
+  "posts": [
+    {
+      "slug": "building-a-crm-for-multi-business-operator",
+      "title": "Building a CRM for a multi-business operator",
+      "summary": "Six weeks of work that replaced three spreadsheets and led to a returning engagement in a different vertical. What I built, what I'd skip next time.",
+      "date": "2026-04-28",
+      "tags": ["CRM", "Laravel", "Next.js", "Client Work"],
+      "body": [
+        "Late last year I shipped a CRM build for a client operating multiple businesses across travel and service verticals. Six weeks of work, replaced three separate spreadsheets the team had been running for years.",
+        "The brief from the client was simple: stop reconciling sheets every Monday. What that actually meant once we mapped the workflow: a sales pipeline any operator could update with one click, a pricing engine that handled multi-tier service quotes, a proposal PDF generator so the team stopped manually formatting every quote, role-based access so reps could see their own pipeline and managers could see everything, and a hotel/vendor database so reused references didn't keep getting re-entered.",
+        "The architecture was straightforward. Laravel on the backend for services and rollups, PostgreSQL for the data layer, Next.js for the operator interface, Docker + Nginx for deployment on a VPS. Nothing exotic, nothing trendy. The exotic stack is what makes maintenance miserable two years later.",
+        "The first week was entirely workflow mapping. No code, no schema. Just sitting with the team understanding how they actually operated, what was breaking, what was duplicate, what mattered. That week is the part most CRM builds skip, and the part you pay for later when the schema doesn't fit how the team actually works.",
+        "The result the client cared about: weekly review dropped from roughly 2 days of manual reconciliation to about 15 minutes. New ops staff onboarding dropped from 2 weeks of 'which sheet do I update' training to a couple of days. A few months after the CRM shipped, the same client came back with a completely different business in a completely different vertical and asked for a follow-up project. That second engagement is the part I'm most proud of — not the technical build, the trust that triggered the second contract.",
+        "Lessons that carried into later work: scope is everything, workflow comes before schema, and a good handoff document is worth more than a clever architecture. Speed of delivery matters less than whether the team can maintain the system after I'm gone."
+      ]
+    }
+  ]
+}

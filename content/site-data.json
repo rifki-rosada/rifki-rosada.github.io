@@ -214,7 +214,9 @@
     ],
     "credibility": [
       "Shipped production systems across CRM, automation, Android AI UX, and multi-surface platform delivery.",
-      "Published research in IEEE Xplore — real-time computer vision (YOLO model evaluation for on-device classification).",
+      "First Author of an IEEE Xplore paper on real-time YOLO object detection benchmarking, presented at IEEE IAICT 2025 in Bali.",
+      "Mobile Engineering Fellow at Bangkit Academy 2024 — a Google / GoTo / Traveloka program with ~10% acceptance from 45,000+ applicants.",
+      "Bachelor of Engineering from Telkom University — IABEE-accredited program, Washington Accord signatory, internationally recognized as substantially equivalent to ABET (USA) and UK engineering degrees.",
       "Returning clients across multiple verticals — operators come back for second and third engagements after first delivery.",
       "Direct stakeholder collaboration on scope, milestones, and rollout context. Full client references available on request."
     ],
@@ -259,6 +261,7 @@
   "featuredCaseSlugs": [
     "enterprise-crm-sales-pipeline-performance-system",
     "automation-workflows-n8n-gas-api-integrations",
+    "spectre-insight-ai-spreadsheet-brief",
     "media-app-android-ai-chat-search-ux",
     "multi-surface-monorepo-nextjs-nestjs-platform"
   ],

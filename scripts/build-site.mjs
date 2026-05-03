@@ -444,6 +444,13 @@ function caseCoverConfig(caseStudy) {
       headline: "Feed cards fixed, zero regressions shipped",
       motif: `<svg class="cc-motif" width="64" height="56" viewBox="0 0 64 56" fill="none" aria-hidden="true"><rect x="8" y="0" width="56" height="14" rx="4" stroke="white" stroke-width="1.5"/><line x1="16" y1="7" x2="52" y2="7" stroke="white" stroke-width="1"/><rect x="4" y="20" width="56" height="14" rx="4" stroke="white" stroke-width="1.5"/><line x1="12" y1="27" x2="48" y2="27" stroke="white" stroke-width="1"/><rect x="0" y="40" width="56" height="14" rx="4" stroke="white" stroke-width="1.5"/><line x1="8" y1="47" x2="44" y2="47" stroke="white" stroke-width="1"/></svg>`
     },
+    "spectre-insight-ai-spreadsheet-brief": {
+      accent: "#fbbf24",
+      background: "linear-gradient(145deg,#1a1208 0%,#291d0d 55%,#1c1409 100%)",
+      tag: "Personal Product · Live",
+      headline: "Spreadsheets in. Management briefs out.",
+      motif: `<svg class="cc-motif" width="84" height="56" viewBox="0 0 84 56" fill="none" aria-hidden="true"><rect x="0" y="2" width="32" height="52" rx="3" stroke="white" stroke-width="1.5"/><line x1="0" y1="14" x2="32" y2="14" stroke="white" stroke-width="1"/><line x1="11" y1="2" x2="11" y2="54" stroke="white" stroke-width="1"/><line x1="22" y1="2" x2="22" y2="54" stroke="white" stroke-width="1"/><line x1="0" y1="26" x2="32" y2="26" stroke="white" stroke-width="1"/><line x1="0" y1="38" x2="32" y2="38" stroke="white" stroke-width="1"/><path d="M38 28 L48 28" stroke="white" stroke-width="1.5"/><polygon points="46,24 52,28 46,32" fill="white"/><rect x="56" y="2" width="28" height="52" rx="3" stroke="white" stroke-width="1.5"/><line x1="60" y1="12" x2="80" y2="12" stroke="white" stroke-width="1.5"/><line x1="60" y1="20" x2="76" y2="20" stroke="white" stroke-width="1"/><line x1="60" y1="28" x2="80" y2="28" stroke="white" stroke-width="1"/><line x1="60" y1="36" x2="74" y2="36" stroke="white" stroke-width="1"/><line x1="60" y1="44" x2="78" y2="44" stroke="white" stroke-width="1"/></svg>`
+    },
     "offscan-ai-offline-ocr-android": {
       accent: "#22d3ee",
       background: "linear-gradient(145deg,#041921 0%,#07293a 55%,#051d27 100%)",

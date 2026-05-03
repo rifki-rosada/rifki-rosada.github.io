@@ -180,7 +180,7 @@
     "category": "Supporting Delivery",
     "type": "client",
     "featured": false,
-    "priority": 5,
+    "priority": 6,
     "role": "Frontend Engineer",
     "timeline": "2-week delivery sprint",
     "problem": "Social cards had uneven spacing and weak hierarchy, which made dense feed views harder to scan.",
@@ -213,6 +213,49 @@
     ]
   },
   {
+    "slug": "spectre-insight-ai-spreadsheet-brief",
+    "title": "Spectre Insight",
+    "shortSummary": "AI-first web product that turns uploaded spreadsheets into concise management briefs using LLM parsing.",
+    "outcome": "Live product at spectre.asia. Built and shipped end-to-end as a solo project — used as a working example of productized AI tooling for small teams.",
+    "category": "Personal Product",
+    "type": "public",
+    "featured": true,
+    "priority": 5,
+    "role": "Solo Founder & Engineer",
+    "timeline": "Ongoing — early access live",
+    "problem": "Operators and managers regularly receive raw spreadsheet exports (sales, ops, inventory, performance) that take hours to manually parse into something a leadership team can act on.",
+    "constraints": [
+      "Output briefs must remain accurate and avoid LLM hallucination on numerical data",
+      "Upload flow must handle messy real-world spreadsheets (mixed schemas, inconsistent headers, partial data)",
+      "Hosting and inference cost has to stay viable at low usage volume during early access"
+    ],
+    "approach": [
+      "Built the upload + parse pipeline on Next.js with Prisma over SQLite for fast solo iteration.",
+      "Designed the LLM prompting layer to ground briefs in the actual data, not free-form summarization.",
+      "Deployed end-to-end on a VPS with predictable cost and zero per-call infrastructure overhead beyond the LLM API.",
+      "Shipped early access at spectre.asia for direct user feedback before broader rollout."
+    ],
+    "results": [
+      "Live product running at spectre.asia, available for early access.",
+      "Validated the core upload-to-brief flow end-to-end with real spreadsheets.",
+      "Established the foundation for future productization (multi-tenant, billing, custom brief templates)."
+    ],
+    "techStack": [
+      "Next.js",
+      "Prisma",
+      "SQLite",
+      "OpenAI",
+      "VPS Deployment"
+    ],
+    "ndaNote": "Public personal product. Live at spectre.asia.",
+    "visualCaption": "End-to-end flow: spreadsheet upload, LLM-grounded parsing, generated management brief.",
+    "relatedSlugs": [
+      "enterprise-crm-sales-pipeline-performance-system",
+      "automation-workflows-n8n-gas-api-integrations",
+      "multi-surface-monorepo-nextjs-nestjs-platform"
+    ]
+  },
+  {
     "slug": "offscan-ai-offline-ocr-android",
     "title": "OffScan AI",
     "shortSummary": "Built and shipped an offline OCR Android app focused on privacy-preserving, on-device text extraction.",
@@ -220,7 +263,7 @@
     "category": "Public Android + AI",
     "type": "public",
     "featured": false,
-    "priority": 6,
+    "priority": 7,
     "role": "Android Product Engineer",
     "timeline": "6-week build and release",
     "problem": "Users needed OCR extraction with stronger privacy guarantees and no network dependency.",
@@ -261,7 +304,7 @@
     "category": "Public Android + AI",
     "type": "public",
     "featured": false,
-    "priority": 7,
+    "priority": 8,
     "role": "ML Prototype Engineer",
     "timeline": "5-week prototype",
     "problem": "Manual quality checks required repeated visual comparison and lacked a fast digital workflow.",
@@ -302,7 +345,7 @@
     "category": "Public Android + AI",
     "type": "public",
     "featured": false,
-    "priority": 8,
+    "priority": 9,
     "role": "Mobile Computer Vision Engineer",
     "timeline": "4-week prototype",
     "problem": "The workflow needed rapid classification support in environments with unstable connectivity.",

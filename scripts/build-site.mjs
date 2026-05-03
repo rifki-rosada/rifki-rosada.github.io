@@ -374,6 +374,7 @@ function renderServiceCards(items, startingDelay = 0) {
       <article class="card service-card" data-animate style="--delay:${animationDelay(index, 0.05, startingDelay)}">
         <header class="service-header">
           <h3>${escapeHtml(item.name)}</h3>
+          ${item.priceFrom ? `<p class="service-price"><strong>${escapeHtml(item.priceFrom)}</strong> &middot; fixed-scope</p>` : ""}
           <p class="service-summary">${escapeHtml(item.summary)}</p>
         </header>
         <p class="service-timeline">${escapeHtml(item.timeline)}</p>
@@ -631,7 +632,7 @@ function renderTestimonials() {
         <div class="container">
           <div class="section-head">
             <h2 id="testimonials-heading">What clients say</h2>
-            <p>Anonymized per NDA. Verified project engagements - full context available on request.</p>
+            <p>Verified delivery — full client context shared on call. Returning clients across multiple verticals.</p>
           </div>
           <div class="testimonials-grid">
             ${testimonials
@@ -705,10 +706,6 @@ function homePage() {
               <a class="btn btn-primary" href="${escapeAttribute(siteData.site.heroPrimaryCta.href)}">${escapeHtml(siteData.site.heroPrimaryCta.label)}</a>
               <a class="btn btn-secondary" href="${escapeAttribute(siteData.site.heroSecondaryCta.href)}">${escapeHtml(siteData.site.heroSecondaryCta.label)}</a>
             </div>
-            <div class="hero-links">
-              <a class="text-link" href="${escapeAttribute(emailProjectBriefHref())}">Email project brief</a>
-              <a class="text-link" href="/hire/">See engagement options</a>
-            </div>
           </div>
           <aside class="hero-panel" data-animate style="--delay:0.08s" aria-label="Positioning and proof summary">
             <div class="profile-photo-wrap">
@@ -717,13 +714,15 @@ function homePage() {
                 <img class="profile-photo" src="/assets/images/profile.jpg" alt="${escapeAttribute(siteData.site.name)}" width="96" height="96" loading="eager" decoding="async">
               </picture>
             </div>
-            <div class="avail-badge"><span class="avail-dot" aria-hidden="true"></span>Open to new projects</div>
+            <div class="avail-badge"><span class="avail-dot" aria-hidden="true"></span>${escapeHtml(siteData.site.heroAvailability || "Open to new projects")}</div>
             <p class="eyebrow eyebrow-muted" style="margin-top:0.9rem">Primary focus</p>
-            <h2>Internal tools, automation, and reliable remote delivery</h2>
+            <h2>${escapeHtml(siteData.site.heroPanelHeadline || "Internal tools, automation, and reliable remote delivery")}</h2>
             <ul class="list-dot list-dot-tight">
-              <li>Best fit for workflow-heavy teams that need clearer operating systems.</li>
-              <li>Android + AI stays visible as a secondary specialization, not the whole story.</li>
-              <li>Replies within 24 hours on weekdays.</li>
+              ${(siteData.site.heroPanelBullets || [
+                "Best fit for workflow-heavy teams that need clearer operating systems.",
+                "Android + AI stays visible as a secondary specialization, not the whole story.",
+                "Replies within 24 hours on weekdays."
+              ]).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
             </ul>
           </aside>
         </div>
@@ -1129,7 +1128,7 @@ function hirePage() {
           <p class="eyebrow" data-animate>${escapeHtml(siteData.site.heroEyebrow)}</p>
           <h1 data-animate style="--delay:0.04s">Hire ${escapeHtml(siteData.site.name)}</h1>
           <p data-animate style="--delay:0.08s">Remote contract support for AI-enabled workflows, internal tools, automation systems, and Android + AI product delivery.</p>
-          <div class="avail-badge" data-animate style="--delay:0.10s;margin-top:0.8rem"><span class="avail-dot" aria-hidden="true"></span>Currently open to new projects</div>
+          <div class="avail-badge" data-animate style="--delay:0.10s;margin-top:0.8rem"><span class="avail-dot" aria-hidden="true"></span>${escapeHtml(siteData.site.heroAvailability || "Currently open to new projects")}</div>
           <div class="actions" data-animate style="--delay:0.14s">
             <a class="btn btn-primary" href="/contact/">Send the current problem</a>
             <a class="btn btn-secondary" href="${escapeAttribute(emailProjectBriefHref())}">Email project brief</a>
@@ -1301,7 +1300,7 @@ function contactPage() {
           <p class="eyebrow" data-animate>${escapeHtml(siteData.site.heroEyebrow)}</p>
           <h1 data-animate style="--delay:0.04s">Share your scope</h1>
           <p data-animate style="--delay:0.08s">Send the project brief, blockers, and timeline. I will reply with the best starting scope for the work.</p>
-          <div class="avail-badge" data-animate style="--delay:0.10s;margin-top:0.6rem"><span class="avail-dot" aria-hidden="true"></span>Open to new projects &mdash; replies within 24h on weekdays</div>
+          <div class="avail-badge" data-animate style="--delay:0.10s;margin-top:0.6rem"><span class="avail-dot" aria-hidden="true"></span>${escapeHtml(siteData.site.heroAvailability || "Open to new projects")} &mdash; replies within 24h on weekdays</div>
           <div class="actions" data-animate style="--delay:0.16s">
             <a class="btn btn-primary" href="${escapeAttribute(scopeMailHref())}">Email project brief</a>
             <button class="btn btn-secondary" type="button" data-copy-target="contact-scope-template-quick" data-copy-feedback="contact-scope-quick-feedback">Copy scope template</button>

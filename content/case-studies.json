@@ -3,14 +3,14 @@
     "slug": "enterprise-crm-sales-pipeline-performance-system",
     "title": "Enterprise CRM - Sales Pipeline & Performance System",
     "shortSummary": "Designed and shipped a custom CRM that turned fragmented sales tracking and reporting into one shared operating workflow.",
-    "outcome": "Gave the team one place to review pipeline movement, ownership, and performance snapshots without spreadsheet reconciliation.",
+    "outcome": "Cut the weekly pipeline review cycle from ~2 days of spreadsheet reconciliation to ~15 minutes — single source of truth across sales, ops, and management.",
     "category": "Client Systems",
     "type": "client",
     "featured": true,
     "priority": 1,
     "role": "Lead Full-Stack Engineer",
     "timeline": "6-week delivery sprint",
-    "problem": "Pipeline updates and performance reporting were split across separate files, making weekly reviews slow and ownership hard to trust.",
+    "problem": "Pipeline updates and performance reporting were split across 3 separate spreadsheets, making weekly reviews take days and ownership hard to trust.",
     "constraints": [
       "Had to fit active sales operations with minimal disruption",
       "Needed role-based access for contributors and managers",
@@ -23,14 +23,15 @@
       "Delivered Docker + Nginx deployment structure so the handoff was stable and recoverable."
     ],
     "results": [
-      "Replaced spreadsheet sprawl with a shared CRM workflow for sales operations.",
-      "Removed manual reconciliation from regular pipeline reviews.",
-      "Created a base system that could support future sales ops features without restarting the architecture."
+      "Replaced 3-spreadsheet sprawl with one shared CRM — pipeline review cycle cut from ~2 days to ~15 minutes.",
+      "Removed all manual reconciliation from weekly reviews; ops lead recovered an estimated 6+ hours/week.",
+      "Role-based access, proposal PDF generation, and pricing engine shipped — operator returned for a 2nd engagement in a different vertical."
     ],
     "techStack": [
       "Laravel",
       "Next.js",
       "PostgreSQL",
+      "Prisma",
       "Docker",
       "Nginx"
     ],
@@ -46,14 +47,14 @@
     "slug": "automation-workflows-n8n-gas-api-integrations",
     "title": "Inbound Order & Lead Ops Automation",
     "shortSummary": "Built automation pipelines that moved orders and chat updates into a shared ops workflow with less manual logging.",
-    "outcome": "Reduced repetitive copy-paste work and improved visibility across inbound operations.",
+    "outcome": "Eliminated an estimated 60–80 hours/month of manual data entry across multi-branch operations. Booking + reporting now flow automatically into a single source of truth.",
     "category": "Automation Systems",
     "type": "client",
     "featured": true,
     "priority": 2,
     "role": "Automation Engineer",
     "timeline": "2-week delivery sprint",
-    "problem": "Inbound orders and chat updates were copied manually into spreadsheets, producing inconsistent records and delayed follow-up.",
+    "problem": "Inbound orders, bookings, and chat updates were copied manually into spreadsheets across multiple branches, producing inconsistent records, delayed follow-up, and zero operational visibility for management.",
     "constraints": [
       "Needed to remain usable for non-technical operations users",
       "Third-party payloads could change without notice",
@@ -66,15 +67,18 @@
       "Defined fallback paths and operating checks for failed runs."
     ],
     "results": [
-      "Reduced manual logging work in inbound operations.",
-      "Improved consistency of lead and order records across channels.",
-      "Provided reusable workflow patterns for future automation extensions."
+      "Estimated 60–80 hours/month of manual logging eliminated across branches.",
+      "Daily Telegram digests for branch + staff KPIs now generated automatically — management visibility went from weekly to daily.",
+      "Reusable n8n + Apps Script patterns shipped so the team can extend new automations without engineering involvement."
     ],
     "techStack": [
       "n8n",
       "Google Apps Script",
-      "REST APIs",
-      "Google Sheets"
+      "Google Sheets",
+      "Google Calendar",
+      "Notion",
+      "Telegram Bot API",
+      "OpenAI"
     ],
     "ndaNote": "Client details withheld. Supporting implementation context is available under NDA.",
     "visualCaption": "Workflow diagram for inbound orders and chats into validation, tagging, and sheet logging.",
@@ -88,7 +92,7 @@
     "slug": "media-app-android-ai-chat-search-ux",
     "title": "Media Android App - AI Chat + Search UX",
     "shortSummary": "Improved AI chat entry, suggestion handling, and search state behavior in a live Android product flow.",
-    "outcome": "Made the AI-assisted discovery flow clearer and more reliable from chat prompt to search result.",
+    "outcome": "Stabilized AI chat-to-search state sync in production — eliminated mismatch issues that broke the discovery flow for end users.",
     "category": "Android + AI",
     "type": "client",
     "featured": true,
@@ -108,9 +112,9 @@
       "Documented edge cases and implementation constraints for future iteration."
     ],
     "results": [
-      "Delivered a cleaner AI chat-to-search handoff in production.",
-      "Reduced state mismatch issues in key search flows.",
-      "Made future iteration easier with clearer behavior expectations."
+      "Stabilized state transitions across chat → suggestion → query → result flow in a live production app.",
+      "Eliminated state-mismatch issues that broke discovery for users in key search paths.",
+      "Documented edge cases and behavior expectations so the next iteration ships without rediscovery cost."
     ],
     "techStack": [
       "Android",

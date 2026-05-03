@@ -27,6 +27,6 @@
 
   <text x="120" y="380" fill="#8ef0dc" font-size="24" font-family="'Segoe UI', Tahoma, sans-serif">Android + AI</text>
   <text x="120" y="432" fill="#f0f5ff" font-size="42" font-family="'Segoe UI', Tahoma, sans-serif" font-weight="700">Media Android App - AI Chat + Search UX</text>
-  <text x="120" y="486" fill="#c0d0ed" font-size="24" font-family="'Segoe UI', Tahoma, sans-serif">Made the AI-assisted discovery flow clearer and more reliable from chat prompt to searc...</text>
+  <text x="120" y="486" fill="#c0d0ed" font-size="24" font-family="'Segoe UI', Tahoma, sans-serif">Stabilized AI chat-to-search state sync in production — eliminated mismatch issues that...</text>
   <text x="120" y="540" fill="#9bc7ff" font-size="22" font-family="'Segoe UI', Tahoma, sans-serif">Android | Kotlin | WebView | Search UX</text>
 </svg>

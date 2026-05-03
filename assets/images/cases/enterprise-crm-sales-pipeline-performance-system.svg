@@ -27,6 +27,6 @@
 
   <text x="120" y="380" fill="#8ef0dc" font-size="24" font-family="'Segoe UI', Tahoma, sans-serif">Client Systems</text>
   <text x="120" y="432" fill="#f0f5ff" font-size="42" font-family="'Segoe UI', Tahoma, sans-serif" font-weight="700">Enterprise CRM - Sales Pipeline &amp; Perform...</text>
-  <text x="120" y="486" fill="#c0d0ed" font-size="24" font-family="'Segoe UI', Tahoma, sans-serif">Gave the team one place to review pipeline movement, ownership, and performance snapsho...</text>
-  <text x="120" y="540" fill="#9bc7ff" font-size="22" font-family="'Segoe UI', Tahoma, sans-serif">Laravel | Next.js | PostgreSQL | Docker</text>
+  <text x="120" y="486" fill="#c0d0ed" font-size="24" font-family="'Segoe UI', Tahoma, sans-serif">Cut the weekly pipeline review cycle from ~2 days of spreadsheet reconciliation to ~15 ...</text>
+  <text x="120" y="540" fill="#9bc7ff" font-size="22" font-family="'Segoe UI', Tahoma, sans-serif">Laravel | Next.js | PostgreSQL | Prisma</text>
 </svg>

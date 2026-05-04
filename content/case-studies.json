@@ -215,8 +215,8 @@
   {
     "slug": "spectre-insight-ai-spreadsheet-brief",
     "title": "Spectre Insight",
-    "shortSummary": "AI-first web product that turns uploaded spreadsheets into concise management briefs using LLM parsing.",
-    "outcome": "Live product at spectre.asia. Built and shipped end-to-end as a solo project — used as a working example of productized AI tooling for small teams.",
+    "shortSummary": "Personal product. Upload a spreadsheet, get a generated management brief using LLM parsing.",
+    "outcome": "Live at spectre.asia. Built end-to-end as a solo project.",
     "category": "Personal Product",
     "type": "public",
     "featured": true,
@@ -230,15 +230,15 @@
       "Hosting and inference cost has to stay viable at low usage volume during early access"
     ],
     "approach": [
-      "Built the upload + parse pipeline on Next.js with Prisma over SQLite for fast solo iteration.",
-      "Designed the LLM prompting layer to ground briefs in the actual data, not free-form summarization.",
-      "Deployed end-to-end on a VPS with predictable cost and zero per-call infrastructure overhead beyond the LLM API.",
-      "Shipped early access at spectre.asia for direct user feedback before broader rollout."
+      "Built the upload and parse pipeline on Next.js with Prisma over SQLite for fast solo iteration.",
+      "Designed the LLM prompting layer to ground briefs in actual data instead of free-form summarization.",
+      "Deployed end-to-end on a VPS with predictable cost and no per-call infrastructure overhead beyond the LLM API.",
+      "Shipped early access at spectre.asia for direct user feedback before opening it more widely."
     ],
     "results": [
-      "Live product running at spectre.asia, available for early access.",
-      "Validated the core upload-to-brief flow end-to-end with real spreadsheets.",
-      "Established the foundation for future productization (multi-tenant, billing, custom brief templates)."
+      "Live at spectre.asia, available for early access.",
+      "Validated the upload-to-brief flow end-to-end with real spreadsheets.",
+      "Set up the base for future work on multi-tenant access, billing, and custom brief templates."
     ],
     "techStack": [
       "Next.js",

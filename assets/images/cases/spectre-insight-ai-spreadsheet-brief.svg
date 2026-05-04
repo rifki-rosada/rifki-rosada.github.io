@@ -27,6 +27,6 @@
 
   <text x="120" y="380" fill="#8ef0dc" font-size="24" font-family="'Segoe UI', Tahoma, sans-serif">Personal Product</text>
   <text x="120" y="432" fill="#f0f5ff" font-size="42" font-family="'Segoe UI', Tahoma, sans-serif" font-weight="700">Spectre Insight</text>
-  <text x="120" y="486" fill="#c0d0ed" font-size="24" font-family="'Segoe UI', Tahoma, sans-serif">Live product at spectre.asia. Built and shipped end-to-end as a solo project — used as ...</text>
+  <text x="120" y="486" fill="#c0d0ed" font-size="24" font-family="'Segoe UI', Tahoma, sans-serif">Live at spectre.asia. Built end-to-end as a solo project.</text>
   <text x="120" y="540" fill="#9bc7ff" font-size="22" font-family="'Segoe UI', Tahoma, sans-serif">Next.js | Prisma | SQLite | OpenAI</text>
 </svg>

@@ -741,6 +741,29 @@ function homePage() {
         </div>
       </section>
 
+      ${siteData.site.homeVideo && siteData.site.homeVideo.loomId ? `
+      <section class="section section-tight" aria-labelledby="walkthrough-heading">
+        <div class="container">
+          <div class="section-head" data-animate>
+            ${siteData.site.homeVideo.eyebrow ? `<p class="eyebrow">${escapeHtml(siteData.site.homeVideo.eyebrow)}</p>` : ""}
+            <h2 id="walkthrough-heading">${escapeHtml(siteData.site.homeVideo.title || "Walkthrough")}</h2>
+            ${siteData.site.homeVideo.lead ? `<p>${escapeHtml(siteData.site.homeVideo.lead)}</p>` : ""}
+          </div>
+          <div class="video-frame" data-animate style="--delay:0.06s">
+            <iframe
+              src="https://www.loom.com/embed/${escapeAttribute(siteData.site.homeVideo.loomId)}"
+              title="${escapeAttribute(siteData.site.homeVideo.title || "Walkthrough video")}"
+              frameborder="0"
+              webkitallowfullscreen
+              mozallowfullscreen
+              allowfullscreen
+              loading="lazy"
+            ></iframe>
+          </div>
+        </div>
+      </section>
+      ` : ""}
+
       <section class="section section-tight" aria-labelledby="proof-heading">
         <div class="container panel panel-highlight">
           <div class="section-head">

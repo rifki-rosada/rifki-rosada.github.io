@@ -174,6 +174,12 @@
   ],
   "testimonials": [
     {
+      "quote": "Thanks for the help, Rifki. You built the n8n automation workflow system at Tekape Workspace for us. Operations at Tekape are now much more controlled, everything runs through the system that was built, and it's helping us scale more cleanly.",
+      "role": "Co-founder",
+      "context": "Tekape Workspace",
+      "note": "Project — n8n automation workflow system (2026)"
+    },
+    {
       "quote": "Rifki mapped the whole workflow before writing a single line of code. The CRM fit exactly how our team operates — we stopped reconciling spreadsheets every Monday. Clean handoff, well documented, ready to hand to whoever maintains it next.",
       "role": "Co-founder",
       "context": "Multi-business operator, Indonesia",

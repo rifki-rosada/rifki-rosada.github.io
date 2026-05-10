@@ -180,16 +180,10 @@
       "note": "Project — n8n automation workflow system (2026)"
     },
     {
-      "quote": "Rifki mapped the whole workflow before writing a single line of code. The CRM fit exactly how our team operates — we stopped reconciling spreadsheets every Monday. Clean handoff, well documented, ready to hand to whoever maintains it next.",
-      "role": "Co-founder",
-      "context": "Multi-business operator, Indonesia",
-      "note": "First project — Enterprise CRM build (2025)"
-    },
-    {
-      "quote": "Brought him back for a totally different vertical after the CRM. Automation cut our daily reporting and booking work from hours to minutes across multiple branches. Edge cases flagged before they became problems.",
-      "role": "Same operator",
-      "context": "Returning client — second project, different vertical",
-      "note": "Second project — Operations automation (2026)"
+      "quote": "Rifki helped us complete our CRM project. He was very responsive and understood what we needed, even though our team is not technical. When bugs came up, he fixed them quickly. We hope to keep collaborating with him going forward.",
+      "role": "Client",
+      "context": "CRM and operations automation client, Indonesia",
+      "note": "Project — Custom CRM, pricing engine, proposal PDF, and operations automation (2026)"
     }
   ],
   "introTemplate": [

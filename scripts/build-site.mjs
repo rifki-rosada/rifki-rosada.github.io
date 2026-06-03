@@ -712,17 +712,21 @@ function renderTestimonials() {
         <div class="container">
           <div class="section-head">
             <h2 id="testimonials-heading">What clients say</h2>
-            <p>Verified delivery — full client context shared on call. Returning clients across multiple verticals.</p>
+            <p>Verified delivery across CRM, automation, and internal tooling projects. Repeat-client context available on call.</p>
           </div>
           <div class="testimonials-grid">
             ${testimonials
               .map(
                 (item, index) => `
             <div class="testimonial-card" data-animate style="--delay:${animationDelay(index, 0.05)}">
-              <p class="testimonial-quote">${escapeHtml(item.quote)}</p>
+              <div class="testimonial-body">
+                ${item.translationLabel ? `<p class="testimonial-label">${escapeHtml(item.translationLabel)}</p>` : ""}
+                <p class="testimonial-quote">${escapeHtml(item.quote)}</p>
+              </div>
               <div class="testimonial-attr">
-                <p class="testimonial-role">${escapeHtml(item.role)} &mdash; ${escapeHtml(item.context)}</p>
-                <p class="testimonial-nda">${escapeHtml(item.note)}</p>
+                <p class="testimonial-client">${escapeHtml(item.clientName)}</p>
+                <p class="testimonial-context">${escapeHtml(item.clientContext)}</p>
+                <p class="testimonial-meta">${escapeHtml(item.meta)}</p>
               </div>
             </div>
           `
@@ -2305,8 +2309,12 @@ function validateContentData() {
   for (const [index, item] of (siteData.testimonials || []).entries()) {
     const label = `testimonial[${index}]`;
     pushMissing(errors, item.quote, `${label}.quote`);
-    pushMissing(errors, item.role, `${label}.role`);
-    pushMissing(errors, item.context, `${label}.context`);
+    pushMissing(errors, item.clientName, `${label}.clientName`);
+    pushMissing(errors, item.clientContext, `${label}.clientContext`);
+    pushMissing(errors, item.meta, `${label}.meta`);
+    if (item.translationLabel !== undefined && typeof item.translationLabel !== "string") {
+      errors.push(`${label}.translationLabel must be a string when provided.`);
+    }
   }
 
   for (const [index, credential] of (siteData.trust?.credentials || []).entries()) {

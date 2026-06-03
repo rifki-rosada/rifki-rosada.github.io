@@ -115,7 +115,7 @@
       "Replaced a manual research-and-drafting chain with a repeatable pipeline covering topic discovery, source collection, source summaries, script drafts, Docs output, and Sheets tracking.",
       "Reduced research and drafting friction by keeping references, drafts, and approval state in one Google Workspace workflow.",
       "Created a reusable delivery pattern for content automation: AI generation where it saves time, human review where accuracy matters.",
-      "Client review: \"Melebihi ekspektasi dan cepat\" (5.0, May 23, 2026)."
+      "Client review: \"Exceeded expectations and delivered fast.\""
     ],
     "techStack": [
       "OpenAI",
@@ -127,10 +127,10 @@
       "Workflow QA"
     ],
     "testimonial": {
-      "quote": "Melebihi ekspektasi dan cepat",
-      "name": "Izzy",
+      "quote": "Exceeded expectations and delivered fast.",
+      "name": "IZZY",
       "context": "AI content automation client",
-      "note": "5.0 review — May 23, 2026"
+      "note": "Translated client review"
     },
     "ndaNote": "Client review from Izzy is public-safe. Private prompts, documents, and workspace details are withheld.",
     "visualCaption": "Automation flow from current-topic discovery to references, script draft generation, Docs output, and Sheet status tracking.",
@@ -167,7 +167,7 @@
       "Converted manual deadline checking into a structured monitoring workflow with H-7, H-3, H-1, and Overdue classifications.",
       "Gave operations a clearer view of follow-up status by responsible staff/section without exposing private records.",
       "Prepared WhatsApp-ready reminder output so urgent follow-up can be reviewed and acted on faster.",
-      "Client review highlighted fast execution, responsiveness, communication, and a satisfying result (5.0, Jun 2, 2026)."
+      "Client review highlighted responsiveness, communication, practical solutions, and a satisfying result."
     ],
     "techStack": [
       "Google Apps Script",
@@ -180,10 +180,10 @@
       "Operations Automation"
     ],
     "testimonial": {
-      "quote": "Hasil kerja sangat memuaskan, responsif, solutif, & komunikatif. Terima kasih mas Rifki, semoga sukses selalu & tetap amanah.",
-      "name": "Anonymous client",
+      "quote": "The result was very satisfying. Rifki was responsive, communicative, and always came with solutions. Thank you, Rifki. Wishing you continued success.",
+      "name": "ANONYMOUS CLIENT",
       "context": "SP2DK/LHP2DK reminder automation client",
-      "note": "5.0 review — Jun 2, 2026"
+      "note": "Translated client review"
     },
     "ndaNote": "Client identity and operational records withheld. Public-safe summary only.",
     "visualCaption": "Reminder workflow from SP2DK/LHP2DK records to deadline buckets, AR/status mapping, and WhatsApp-ready follow-up.",

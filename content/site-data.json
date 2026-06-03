@@ -183,28 +183,30 @@
   ],
   "testimonials": [
     {
-      "quote": "Melebihi ekspektasi dan cepat",
-      "role": "Izzy",
-      "context": "AI content automation client",
-      "note": "5.0 review — May 23, 2026"
+      "quote": "Rifki helped us complete our CRM project. He was responsive, understood what we needed even though our team is not technical, and fixed issues quickly. We hope to keep collaborating with him.",
+      "clientName": "REPEAT CLIENT",
+      "clientContext": "CRM and operations automation client",
+      "meta": "Custom CRM, pricing engine, proposal PDF, and operations automation — 2026"
     },
     {
-      "quote": "Hasil kerja sangat memuaskan, responsif, solutif, & komunikatif. Terima kasih mas Rifki, semoga sukses selalu & tetap amanah.",
-      "role": "Anonymous client",
-      "context": "SP2DK/LHP2DK reminder automation client",
-      "note": "5.0 review — Jun 2, 2026"
+      "quote": "Thanks for the help, Rifki. You built the n8n automation workflow system for Tekape Workspace. Operations are now much more controlled, everything runs through the system, and it helps us scale more cleanly.",
+      "clientName": "CO-FOUNDER",
+      "clientContext": "Tekape Workspace automation client",
+      "meta": "n8n workflow automation project — 2026"
     },
     {
-      "quote": "Thanks for the help, Rifki. You built the n8n automation workflow system at Tekape Workspace for us. Operations at Tekape are now much more controlled, everything runs through the system that was built, and it's helping us scale more cleanly.",
-      "role": "Co-founder",
-      "context": "Tekape Workspace",
-      "note": "Project — n8n automation workflow system (2026)"
+      "translationLabel": "Translated client review",
+      "quote": "The result was very satisfying. Rifki was responsive, communicative, and always came with solutions. Thank you, Rifki. Wishing you continued success.",
+      "clientName": "ANONYMOUS CLIENT",
+      "clientContext": "SP2DK/LHP2DK reminder automation client",
+      "meta": "Deadline monitoring and WhatsApp-ready reminder system — 2026"
     },
     {
-      "quote": "Rifki helped us complete our CRM project. He was very responsive and understood what we needed, even though our team is not technical. When bugs came up, he fixed them quickly. We hope to keep collaborating with him going forward.",
-      "role": "Client",
-      "context": "CRM and operations automation client, Indonesia",
-      "note": "Project — Custom CRM, pricing engine, proposal PDF, and operations automation (2026)"
+      "translationLabel": "Translated client review",
+      "quote": "Exceeded expectations and delivered fast.",
+      "clientName": "IZZY",
+      "clientContext": "AI content research & script automation client",
+      "meta": "AI-assisted research, script drafting, Docs output, and Sheets tracking — 2026"
     }
   ],
   "introTemplate": [

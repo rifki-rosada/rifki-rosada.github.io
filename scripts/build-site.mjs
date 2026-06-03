@@ -65,6 +65,8 @@ for (const item of caseStudies) {
   slugSet.add(item.slug);
 }
 
+validateContentData();
+
 const navItems = [
   { label: "Home", href: "/" },
   { label: "Work", href: "/work/" },
@@ -170,6 +172,14 @@ function emailProjectBriefHref() {
   return `mailto:${siteData.contact.email}`;
 }
 
+function resumeHref() {
+  return siteData.resume?.href || "/Profile.pdf";
+}
+
+function resumeLabel() {
+  return siteData.resume?.label || "Resume";
+}
+
 function findCaseStudy(slug) {
   return caseStudies.find((item) => item.slug === slug) || null;
 }
@@ -244,6 +254,7 @@ function renderHeader(currentRoute) {
 function renderFooter() {
   const contactLinks = [
     { label: "Email", url: emailProjectBriefHref() },
+    { label: resumeLabel(), url: resumeHref() },
     { label: "LinkedIn", url: siteData.contact.linkedin },
     { label: "GitHub", url: siteData.contact.github }
   ].filter((item) => item.url);
@@ -291,7 +302,9 @@ function renderDocument({
   noIndex = false,
   injectHead = "",
   ogImage = `${siteUrl}/og-image.png`,
-  ogImageAlt = `${siteData.site.name} portfolio preview`
+  ogImageAlt = `${siteData.site.name} portfolio preview`,
+  ogImageWidth = 1200,
+  ogImageHeight = 630
 }) {
   const canonical = toAbsoluteUrl(route);
   const robots = noIndex ? "noindex, nofollow" : "index, follow";
@@ -314,8 +327,8 @@ function renderDocument({
   <meta property="og:site_name" content="${escapeAttribute(siteData.site.name)}">
   <meta property="og:image" content="${escapeAttribute(ogImage)}">
   <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
+  <meta property="og:image:width" content="${escapeAttribute(ogImageWidth)}">
+  <meta property="og:image:height" content="${escapeAttribute(ogImageHeight)}">
   <meta property="og:image:alt" content="${escapeAttribute(ogImageAlt)}">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="${escapeAttribute(canonical)}">
@@ -428,6 +441,20 @@ function caseCoverConfig(caseStudy) {
       tag: "Order & Lead Ops",
       headline: "Manual ops replaced with zero-touch flow",
       motif: `<svg class="cc-motif" width="96" height="44" viewBox="0 0 96 44" fill="none" aria-hidden="true"><circle cx="10" cy="22" r="8" stroke="white" stroke-width="1.5"/><line x1="18" y1="22" x2="34" y2="22" stroke="white" stroke-width="1.5"/><polygon points="33,18 41,22 33,26" fill="white"/><rect x="41" y="12" width="20" height="20" rx="3" stroke="white" stroke-width="1.5"/><line x1="61" y1="22" x2="72" y2="12" stroke="white" stroke-width="1.5"/><line x1="61" y1="22" x2="72" y2="32" stroke="white" stroke-width="1.5"/><circle cx="80" cy="8" r="7" stroke="white" stroke-width="1.5"/><circle cx="80" cy="36" r="7" stroke="white" stroke-width="1.5"/></svg>`
+    },
+    "ai-content-research-script-automation": {
+      accent: "#38bdf8",
+      background: "linear-gradient(145deg,#061826 0%,#0a2b3f 55%,#071c2b 100%)",
+      tag: "AI Research Workflow",
+      headline: "Research, scripts, Docs, and Sheets in one flow",
+      motif: `<svg class="cc-motif" width="78" height="56" viewBox="0 0 78 56" fill="none" aria-hidden="true"><rect x="2" y="4" width="26" height="40" rx="4" stroke="white" stroke-width="1.5"/><line x1="8" y1="14" x2="22" y2="14" stroke="white" stroke-width="1.4"/><line x1="8" y1="23" x2="22" y2="23" stroke="white" stroke-width="1.4"/><line x1="8" y1="32" x2="18" y2="32" stroke="white" stroke-width="1.4"/><path d="M31 24 H43" stroke="white" stroke-width="1.5"/><polygon points="42,20 50,24 42,28" fill="white"/><rect x="52" y="8" width="24" height="36" rx="4" stroke="white" stroke-width="1.5"/><line x1="58" y1="18" x2="70" y2="18" stroke="white" stroke-width="1.4"/><line x1="58" y1="27" x2="70" y2="27" stroke="white" stroke-width="1.4"/><line x1="58" y1="36" x2="66" y2="36" stroke="white" stroke-width="1.4"/></svg>`
+    },
+    "sp2dk-lhp2dk-whatsapp-reminder-system": {
+      accent: "#34d399",
+      background: "linear-gradient(145deg,#06180f 0%,#0b2d1d 55%,#071d13 100%)",
+      tag: "Reminder Ops",
+      headline: "Deadlines mapped into WhatsApp-ready follow-up",
+      motif: `<svg class="cc-motif" width="76" height="56" viewBox="0 0 76 56" fill="none" aria-hidden="true"><rect x="3" y="6" width="34" height="40" rx="5" stroke="white" stroke-width="1.5"/><line x1="11" y1="17" x2="29" y2="17" stroke="white" stroke-width="1.4"/><line x1="11" y1="27" x2="29" y2="27" stroke="white" stroke-width="1.4"/><line x1="11" y1="37" x2="23" y2="37" stroke="white" stroke-width="1.4"/><path d="M42 29 C42 18 50 10 61 10 C69 10 74 16 74 24 C74 34 66 41 57 41 H50 L43 48 L45 39 C43 36 42 33 42 29 Z" stroke="white" stroke-width="1.5"/><circle cx="54" cy="26" r="1.8" fill="white"/><circle cx="62" cy="26" r="1.8" fill="white"/></svg>`
     },
     "media-app-android-ai-chat-search-ux": {
       accent: "#a78bfa",
@@ -579,9 +606,30 @@ function renderRelatedCaseCards(caseStudy) {
   `;
 }
 
+function renderCaseTestimonial(caseStudy) {
+  const testimonial = caseStudy.testimonial;
+  if (!testimonial?.quote) {
+    return "";
+  }
+
+  const attribution = [testimonial.name, testimonial.context].filter(Boolean).join(" — ");
+
+  return `
+            <section class="case-testimonial-section">
+              <h2>Client proof</h2>
+              <blockquote class="case-testimonial">
+                <p>${escapeHtml(testimonial.quote)}</p>
+                ${attribution ? `<footer>${escapeHtml(attribution)}</footer>` : ""}
+                ${testimonial.note ? `<span>${escapeHtml(testimonial.note)}</span>` : ""}
+              </blockquote>
+            </section>
+  `;
+}
+
 function renderContactChannels() {
   const links = [
     { label: `Email (${siteData.contact.email})`, href: emailProjectBriefHref() },
+    { label: resumeLabel(), href: resumeHref() },
     { label: "LinkedIn", href: siteData.contact.linkedin },
     { label: "GitHub", href: siteData.contact.github }
   ].filter((item) => item.href);
@@ -632,6 +680,25 @@ function renderProfileLinks() {
         `<a href="${escapeAttribute(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.label)}</a>`
     )
     .join("");
+}
+
+function renderCredentialLinks() {
+  const credentials = (siteData.trust?.credentials || []).filter((item) => item.label && item.url);
+  if (credentials.length === 0) {
+    return "";
+  }
+
+  return `
+    <h3 class="links-title">Verified credentials</h3>
+    <div class="profile-links credential-links">
+      ${credentials
+        .map(
+          (item) =>
+            `<a href="${escapeAttribute(item.url)}" target="_blank" rel="noopener noreferrer"${item.detail ? ` title="${escapeAttribute(item.detail)}"` : ""}>${escapeHtml(item.label)}</a>`
+        )
+        .join("")}
+    </div>
+  `;
 }
 
 function renderTestimonials() {
@@ -835,6 +902,7 @@ function homePage() {
             <div class="profile-links">
               ${renderProfileLinks()}
             </div>
+            ${renderCredentialLinks()}
           </div>
         </div>
       </section>
@@ -847,7 +915,7 @@ function homePage() {
           ${renderContactChannels()}
           <div class="actions">
             <a class="btn btn-primary" href="/contact/">Share your scope</a>
-            <a class="btn btn-secondary" href="${escapeAttribute(emailProjectBriefHref())}">Email project brief</a>
+            <a class="btn btn-secondary" href="${escapeAttribute(scopeMailHref())}">Email project brief</a>
           </div>
         </div>
       </section>
@@ -1069,7 +1137,7 @@ function workPage() {
           <p>Share the current state and target outcome. I will reply with the best next step for a scoped remote contract.</p>
           <div class="actions">
             <a class="btn btn-primary" href="/contact/">Share your scope</a>
-            <a class="btn btn-secondary" href="${escapeAttribute(emailProjectBriefHref())}">Email project brief</a>
+            <a class="btn btn-secondary" href="${escapeAttribute(scopeMailHref())}">Email project brief</a>
           </div>
         </div>
       </section>
@@ -1211,7 +1279,7 @@ function casePage(caseStudy) {
               </ul>
             </section>
             <section>
-              <h2>Delivery</h2>
+              <h2>System workflow</h2>
               <ul class="list-dot">
                 ${(caseStudy.approach || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
               </ul>
@@ -1222,6 +1290,7 @@ function casePage(caseStudy) {
                 ${(caseStudy.results || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
               </ul>
             </section>
+            ${renderCaseTestimonial(caseStudy)}
             <section>
               <h2>Tech stack</h2>
               <ul class="stack-list large">
@@ -1240,7 +1309,7 @@ function casePage(caseStudy) {
           <p>Share the workflow, delivery risk, and timeline. I will reply with the best starting scope.</p>
           <div class="actions">
             <a class="btn btn-primary" href="/contact/">Share your scope</a>
-            <a class="btn btn-secondary" href="${escapeAttribute(emailProjectBriefHref())}">Email project brief</a>
+            <a class="btn btn-secondary" href="${escapeAttribute(scopeMailHref())}">Email project brief</a>
           </div>
         </div>
       </section>
@@ -1256,6 +1325,8 @@ function casePage(caseStudy) {
     ogType: "article",
     ogImage: `${siteUrl}/assets/images/cases/${caseStudy.slug}.png`,
     ogImageAlt: `${caseStudy.title} case study preview`,
+    ogImageWidth: 1200,
+    ogImageHeight: 675,
     jsonLd: [breadcrumbJsonLd, articleJsonLd]
   };
 }
@@ -1306,7 +1377,8 @@ function hirePage() {
           <div class="avail-badge" data-animate style="--delay:0.10s;margin-top:0.8rem"><span class="avail-dot" aria-hidden="true"></span>${escapeHtml(siteData.site.heroAvailability || "Currently open to new projects")}</div>
           <div class="actions" data-animate style="--delay:0.14s">
             <a class="btn btn-primary" href="/contact/">Send the current problem</a>
-            <a class="btn btn-secondary" href="${escapeAttribute(emailProjectBriefHref())}">Email project brief</a>
+            <a class="btn btn-secondary" href="${escapeAttribute(scopeMailHref())}">Email project brief</a>
+            <a class="btn btn-secondary" href="${escapeAttribute(resumeHref())}">Download resume</a>
           </div>
         </div>
       </section>
@@ -1316,7 +1388,7 @@ function hirePage() {
           <div class="section-head">
             <h2 id="packages-heading">Engagement options</h2>
             <p>Clear paths for internal tools, automation systems, Android + AI delivery, and ongoing remote execution.</p>
-            <p class="pricing-note"><strong>Scope-based pricing.</strong> Send the brief and I will return a milestone estimate within 24 hours. Short automation sprints typically start from a few hundred dollars. Full CRM or platform builds are scoped per delivery plan. No retainer required to start.</p>
+            <p class="pricing-note"><strong>Scope-based pricing.</strong> Production automation sprints start from $3,500, Android + AI delivery starts from $4,500, and internal tool builds start from $5,000. Send the brief and I will return a milestone estimate within 24 hours. No retainer required to start.</p>
           </div>
           <div class="grid grid-2">
             ${renderServiceCards(packages)}
@@ -1460,6 +1532,7 @@ function contactPage() {
   const scopeTemplate = (siteData.scopeTemplate || []).join("\n");
   const channels = [
     { label: "Email", value: siteData.contact.email, href: emailProjectBriefHref() },
+    { label: resumeLabel(), value: "Download PDF", href: resumeHref() },
     { label: "LinkedIn", value: "Open profile", href: siteData.contact.linkedin },
     { label: "GitHub", value: "View repositories", href: siteData.contact.github }
   ];
@@ -2048,6 +2121,44 @@ async function ensureOffscanSupportFiles() {
   }
 }
 
+async function ensureOffscanLegacyMetadata() {
+  const pages = [
+    {
+      file: path.join("apps", "offscanai", "faq", "index.html"),
+      canonical: `${siteUrl}/apps/offscanai/faq/`
+    },
+    {
+      file: path.join("apps", "offscanai", "premium", "index.html"),
+      canonical: `${siteUrl}/apps/offscanai/premium/`
+    }
+  ];
+
+  for (const page of pages) {
+    const targetPath = path.join(rootDir, page.file);
+    let source;
+    try {
+      source = await fs.readFile(targetPath, "utf8");
+    } catch {
+      continue;
+    }
+
+    let updated = source;
+    if (/<meta name="robots" content="[^"]*"\/?>/.test(updated)) {
+      updated = updated.replace(/<meta name="robots" content="[^"]*"\/?>/, '<meta name="robots" content="noindex, follow"/>');
+    } else {
+      updated = updated.replace(
+        /<meta name="lastUpdated"/,
+        '<meta name="robots" content="noindex, follow"/><meta name="lastUpdated"'
+      );
+    }
+
+    updated = updated.replace(/<link rel="canonical" href="[^"]*"\/>/, `<link rel="canonical" href="${page.canonical}"/>`);
+    updated = updated.replace(/<meta property="og:url" content="[^"]*"\/>/, `<meta property="og:url" content="${page.canonical}"/>`);
+
+    await writeTextFile(page.file, updated);
+  }
+}
+
 async function collectHtmlFiles(startDir, list = []) {
   const entries = await fs.readdir(startDir, { withFileTypes: true });
   for (const entry of entries) {
@@ -2133,6 +2244,134 @@ async function validateInternalLinks() {
   }
 }
 
+function isNonEmptyString(value) {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function isValidUrl(value, { allowRelative = false } = {}) {
+  if (!isNonEmptyString(value)) return false;
+  if (allowRelative && value.startsWith("/")) return true;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "mailto:";
+  } catch {
+    return false;
+  }
+}
+
+function pushMissing(errors, value, label) {
+  if (!isNonEmptyString(value)) {
+    errors.push(`${label} is required.`);
+  }
+}
+
+function validateContentData() {
+  const errors = [];
+
+  pushMissing(errors, siteData.site?.name, "site.name");
+  pushMissing(errors, siteData.site?.title, "site.title");
+  pushMissing(errors, siteData.site?.tagline, "site.tagline");
+  pushMissing(errors, siteData.site?.heroHeadline, "site.heroHeadline");
+  pushMissing(errors, siteData.site?.heroSubheadline, "site.heroSubheadline");
+  pushMissing(errors, siteData.contact?.email, "contact.email");
+
+  if (!isValidUrl(siteData.site?.url)) {
+    errors.push("site.url must be an absolute https URL.");
+  }
+  if (!isValidUrl(siteData.contact?.email ? `mailto:${siteData.contact.email}` : "")) {
+    errors.push("contact.email must be usable as a mailto URL.");
+  }
+  if (siteData.contact?.linkedin && !isValidUrl(siteData.contact.linkedin)) {
+    errors.push("contact.linkedin must be an absolute https URL.");
+  }
+  if (siteData.contact?.github && !isValidUrl(siteData.contact.github)) {
+    errors.push("contact.github must be an absolute https URL.");
+  }
+  if (siteData.resume?.href && !isValidUrl(siteData.resume.href, { allowRelative: true })) {
+    errors.push("resume.href must be a relative path or absolute https URL.");
+  }
+
+  const packages = [...(siteData.services || []), siteData.retainer].filter(Boolean);
+  for (const [index, item] of packages.entries()) {
+    const label = `package[${index}]`;
+    pushMissing(errors, item.name, `${label}.name`);
+    pushMissing(errors, item.summary, `${label}.summary`);
+    pushMissing(errors, item.timeline, `${label}.timeline`);
+    if (!/^From \$[\d,]+(?:\/month)?$/.test(String(item.priceFrom || ""))) {
+      errors.push(`${label}.priceFrom must look like "From $3,500" or "From $4,000/month".`);
+    }
+  }
+
+  for (const [index, item] of (siteData.testimonials || []).entries()) {
+    const label = `testimonial[${index}]`;
+    pushMissing(errors, item.quote, `${label}.quote`);
+    pushMissing(errors, item.role, `${label}.role`);
+    pushMissing(errors, item.context, `${label}.context`);
+  }
+
+  for (const [index, credential] of (siteData.trust?.credentials || []).entries()) {
+    if (credential.url && !isValidUrl(credential.url, { allowRelative: true })) {
+      errors.push(`trust.credentials[${index}].url must be a relative path or absolute https URL.`);
+    }
+  }
+
+  for (const [index, item] of caseStudies.entries()) {
+    const label = `caseStudies[${index}]`;
+    pushMissing(errors, item.title, `${label}.title`);
+    pushMissing(errors, item.shortSummary, `${label}.shortSummary`);
+    pushMissing(errors, item.outcome, `${label}.outcome`);
+    pushMissing(errors, item.problem, `${label}.problem`);
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(item.slug || ""))) {
+      errors.push(`${label}.slug must be kebab-case.`);
+    }
+    if (!Number.isFinite(item.priority)) {
+      errors.push(`${label}.priority must be a number.`);
+    }
+    if (item.testimonial) {
+      pushMissing(errors, item.testimonial.quote, `${label}.testimonial.quote`);
+      pushMissing(errors, item.testimonial.name, `${label}.testimonial.name`);
+      pushMissing(errors, item.testimonial.context, `${label}.testimonial.context`);
+    }
+    for (const relatedSlug of item.relatedSlugs || []) {
+      if (!slugSet.has(relatedSlug)) {
+        errors.push(`${label}.relatedSlugs contains unknown slug "${relatedSlug}".`);
+      }
+    }
+  }
+
+  if (errors.length > 0) {
+    throw new Error(`Content validation failed:\n${errors.map((line) => `- ${line}`).join("\n")}`);
+  }
+}
+
+function validateGeneratedPages(pages) {
+  const errors = [];
+
+  for (const page of pages) {
+    const label = `page ${page.route || page.filePath}`;
+    pushMissing(errors, page.title, `${label}.title`);
+    pushMissing(errors, page.description, `${label}.description`);
+
+    if (!String(page.route || "").startsWith("/")) {
+      errors.push(`${label}.route must start with "/".`);
+    }
+
+    const canonical = toAbsoluteUrl(page.route);
+    if (!canonical.startsWith(`${siteUrl}/`) && canonical !== `${siteUrl}/`) {
+      errors.push(`${label}.canonical must stay under ${siteUrl}.`);
+    }
+
+    const ogImage = page.ogImage || `${siteUrl}/og-image.png`;
+    if (!isValidUrl(ogImage)) {
+      errors.push(`${label}.ogImage must be an absolute https URL.`);
+    }
+  }
+
+  if (errors.length > 0) {
+    throw new Error(`Generated page validation failed:\n${errors.map((line) => `- ${line}`).join("\n")}`);
+  }
+}
+
 async function latestModifiedDate(paths) {
   const stats = await Promise.all(paths.map((filePath) => fs.stat(filePath)));
   const newest = Math.max(...stats.map((item) => item.mtimeMs));
@@ -2154,6 +2393,8 @@ async function build() {
     ...(siteData.legacyRedirects || []).map((item) => redirectPage(item))
   ];
 
+  validateGeneratedPages(pages);
+
   for (const page of pages) {
     const html = renderDocument({
       title: page.title,
@@ -2165,7 +2406,9 @@ async function build() {
       noIndex: page.noIndex,
       injectHead: page.injectHead,
       ogImage: page.ogImage,
-      ogImageAlt: page.ogImageAlt
+      ogImageAlt: page.ogImageAlt,
+      ogImageWidth: page.ogImageWidth,
+      ogImageHeight: page.ogImageHeight
     });
     await writeTextFile(page.filePath, html);
   }
@@ -2181,6 +2424,7 @@ async function build() {
   await writeTextFile("site.webmanifest", webManifest());
 
   await ensureOffscanSupportFiles();
+  await ensureOffscanLegacyMetadata();
 
   if (!isCheckMode) {
     await removeStaleCaseOutput();

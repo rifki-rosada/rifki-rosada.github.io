@@ -51,9 +51,15 @@
     "whatsapp": "",
     "responseTime": "Usually replies within 24 hours on weekdays."
   },
+  "resume": {
+    "label": "Resume",
+    "href": "/Profile.pdf"
+  },
   "proofStrip": [
     "Custom CRM replaced 3 separate spreadsheets — pipeline review cycle cut from ~2 days to ~15 minutes.",
     "Inbound order + lead automation eliminated an estimated 60–80 hours/month of manual logging for a multi-branch operator.",
+    "AI content automation now covers topic discovery, references, scripts, Docs output, and Sheets approval tracking in one repeatable workflow.",
+    "SP2DK/LHP2DK reminders now classify H-7/H-3/H-1/Overdue follow-up with ownership mapping and WhatsApp-ready operations.",
     "Shipped Android AI chat-to-search UX in a live media app — stabilized state sync across the discovery flow."
   ],
   "services": [
@@ -71,6 +77,7 @@
       "proofSlugs": [
         "enterprise-crm-sales-pipeline-performance-system",
         "automation-workflows-n8n-gas-api-integrations",
+        "sp2dk-lhp2dk-whatsapp-reminder-system",
         "multi-surface-monorepo-nextjs-nestjs-platform"
       ]
     },
@@ -87,6 +94,8 @@
       ],
       "proofSlugs": [
         "automation-workflows-n8n-gas-api-integrations",
+        "ai-content-research-script-automation",
+        "sp2dk-lhp2dk-whatsapp-reminder-system",
         "enterprise-crm-sales-pipeline-performance-system"
       ]
     },
@@ -174,6 +183,18 @@
   ],
   "testimonials": [
     {
+      "quote": "Melebihi ekspektasi dan cepat",
+      "role": "Izzy",
+      "context": "AI content automation client",
+      "note": "5.0 review — May 23, 2026"
+    },
+    {
+      "quote": "Hasil kerja sangat memuaskan, responsif, solutif, & komunikatif. Terima kasih mas Rifki, semoga sukses selalu & tetap amanah.",
+      "role": "Anonymous client",
+      "context": "SP2DK/LHP2DK reminder automation client",
+      "note": "5.0 review — Jun 2, 2026"
+    },
+    {
       "quote": "Thanks for the help, Rifki. You built the n8n automation workflow system at Tekape Workspace for us. Operations at Tekape are now much more controlled, everything runs through the system that was built, and it's helping us scale more cleanly.",
       "role": "Co-founder",
       "context": "Tekape Workspace",
@@ -226,6 +247,13 @@
       "Returning client across two verticals — same operator engaged me for a second project in a different business after the first delivery.",
       "Direct stakeholder collaboration on scope, milestones, and rollout context. Full client references available on request."
     ],
+    "credentials": [
+      {
+        "label": "IEEE Xplore publication DOI",
+        "detail": "First-author real-time YOLO benchmarking paper presented at IEEE IAICT 2025.",
+        "url": "https://doi.org/10.1109/IAICT65714.2025.11100674"
+      }
+    ],
     "profiles": [
       {
         "label": "GitHub",
@@ -267,8 +295,10 @@
   "featuredCaseSlugs": [
     "enterprise-crm-sales-pipeline-performance-system",
     "automation-workflows-n8n-gas-api-integrations",
-    "spectre-insight-ai-spreadsheet-brief",
+    "ai-content-research-script-automation",
+    "sp2dk-lhp2dk-whatsapp-reminder-system",
     "media-app-android-ai-chat-search-ux",
+    "spectre-insight-ai-spreadsheet-brief",
     "multi-surface-monorepo-nextjs-nestjs-platform"
   ],
   "legacyRedirects": [

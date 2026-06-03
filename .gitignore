@@ -1,5 +1,6 @@
 node_modules/
 tmp-chrome-lh/
+content/allsearches.txt
 .DS_Store
 LINKEDIN_REWRITE.md
 COLD_OUTREACH.md

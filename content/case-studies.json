@@ -89,6 +89,111 @@
     ]
   },
   {
+    "slug": "ai-content-research-script-automation",
+    "title": "AI Content Research & Script Automation",
+    "shortSummary": "Converted manual financial/content research into an AI-assisted script pipeline for topic discovery, references, Google Docs drafts, and Sheets approval tracking.",
+    "outcome": "Converted manual content research into a repeatable AI-assisted script pipeline with Docs output and Sheets approval tracking.",
+    "category": "Automation Systems",
+    "type": "client",
+    "featured": true,
+    "priority": 3,
+    "role": "AI Automation Engineer",
+    "timeline": "Completed May 2026",
+    "problem": "Before delivery, each script cycle required manual scanning for current topics, reference validation, source summarization, short-form script drafting, Doc creation, and review-status tracking.",
+    "constraints": [
+      "The workflow had to support current-topic research while keeping private prompts, references, and client documents out of the public case study",
+      "References and summaries needed enough traceability for human review before scripts moved forward",
+      "The client needed the system inside Google Workspace, not a separate product the team would have to learn"
+    ],
+    "approach": [
+      "Mapped the end-to-end content operation: topic discovery, reference collection, summary generation, script drafting, Docs export, and Sheets-based status review.",
+      "Built an AI-assisted research pipeline that turns selected topics into summarized source notes and short-form script drafts.",
+      "Connected generated outputs to Google Docs for draft review and Google Sheets for approval/status tracking.",
+      "Added workflow QA around references, generated sections, and handoff states so the system could be reused safely across content batches."
+    ],
+    "results": [
+      "Replaced a manual research-and-drafting chain with a repeatable pipeline covering topic discovery, source collection, source summaries, script drafts, Docs output, and Sheets tracking.",
+      "Reduced research and drafting friction by keeping references, drafts, and approval state in one Google Workspace workflow.",
+      "Created a reusable delivery pattern for content automation: AI generation where it saves time, human review where accuracy matters.",
+      "Client review: \"Melebihi ekspektasi dan cepat\" (5.0, May 23, 2026)."
+    ],
+    "techStack": [
+      "OpenAI",
+      "Google Apps Script",
+      "Google Docs",
+      "Google Sheets",
+      "Google Workspace",
+      "Research Automation",
+      "Workflow QA"
+    ],
+    "testimonial": {
+      "quote": "Melebihi ekspektasi dan cepat",
+      "name": "Izzy",
+      "context": "AI content automation client",
+      "note": "5.0 review — May 23, 2026"
+    },
+    "ndaNote": "Client review from Izzy is public-safe. Private prompts, documents, and workspace details are withheld.",
+    "visualCaption": "Automation flow from current-topic discovery to references, script draft generation, Docs output, and Sheet status tracking.",
+    "relatedSlugs": [
+      "automation-workflows-n8n-gas-api-integrations",
+      "sp2dk-lhp2dk-whatsapp-reminder-system",
+      "enterprise-crm-sales-pipeline-performance-system"
+    ]
+  },
+  {
+    "slug": "sp2dk-lhp2dk-whatsapp-reminder-system",
+    "title": "SP2DK & LHP2DK WhatsApp Reminder System",
+    "shortSummary": "Built a Google Workspace reminder system that classifies SP2DK/LHP2DK deadlines, maps ownership, and prepares WhatsApp-ready follow-up from Sheets.",
+    "outcome": "Turned deadline monitoring into a structured reminder workflow with H-7/H-3/H-1/Overdue buckets and WhatsApp-ready follow-up.",
+    "category": "Automation Systems",
+    "type": "client",
+    "featured": true,
+    "priority": 4,
+    "role": "Google Workspace Automation Engineer",
+    "timeline": "Completed Jun 2026",
+    "problem": "Before delivery, SP2DK/LHP2DK monitoring depended on manual deadline checks, scattered status review, and follow-up visibility that was easy to miss as records moved across owners and sections.",
+    "constraints": [
+      "Operational records, staff identifiers, and communication details had to remain private",
+      "Reminder buckets had to reflect practical follow-up urgency: H-7, H-3, H-1, and Overdue",
+      "The system needed to work inside Google Sheets / Apps Script instead of adding a heavy new platform"
+    ],
+    "approach": [
+      "Mapped the follow-up operation around document type, due date, status, responsible staff/section, and reminder bucket.",
+      "Built Apps Script logic over Google Sheets to classify deadlines, map AR/status ownership, and expose the next follow-up state.",
+      "Created a lightweight Apps Script web-app flow for monitoring and WhatsApp-ready reminder preparation.",
+      "Kept public documentation sanitized by excluding sheet URLs, record identifiers, phone numbers, and internal document details."
+    ],
+    "results": [
+      "Converted manual deadline checking into a structured monitoring workflow with H-7, H-3, H-1, and Overdue classifications.",
+      "Gave operations a clearer view of follow-up status by responsible staff/section without exposing private records.",
+      "Prepared WhatsApp-ready reminder output so urgent follow-up can be reviewed and acted on faster.",
+      "Client review highlighted fast execution, responsiveness, communication, and a satisfying result (5.0, Jun 2, 2026)."
+    ],
+    "techStack": [
+      "Google Apps Script",
+      "Google Sheets",
+      "Apps Script Web App",
+      "Google Workspace",
+      "WhatsApp-Ready Reminder Flow",
+      "Deadline Classification",
+      "Status / Ownership Mapping",
+      "Operations Automation"
+    ],
+    "testimonial": {
+      "quote": "Hasil kerja sangat memuaskan, responsif, solutif, & komunikatif. Terima kasih mas Rifki, semoga sukses selalu & tetap amanah.",
+      "name": "Anonymous client",
+      "context": "SP2DK/LHP2DK reminder automation client",
+      "note": "5.0 review — Jun 2, 2026"
+    },
+    "ndaNote": "Client identity and operational records withheld. Public-safe summary only.",
+    "visualCaption": "Reminder workflow from SP2DK/LHP2DK records to deadline buckets, AR/status mapping, and WhatsApp-ready follow-up.",
+    "relatedSlugs": [
+      "automation-workflows-n8n-gas-api-integrations",
+      "ai-content-research-script-automation",
+      "enterprise-crm-sales-pipeline-performance-system"
+    ]
+  },
+  {
     "slug": "media-app-android-ai-chat-search-ux",
     "title": "Media Android App - AI Chat + Search UX",
     "shortSummary": "Improved AI chat entry, suggestion handling, and search state behavior in a live Android product flow.",
@@ -96,7 +201,7 @@
     "category": "Android + AI",
     "type": "client",
     "featured": true,
-    "priority": 3,
+    "priority": 5,
     "role": "Android AI UX Engineer",
     "timeline": "3-week delivery sprint",
     "problem": "Users lacked a clear transition from AI chat prompts to meaningful search actions, and state sync issues reduced UX reliability.",
@@ -138,7 +243,7 @@
     "category": "Platform Delivery",
     "type": "client",
     "featured": true,
-    "priority": 4,
+    "priority": 6,
     "role": "Monorepo Platform Engineer",
     "timeline": "4-week delivery sprint",
     "problem": "Separate repositories for related surfaces caused dependency drift and slowed coordinated releases.",
@@ -180,7 +285,7 @@
     "category": "Supporting Delivery",
     "type": "client",
     "featured": false,
-    "priority": 6,
+    "priority": 8,
     "role": "Frontend Engineer",
     "timeline": "2-week delivery sprint",
     "problem": "Social cards had uneven spacing and weak hierarchy, which made dense feed views harder to scan.",
@@ -220,7 +325,7 @@
     "category": "Personal Product",
     "type": "public",
     "featured": true,
-    "priority": 5,
+    "priority": 7,
     "role": "Solo Founder & Engineer",
     "timeline": "Ongoing — early access live",
     "problem": "Operators and managers regularly receive raw spreadsheet exports (sales, ops, inventory, performance) that take hours to manually parse into something a leadership team can act on.",
@@ -263,7 +368,7 @@
     "category": "Public Android + AI",
     "type": "public",
     "featured": false,
-    "priority": 7,
+    "priority": 9,
     "role": "Android Product Engineer",
     "timeline": "6-week build and release",
     "problem": "Users needed OCR extraction with stronger privacy guarantees and no network dependency.",
@@ -304,7 +409,7 @@
     "category": "Public Android + AI",
     "type": "public",
     "featured": false,
-    "priority": 8,
+    "priority": 10,
     "role": "ML Prototype Engineer",
     "timeline": "5-week prototype",
     "problem": "Manual quality checks required repeated visual comparison and lacked a fast digital workflow.",
@@ -345,7 +450,7 @@
     "category": "Public Android + AI",
     "type": "public",
     "featured": false,
-    "priority": 9,
+    "priority": 11,
     "role": "Mobile Computer Vision Engineer",
     "timeline": "4-week prototype",
     "problem": "The workflow needed rapid classification support in environments with unstable connectivity.",

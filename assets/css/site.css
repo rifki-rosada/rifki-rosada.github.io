@@ -1098,6 +1098,44 @@ main {
   font-size: 1rem;
 }
 
+.case-testimonial {
+  display: grid;
+  gap: 0.42rem;
+  margin: 0;
+  padding: 0.88rem 0.95rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(71, 221, 172, 0.22);
+  background: rgba(15, 34, 48, 0.82);
+}
+
+.case-testimonial p {
+  margin: 0;
+  color: #eaf6ff;
+  font-size: 0.96rem;
+  line-height: 1.68;
+}
+
+.case-testimonial p::before {
+  content: "\201C";
+}
+
+.case-testimonial p::after {
+  content: "\201D";
+}
+
+.case-testimonial footer {
+  color: #a5d0ff;
+  font-size: 0.78rem;
+  font-weight: 750;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.case-testimonial span {
+  color: #88a7ca;
+  font-size: 0.75rem;
+}
+
 .glance-list {
   display: grid;
   gap: 0.9rem;
@@ -1396,8 +1434,7 @@ main {
   gap: 0.38rem;
 }
 
-.case-grid-work .case-card .case-summary,
-.case-grid-work .case-card .case-outcome {
+.case-grid-work .case-card .case-summary {
   display: none;
 }
 

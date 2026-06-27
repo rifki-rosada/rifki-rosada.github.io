@@ -11,6 +11,20 @@
   const editButton = document.querySelector("[data-estimate-edit]");
   const mailtoLink = document.querySelector("[data-estimate-mailto]");
   const mailtoTriggers = document.querySelectorAll("[data-estimate-mailto], [data-estimate-mailto-trigger]");
+  const steps = Array.from(form.querySelectorAll("[data-estimate-step]"));
+  const prevButton = form.querySelector("[data-estimate-prev]");
+  const nextButton = form.querySelector("[data-estimate-next]");
+  const showResultButton = form.querySelector("[data-estimate-show-result]");
+  const progressLabel = form.querySelector("[data-estimate-progress-label]");
+  const progressTitle = form.querySelector("[data-estimate-progress-title]");
+  const progressBar = form.querySelector("[data-estimate-progress-bar]");
+  const summaryNodes = Array.from(document.querySelectorAll("[data-summary]")).reduce((map, node) => {
+    map[node.getAttribute("data-summary")] = {
+      node,
+      placeholder: node.textContent
+    };
+    return map;
+  }, {});
   const config = readConfig();
   const estimateContent = readEstimateData();
   const submitCooldownMs = 60000;
@@ -22,6 +36,7 @@
   let currentPayload = null;
   let isSubmitting = false;
   let hasTrackedStart = false;
+  let currentStepIndex = 0;
 
   form.addEventListener("change", function (event) {
     if (!hasTrackedStart) {
@@ -31,6 +46,7 @@
     if (event.target && event.target.name === "location") {
       updateBudgetLabels();
     }
+    updateSummary();
   });
 
   form.addEventListener("input", function () {
@@ -38,6 +54,22 @@
       trackEvent(analyticsEvents.start || "estimate_start");
       hasTrackedStart = true;
     }
+    updateSummary();
+  });
+
+  prevButton?.addEventListener("click", function () {
+    clearMessage(formError);
+    setCurrentStep(currentStepIndex - 1, { scroll: true });
+  });
+
+  nextButton?.addEventListener("click", function () {
+    clearMessage(formError);
+    const validation = validateStep(currentStepIndex);
+    if (!validation.valid) {
+      showEstimateValidation(validation);
+      return;
+    }
+    setCurrentStep(currentStepIndex + 1, { scroll: true });
   });
 
   form.addEventListener("submit", function (event) {
@@ -48,8 +80,7 @@
     const collected = collectEstimateData();
     const validation = validateEstimate(collected);
     if (!validation.valid) {
-      showMessage(formError, validation.message);
-      validation.target?.focus();
+      showEstimateValidation(validation);
       return;
     }
 
@@ -59,6 +90,8 @@
     renderResult(currentPayload);
     updateMailto(currentPayload);
     resultSection.hidden = false;
+    form.hidden = true;
+    updateSummary(currentPayload);
     trackEvent(analyticsEvents.result || "estimate_result_view", publicEventPayload(currentPayload));
     resultSection.scrollIntoView({ behavior: "smooth", block: "start" });
   });
@@ -77,7 +110,7 @@
     const validation = validateContact(contact);
     if (!validation.valid) {
       showMessage(submitStatus, validation.message);
-      validation.target?.focus();
+      focusTarget(validation.target);
       return;
     }
 
@@ -122,6 +155,9 @@
 
   editButton?.addEventListener("click", function () {
     resultSection.hidden = true;
+    form.hidden = false;
+    setCurrentStep(Math.max(steps.length - 1, 0));
+    clearMessage(submitStatus);
     form.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
@@ -145,6 +181,8 @@
   });
 
   updateBudgetLabels();
+  setupStepper();
+  updateSummary();
 
   function readConfig() {
     const node = document.getElementById("estimate-config");
@@ -170,6 +208,7 @@
       questions: [],
       contact: {},
       result: {},
+      sidePanel: {},
       disclaimer: "",
       scoring: {},
       analytics: {}
@@ -182,6 +221,125 @@
     } catch {
       return fallback;
     }
+  }
+
+  function setupStepper() {
+    if (steps.length === 0) {
+      if (prevButton) prevButton.hidden = true;
+      if (nextButton) nextButton.hidden = true;
+      if (showResultButton) showResultButton.hidden = false;
+      return;
+    }
+    setCurrentStep(0);
+  }
+
+  function setCurrentStep(index, options = {}) {
+    const nextIndex = Math.min(Math.max(index, 0), Math.max(steps.length - 1, 0));
+    currentStepIndex = nextIndex;
+
+    steps.forEach((step, stepIndex) => {
+      step.hidden = stepIndex !== currentStepIndex;
+    });
+
+    const isFirst = currentStepIndex === 0;
+    const isLast = currentStepIndex === steps.length - 1;
+    if (prevButton) prevButton.disabled = isFirst;
+    if (nextButton) nextButton.hidden = isLast;
+    if (showResultButton) showResultButton.hidden = !isLast;
+    if (progressLabel) progressLabel.textContent = `Step ${currentStepIndex + 1} of ${steps.length}`;
+    if (progressTitle) {
+      progressTitle.textContent =
+        steps[currentStepIndex]?.getAttribute("data-estimate-step-title") || `Pre-audit step ${currentStepIndex + 1}`;
+    }
+    if (progressBar) {
+      progressBar.style.width = `${((currentStepIndex + 1) / Math.max(steps.length, 1)) * 100}%`;
+    }
+    if (options.scroll) {
+      form.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  function validateStep(stepIndex) {
+    const data = collectEstimateData();
+    if (data.website) {
+      return { valid: false, message: "Unable to process this request.", target: targetFor("location") };
+    }
+
+    const questions = estimateContent.questions?.[stepIndex]?.questions || [];
+    for (const question of questions) {
+      const validation = validateQuestion(question, data);
+      if (!validation.valid) return validation;
+    }
+
+    return { valid: true, message: "" };
+  }
+
+  function validateQuestion(question, data) {
+    if (!question?.required) return { valid: true, message: "" };
+    if (question.name === "automationNeeds" && data.automationNeeds.length === 0) {
+      return {
+        valid: false,
+        message: "Choose at least one automation need.",
+        target: targetFor("automationNeeds")
+      };
+    }
+    if (!data[question.name]) {
+      return {
+        valid: false,
+        message: validationMessageFor(question.name, question.label),
+        target: targetFor(question.name)
+      };
+    }
+    return { valid: true, message: "" };
+  }
+
+  function validationMessageFor(name, label) {
+    const messages = {
+      location: "Choose the business location.",
+      businessType: "Choose the business type.",
+      currentProcess: "Choose the current process.",
+      teamSize: "Choose the number of users or team members.",
+      integrations: "Choose the number of integrations.",
+      dataComplexity: "Choose the data complexity.",
+      urgency: "Choose the urgency.",
+      budgetReadiness: "Choose the budget readiness.",
+      projectDescription: "Add a short project description."
+    };
+    return messages[name] || `Complete ${String(label || "this question").toLowerCase()}.`;
+  }
+
+  function showEstimateValidation(validation) {
+    const stepIndex = stepIndexForTarget(validation.target);
+    if (stepIndex >= 0) {
+      setCurrentStep(stepIndex);
+    }
+    showMessage(formError, validation.message);
+    focusTarget(validation.target);
+  }
+
+  function stepIndexForTarget(target) {
+    const element = firstElementFromTarget(target);
+    const step = element?.closest?.("[data-estimate-step]");
+    if (!step) return -1;
+    return steps.indexOf(step);
+  }
+
+  function targetFor(name) {
+    const field = form.elements[name];
+    if (!field) return null;
+    return firstElementFromTarget(field);
+  }
+
+  function firstElementFromTarget(target) {
+    if (!target) return null;
+    if (typeof target.focus === "function") return target;
+    if (typeof target.length === "number") return Array.from(target).find(Boolean) || null;
+    return null;
+  }
+
+  function focusTarget(target) {
+    const element = firstElementFromTarget(target);
+    element?.focus?.({ preventScroll: true });
   }
 
   function buildQuestionMap(sections) {
@@ -275,7 +433,7 @@
 
   function validateEstimate(data) {
     if (data.website) {
-      return { valid: false, message: "Unable to process this request.", target: form.elements.location };
+      return { valid: false, message: "Unable to process this request.", target: targetFor("location") };
     }
 
     const required = [
@@ -292,7 +450,7 @@
 
     for (const [field, message] of required) {
       if (!data[field]) {
-        return { valid: false, message, target: form.elements[field] };
+        return { valid: false, message, target: targetFor(field) };
       }
     }
 
@@ -300,7 +458,7 @@
       return {
         valid: false,
         message: "Choose at least one automation need.",
-        target: form.querySelector('input[name="automationNeeds"]')
+        target: targetFor("automationNeeds")
       };
     }
 
@@ -624,6 +782,78 @@
     );
     const label = input?.closest(".estimate-option")?.querySelector("[data-budget-label]");
     return sanitizeText(label?.textContent || labelFor("budgetReadiness", data.budgetReadiness), 140);
+  }
+
+  function updateSummary(payload = null) {
+    if (Object.keys(summaryNodes).length === 0) return;
+    const data = payload?.selectedAnswers
+      ? {
+          location: payload.location,
+          businessType: payload.businessType,
+          automationNeeds: payload.selectedAnswers.automationNeeds || [],
+          currentProcess: payload.currentProcess,
+          teamSize: payload.teamSize,
+          integrations: payload.integrations,
+          dataComplexity: payload.dataComplexity,
+          urgency: payload.urgency,
+          budgetReadiness: payload.budgetReadiness,
+          projectDescription: payload.projectDescription || "",
+          website: ""
+        }
+      : collectEstimateData();
+
+    setSummary("context", businessContextSummary(data));
+    setSummary("bottlenecks", bottleneckSummary(data));
+    setSummary("complexity", complexitySummary(data));
+    setSummary("path", planningPathSummary(data, payload));
+  }
+
+  function setSummary(key, value) {
+    const entry = summaryNodes[key];
+    if (!entry?.node) return;
+    entry.node.textContent = value || entry.placeholder;
+  }
+
+  function businessContextSummary(data) {
+    const parts = [];
+    if (data.location) {
+      parts.push(`${labelFor("location", data.location)} (${data.location === "international" ? "USD" : "IDR"})`);
+    }
+    if (data.businessType) parts.push(labelFor("businessType", data.businessType));
+    if (data.currentProcess) parts.push(labelFor("currentProcess", data.currentProcess));
+    return parts.join(" | ");
+  }
+
+  function bottleneckSummary(data) {
+    if (!data.automationNeeds.length) return "";
+    const labels = data.automationNeeds.map((need) => labelFor("automationNeeds", need));
+    const visible = labels.slice(0, 3).join(", ");
+    const extra = labels.length > 3 ? ` +${labels.length - 3} more` : "";
+    return `${labels.length} selected: ${visible}${extra}`;
+  }
+
+  function complexitySummary(data) {
+    const parts = [];
+    if (data.teamSize) parts.push(`${labelFor("teamSize", data.teamSize)} users`);
+    if (data.integrations) parts.push(`${labelFor("integrations", data.integrations)} integrations`);
+    if (data.dataComplexity) parts.push(labelFor("dataComplexity", data.dataComplexity));
+    return parts.join(" | ");
+  }
+
+  function planningPathSummary(data, payload = null) {
+    if (payload?.recommendedPackage) {
+      return `Recommended path: ${payload.recommendedPackage}`;
+    }
+    if (validateEstimate(data).valid) {
+      return `Potential path: ${calculateEstimate(data).package}`;
+    }
+    if (data.budgetReadiness) {
+      return `Budget signal: ${selectedBudgetLabel(data)}`;
+    }
+    if (data.integrations || data.dataComplexity || data.automationNeeds.length) {
+      return "Direction will firm up after bottleneck, data, and budget signals.";
+    }
+    return "";
   }
 
   function renderResult(payload) {

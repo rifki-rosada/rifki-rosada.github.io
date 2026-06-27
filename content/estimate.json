@@ -1,27 +1,28 @@
 {
   "seo": {
     "title": "Estimate Your Automation System | Rifki Rosada",
-    "description": "Get a practical budget and timeline estimate for CRM, dashboard, workflow automation, Android AI, and internal tooling projects."
+    "description": "Get a practical planning range and implementation path for CRM, dashboard, workflow automation, Android AI, and internal tooling projects."
   },
   "fallbackEmail": "rifki@rifkirosada.com",
   "hero": {
-    "eyebrow": "Automation project estimator",
-    "headline": "Estimate Your Automation System",
-    "subheadline": "Answer a few questions about your workflow, tools, team size, and business process. You will get an estimated budget range, timeline, and recommended implementation path.",
-    "primaryCta": "Get Automation Estimate",
+    "eyebrow": "Automation pre-audit",
+    "headline": "Plan Your Automation System",
+    "subheadline": "Walk through a short consultant-led pre-audit about your workflow, tools, team size, and rollout context. You will get a planning range, likely delivery window, and recommended implementation path.",
+    "primaryCta": "Start Pre-audit",
     "secondaryCta": "Review relevant work"
   },
   "form": {
-    "eyebrow": "Pre-audit intake",
-    "heading": "Project details",
-    "lead": "This planning estimate is for real business systems: automation, CRM, dashboards, Android AI workflows, and internal tools.",
+    "eyebrow": "Guided diagnostic",
+    "heading": "Guided pre-audit",
+    "lead": "Work through the main business, bottleneck, system, and readiness signals before seeing the planning range.",
     "submitLabel": "Show My Estimate",
     "emailFallbackLabel": "Email project brief",
     "sections": [
       {
         "id": "context",
-        "eyebrow": "Step 1",
-        "heading": "Business context",
+        "eyebrow": "Step 1 of 4",
+        "heading": "First, what kind of business are we looking at?",
+        "lead": "I start by understanding where the business operates, what kind of workflow exists today, and whether the current process is manual, spreadsheet-based, or already systemized.",
         "questions": [
           {
             "name": "location",
@@ -66,33 +67,54 @@
         ]
       },
       {
-        "id": "scope",
-        "eyebrow": "Step 2",
-        "heading": "Scope signals",
+        "id": "bottleneck",
+        "eyebrow": "Step 2 of 4",
+        "heading": "Where is the workflow breaking down?",
+        "lead": "The strongest automation projects usually start from repeated manual work, slow reporting, missed follow-ups, scattered data, or owner visibility problems.",
         "questions": [
           {
             "name": "automationNeeds",
             "type": "checkbox",
             "label": "What do you want to automate?",
+            "helper": "Pick the workflows that currently cost the most time, cause the most missed follow-ups, or create the most manual reporting.",
             "required": true,
+            "columns": "estimate-options-3",
             "options": [
-              { "value": "whatsapp-customer-service", "label": "WhatsApp / customer service" },
+              { "value": "whatsapp-customer-service", "label": "WhatsApp follow-up" },
               { "value": "crm-sales-pipeline", "label": "CRM / sales pipeline" },
               { "value": "daily-reports", "label": "Daily reports" },
-              { "value": "owner-manager-dashboard", "label": "Dashboard for owner or manager" },
-              { "value": "invoice-payment-checking", "label": "Invoice / payment checking" },
-              { "value": "lead-generation-outreach", "label": "Lead generation / outreach" },
-              { "value": "appointment-booking-workflow", "label": "Appointment / booking workflow" },
+              { "value": "owner-manager-dashboard", "label": "Owner dashboard" },
+              { "value": "invoice-payment-checking", "label": "Invoice / payment checks" },
+              { "value": "lead-generation-outreach", "label": "Lead outreach" },
+              { "value": "appointment-booking-workflow", "label": "Booking workflow" },
               { "value": "internal-admin-workflow", "label": "Internal admin workflow" },
-              { "value": "ai-document-data-processing", "label": "AI document or data processing" },
-              { "value": "android-mobile-workflow", "label": "Android app or mobile workflow" }
+              { "value": "ai-document-data-processing", "label": "AI document processing" },
+              { "value": "android-mobile-workflow", "label": "Android mobile workflow" }
             ]
           },
+          {
+            "name": "projectDescription",
+            "type": "textarea",
+            "label": "Short project description",
+            "helper": "Describe the handoff, reporting, data quality, or follow-up problem in plain language.",
+            "placeholder": "What is manual, slow, duplicated, or hard to track?",
+            "required": true,
+            "rows": 5
+          }
+        ]
+      },
+      {
+        "id": "complexity",
+        "eyebrow": "Step 3 of 4",
+        "heading": "How complex is the system behind it?",
+        "lead": "Integrations and data quality usually decide whether this is a quick sprint or a deeper system build.",
+        "questions": [
           {
             "name": "teamSize",
             "type": "radio",
             "label": "Number of users or team members",
             "required": true,
+            "columns": "estimate-options-3",
             "options": [
               { "value": "1-3", "label": "1-3" },
               { "value": "4-10", "label": "4-10" },
@@ -107,6 +129,7 @@
             "label": "Number of integrations",
             "helper": "Examples: WhatsApp, Google Sheets, Gmail, Calendar, CRM, ERP, payment system, website, API.",
             "required": true,
+            "columns": "estimate-options-2",
             "options": [
               { "value": "none", "label": "None" },
               { "value": "1-2", "label": "1-2 tools" },
@@ -119,6 +142,7 @@
             "type": "radio",
             "label": "Data complexity",
             "required": true,
+            "columns": "estimate-options-2",
             "options": [
               { "value": "simple-form-input", "label": "Simple form/input" },
               { "value": "spreadsheet-database", "label": "Spreadsheet/database" },
@@ -131,14 +155,16 @@
       },
       {
         "id": "timing",
-        "eyebrow": "Step 3",
-        "heading": "Timing and budget readiness",
+        "eyebrow": "Step 4 of 4",
+        "heading": "How soon does this need to work?",
+        "lead": "This helps route the project into a paid audit, MVP automation sprint, internal system build, or advanced multi-integration implementation.",
         "questions": [
           {
             "name": "urgency",
             "type": "radio",
             "label": "Urgency",
             "required": true,
+            "columns": "estimate-options-2",
             "options": [
               { "value": "flexible", "label": "Flexible" },
               { "value": "within-1-month", "label": "Within 1 month" },
@@ -150,7 +176,9 @@
             "name": "budgetReadiness",
             "type": "radio",
             "label": "Budget readiness",
+            "helper": "Budget readiness helps route the project into an audit, MVP sprint, or full internal system.",
             "required": true,
+            "columns": "estimate-options-2",
             "options": [
               {
                 "value": "below-minimum",
@@ -183,14 +211,6 @@
                 "usdLabel": "$5k+"
               }
             ]
-          },
-          {
-            "name": "projectDescription",
-            "type": "textarea",
-            "label": "Short project description",
-            "placeholder": "What is manual, slow, duplicated, or hard to track?",
-            "required": true,
-            "rows": 5
           }
         ]
       }
@@ -212,34 +232,26 @@
   },
   "result": {
     "eyebrow": "Pre-audit summary",
-    "heading": "Recommended implementation path",
+    "heading": "Here is the likely implementation path.",
     "labels": {
-      "range": "Estimated range",
-      "timeline": "Estimated timeline",
-      "package": "Recommended package",
-      "complexity": "Complexity level"
+      "range": "Planning range",
+      "timeline": "Likely delivery window",
+      "package": "Recommended implementation path",
+      "complexity": "Complexity"
     },
-    "lowFitNote": "The best first step is a smaller paid audit or one focused workflow slice before a larger build.",
+    "whyLabel": "Why this path",
+    "lowFitNote": "The best first step is a paid audit or focused workflow slice before a larger build.",
     "defaultExplanation": "The estimate depends on integration access, data quality, approval flow, and rollout constraints."
   },
   "disclaimer": "This estimate is a planning range, not a final quotation or delivery commitment. Final scope, timeline, and commercial terms are confirmed after a technical audit of requirements, data, integrations, access, and rollout constraints.",
   "sidePanel": {
-    "eyebrow": "Estimate covers",
-    "items": [
-      {
-        "title": "CRM and dashboards",
-        "detail": "Lead flow, sales pipeline, reporting, and management visibility."
-      },
-      {
-        "title": "Workflow automation",
-        "detail": "Apps Script, n8n, WhatsApp, Sheets, API handoffs, and status tracking."
-      },
-      {
-        "title": "AI and Android systems",
-        "detail": "Document automation, AI-assisted workflows, and mobile AI features."
-      }
-    ],
-    "packageHeading": "Planning paths"
+    "eyebrow": "Pre-audit summary",
+    "contextPlaceholder": "Business context will appear here.",
+    "bottleneckPlaceholder": "Selected workflows will appear here.",
+    "complexityPlaceholder": "Complexity signals will update as you answer.",
+    "pathPlaceholder": "Potential package direction will appear after the main signals.",
+    "nextHeading": "What happens next",
+    "nextDetail": "Review the planning range, then send the summary with your contact details if the direction feels useful."
   },
   "pricing": {
     "indonesia": [
@@ -297,7 +309,7 @@
   },
   "proof": {
     "heading": "Relevant delivery proof",
-    "description": "Public-safe examples across automation, CRM, dashboards, Android AI, and internal systems.",
+    "description": "Public-safe examples from CRM, workflow automation, internal tools, and Android AI delivery.",
     "items": [
       {
         "label": "CRM / Operations Automation",

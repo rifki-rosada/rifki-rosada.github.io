@@ -774,6 +774,14 @@ function requiredMark(required = true) {
   return required ? ` <span aria-hidden="true">*</span>` : "";
 }
 
+function renderEstimateOptionContent(option, extraAttributes = "") {
+  return `
+            <span class="estimate-option-copy"${extraAttributes}>
+              <span class="estimate-option-label">${escapeHtml(option.label)}</span>
+              ${option.helper ? `<small>${escapeHtml(option.helper)}</small>` : ""}
+            </span>`;
+}
+
 function renderEstimateRadioGroup({ name, label, options, columns = "", required = true, helper = "" }) {
   return `
     <fieldset class="estimate-fieldset">
@@ -785,7 +793,7 @@ function renderEstimateRadioGroup({ name, label, options, columns = "", required
             (option) => `
           <label class="estimate-option">
             <input type="radio" name="${escapeAttribute(name)}" value="${escapeAttribute(option.value)}"${required ? " required" : ""}>
-            <span>${escapeHtml(option.label)}</span>
+${renderEstimateOptionContent(option)}
           </label>
         `
           )
@@ -795,18 +803,18 @@ function renderEstimateRadioGroup({ name, label, options, columns = "", required
   `;
 }
 
-function renderEstimateCheckboxGroup({ name, label, options, required = true, helper = "" }) {
+function renderEstimateCheckboxGroup({ name, label, options, columns = "", required = true, helper = "" }) {
   return `
     <fieldset class="estimate-fieldset"${required ? ` data-required-checkbox-group="${escapeAttribute(name)}"` : ""}>
       <legend>${escapeHtml(label)}${requiredMark(required)}</legend>
       ${helper ? `<p class="estimate-helper">${escapeHtml(helper)}</p>` : ""}
-      <div class="estimate-options estimate-options-check">
+      <div class="estimate-options estimate-options-check${columns ? ` ${escapeAttribute(columns)}` : ""}">
         ${options
           .map(
             (option) => `
           <label class="estimate-option">
             <input type="checkbox" name="${escapeAttribute(name)}" value="${escapeAttribute(option.value)}">
-            <span>${escapeHtml(option.label)}</span>
+${renderEstimateOptionContent(option)}
           </label>
         `
           )
@@ -834,13 +842,16 @@ function renderEstimateBudgetOptions(question) {
     <fieldset class="estimate-fieldset">
       <legend>${escapeHtml(question.label)}${requiredMark(question.required)}</legend>
       ${question.helper ? `<p class="estimate-helper">${escapeHtml(question.helper)}</p>` : ""}
-      <div class="estimate-options">
+      <div class="estimate-options${question.columns ? ` ${escapeAttribute(question.columns)}` : ""}">
         ${(question.options || [])
           .map(
             (option) => `
           <label class="estimate-option">
             <input type="radio" name="${escapeAttribute(question.name)}" value="${escapeAttribute(option.value)}"${question.required ? " required" : ""}>
-            <span data-budget-label data-idr="${escapeAttribute(option.idrLabel || option.label)}" data-usd="${escapeAttribute(option.usdLabel || option.label)}">${escapeHtml(option.label)}</span>
+${renderEstimateOptionContent(
+  option,
+  ` data-budget-label data-idr="${escapeAttribute(option.idrLabel || option.label)}" data-usd="${escapeAttribute(option.usdLabel || option.label)}"`
+)}
           </label>
         `
           )
@@ -871,11 +882,12 @@ function renderEstimateQuestion(question) {
 function renderEstimateFormSections() {
   return (estimateData.form?.sections || [])
     .map(
-      (section) => `
-        <section class="estimate-form-section" aria-labelledby="estimate-section-${escapeAttribute(section.id)}">
+      (section, index) => `
+        <section class="estimate-form-section" data-estimate-step="${index}" data-estimate-step-title="${escapeAttribute(section.heading)}" aria-labelledby="estimate-section-${escapeAttribute(section.id)}"${index > 0 ? " hidden" : ""}>
           <div class="estimate-section-head">
             ${section.eyebrow ? `<p class="mini-label">${escapeHtml(section.eyebrow)}</p>` : ""}
             <h3 id="estimate-section-${escapeAttribute(section.id)}">${escapeHtml(section.heading)}</h3>
+            ${section.lead ? `<p>${escapeHtml(section.lead)}</p>` : ""}
           </div>
           ${(section.questions || []).map((question) => renderEstimateQuestion(question)).join("")}
         </section>
@@ -927,6 +939,41 @@ function renderEstimateProofStrip() {
   `;
 }
 
+function renderEstimateSummaryPanel() {
+  const sidePanel = estimateData.sidePanel || {};
+
+  return `
+          <aside class="estimate-side" aria-label="Pre-audit summary" data-estimate-summary-panel>
+            <p class="eyebrow">${escapeHtml(sidePanel.eyebrow || "Pre-audit summary")}</p>
+            <dl class="estimate-summary-list">
+              <div>
+                <dt>Business context</dt>
+                <dd data-summary="context">${escapeHtml(sidePanel.contextPlaceholder || "Business context will appear here.")}</dd>
+              </div>
+              <div>
+                <dt>Selected bottlenecks</dt>
+                <dd data-summary="bottlenecks">${escapeHtml(sidePanel.bottleneckPlaceholder || "Selected workflows will appear here.")}</dd>
+              </div>
+              <div>
+                <dt>Complexity signals</dt>
+                <dd data-summary="complexity">${escapeHtml(sidePanel.complexityPlaceholder || "Complexity signals will update as you answer.")}</dd>
+              </div>
+              <div>
+                <dt>Planning path preview</dt>
+                <dd data-summary="path">${escapeHtml(sidePanel.pathPlaceholder || "Potential package direction will appear after the main signals.")}</dd>
+              </div>
+            </dl>
+            <div class="estimate-next-note">
+              <p class="mini-label">${escapeHtml(sidePanel.nextHeading || "What happens next")}</p>
+              <p>${escapeHtml(
+                sidePanel.nextDetail ||
+                  "Review the planning range, then send the summary with your contact details if the direction feels useful."
+              )}</p>
+            </div>
+          </aside>
+  `;
+}
+
 function renderEstimateConfigScript() {
   const config = {
     webhookEndpoint: estimateWebhookEndpoint,
@@ -943,6 +990,7 @@ function renderEstimateDataScript() {
     questions: estimateData.form?.sections || [],
     contact: estimateData.contact || {},
     result: estimateData.result || {},
+    sidePanel: estimateData.sidePanel || {},
     disclaimer: estimateData.disclaimer,
     scoring: estimateData.scoring || {},
     analytics: estimateData.analytics || {}
@@ -973,7 +1021,6 @@ function estimatePage() {
     serviceType: "Automation, CRM, dashboard, AI, Android, and internal tooling delivery",
     areaServed: ["Indonesia", "Remote"]
   };
-  const sidePanel = estimateData.sidePanel || {};
   const result = estimateData.result || {};
   const contact = estimateData.contact || {};
   const primaryCta = estimateData.hero?.primaryCta || "Get Automation Estimate";
@@ -995,97 +1042,94 @@ function estimatePage() {
 
       <section class="section section-tight estimate-section" aria-labelledby="estimate-form-heading">
         <div class="container estimate-shell">
-          <form id="automation-estimate-form" class="estimate-form" data-estimate-form novalidate>
-            <div class="estimate-form-head">
-              <p class="eyebrow">${escapeHtml(estimateData.form?.eyebrow || "Pre-audit intake")}</p>
-              <h2 id="estimate-form-heading">${escapeHtml(estimateData.form?.heading || "Project details")}</h2>
-              ${estimateData.form?.lead ? `<p>${escapeHtml(estimateData.form.lead)}</p>` : ""}
-            </div>
-
-            ${renderEstimateFormSections()}
-
-            <label class="estimate-honeypot" aria-hidden="true">
-              <span>Website</span>
-              <input type="text" name="website" tabindex="-1" autocomplete="off">
-            </label>
-
-            <div class="estimate-error" data-estimate-error role="alert" hidden></div>
-            <div class="actions">
-              <button class="btn btn-primary" type="submit">${escapeHtml(estimateData.form?.submitLabel || "Show My Estimate")}</button>
-              <a class="btn btn-secondary" href="${escapeAttribute(estimateMailHref())}" data-estimate-mailto-trigger>${escapeHtml(estimateData.form?.emailFallbackLabel || "Email project brief")}</a>
-            </div>
-          </form>
-
-          <aside class="estimate-side" aria-label="Estimator scope">
-            <p class="eyebrow">${escapeHtml(sidePanel.eyebrow || "Estimate covers")}</p>
-            <ul class="estimate-side-list">
-              ${(sidePanel.items || [])
-                .map(
-                  (item) => `
-              <li>
-                <strong>${escapeHtml(item.title)}</strong>
-                <span>${escapeHtml(item.detail)}</span>
-              </li>`
-                )
-                .join("")}
-            </ul>
-            <div class="estimate-package-list">
-              <p class="mini-label">${escapeHtml(sidePanel.packageHeading || "Planning paths")}</p>
-              <dl>
-                ${(estimateData.pricing?.indonesia || [])
-                  .map((item) => `<div><dt>${escapeHtml(item.name)}</dt><dd>${escapeHtml(item.timeline)}</dd></div>`)
-                  .join("")}
-              </dl>
-            </div>
-          </aside>
-        </div>
-      </section>
-
-      <section class="section section-tight estimate-result-section" data-estimate-result-section hidden aria-labelledby="estimate-result-heading">
-        <div class="container">
-          <article class="estimate-result-card" data-estimate-result-card aria-live="polite">
-            <div class="estimate-result-head">
-              <p class="eyebrow">${escapeHtml(result.eyebrow || "Pre-audit summary")}</p>
-              <h2 id="estimate-result-heading">${escapeHtml(result.heading || "Recommended implementation path")}</h2>
-              <p data-result="explanation"></p>
-            </div>
-            <dl class="estimate-result-grid">
-              <div>
-                <dt>${escapeHtml(result.labels?.range || "Estimated range")}</dt>
-                <dd data-result="range">-</dd>
-              </div>
-              <div>
-                <dt>${escapeHtml(result.labels?.timeline || "Estimated timeline")}</dt>
-                <dd data-result="timeline">-</dd>
-              </div>
-              <div>
-                <dt>${escapeHtml(result.labels?.package || "Recommended package")}</dt>
-                <dd data-result="package">-</dd>
-              </div>
-              <div>
-                <dt>${escapeHtml(result.labels?.complexity || "Complexity level")}</dt>
-                <dd data-result="complexity">-</dd>
-              </div>
-            </dl>
-            <p class="estimate-disclaimer">${escapeHtml(estimateData.disclaimer)}</p>
-            <div class="estimate-payload-preview" data-estimate-payload-preview></div>
-            <form class="estimate-contact-form" data-estimate-contact-form novalidate>
+          <div class="estimate-main">
+            <form id="automation-estimate-form" class="estimate-form" data-estimate-form novalidate>
               <div class="estimate-form-head">
-                <p class="eyebrow">${escapeHtml(contact.eyebrow || "Send the summary")}</p>
-                <h3>${escapeHtml(contact.heading || "Send this estimate to Rifki")}</h3>
-                ${contact.lead ? `<p>${escapeHtml(contact.lead)}</p>` : ""}
+                <p class="eyebrow">${escapeHtml(estimateData.form?.eyebrow || "Pre-audit intake")}</p>
+                <h2 id="estimate-form-heading">${escapeHtml(estimateData.form?.heading || "Project details")}</h2>
+                ${estimateData.form?.lead ? `<p>${escapeHtml(estimateData.form.lead)}</p>` : ""}
               </div>
-              <div class="estimate-field-grid">
-                ${renderEstimateContactFields()}
+
+              <div class="estimate-progress" aria-label="Pre-audit progress">
+                <div class="estimate-progress-text">
+                  <span data-estimate-progress-label>Step 1 of ${(estimateData.form?.sections || []).length}</span>
+                  <strong data-estimate-progress-title>${escapeHtml(estimateData.form?.sections?.[0]?.heading || "")}</strong>
+                </div>
+                <div class="estimate-progress-track" aria-hidden="true">
+                  <span data-estimate-progress-bar></span>
+                </div>
+              </div>
+
+              ${renderEstimateFormSections()}
+
+              <label class="estimate-honeypot" aria-hidden="true">
+                <span>Website</span>
+                <input type="text" name="website" tabindex="-1" autocomplete="off">
+              </label>
+
+              <div class="estimate-error" data-estimate-error role="alert" hidden></div>
+              <div class="estimate-step-nav" aria-label="Pre-audit navigation">
+                <button class="btn btn-secondary" type="button" data-estimate-prev>Back</button>
+                <button class="btn btn-primary" type="button" data-estimate-next>Next</button>
+                <button class="btn btn-primary" type="submit" data-estimate-show-result hidden>${escapeHtml(
+                  estimateData.form?.submitLabel || "Show My Estimate"
+                )}</button>
               </div>
             </form>
-            <div class="estimate-error" data-estimate-submit-status role="status" aria-live="polite" hidden></div>
-            <div class="actions">
-              <button class="btn btn-primary" type="button" data-estimate-submit>${escapeHtml(contact.submitLabel || "Send My Estimate to Rifki")}</button>
-              <button class="btn btn-secondary" type="button" data-estimate-edit>${escapeHtml(contact.editLabel || "Edit answers")}</button>
-              <a class="btn btn-secondary" href="${escapeAttribute(estimateMailHref())}" data-estimate-mailto>${escapeHtml(contact.emailFallbackLabel || "Email Project Brief")}</a>
-            </div>
-          </article>
+
+            <section class="estimate-result-section" data-estimate-result-section hidden aria-labelledby="estimate-result-heading">
+              <article class="estimate-result-card" data-estimate-result-card aria-live="polite">
+                <div class="estimate-result-head">
+                  <p class="mini-label">Step 5 of 6</p>
+                  <p class="eyebrow">${escapeHtml(result.eyebrow || "Pre-audit summary")}</p>
+                  <h2 id="estimate-result-heading">${escapeHtml(result.heading || "Recommended implementation path")}</h2>
+                </div>
+                <dl class="estimate-result-grid">
+                  <div>
+                    <dt>${escapeHtml(result.labels?.package || "Recommended implementation path")}</dt>
+                    <dd data-result="package">-</dd>
+                  </div>
+                  <div>
+                    <dt>${escapeHtml(result.labels?.range || "Planning range")}</dt>
+                    <dd data-result="range">-</dd>
+                  </div>
+                  <div>
+                    <dt>${escapeHtml(result.labels?.timeline || "Likely delivery window")}</dt>
+                    <dd data-result="timeline">-</dd>
+                  </div>
+                  <div>
+                    <dt>${escapeHtml(result.labels?.complexity || "Complexity")}</dt>
+                    <dd data-result="complexity">-</dd>
+                  </div>
+                </dl>
+                <div class="estimate-why">
+                  <p class="mini-label">${escapeHtml(result.whyLabel || "Why this path")}</p>
+                  <p data-result="explanation"></p>
+                </div>
+                <p class="estimate-disclaimer">${escapeHtml(estimateData.disclaimer)}</p>
+                <div class="estimate-payload-preview" data-estimate-payload-preview></div>
+                <form class="estimate-contact-form" data-estimate-contact-form novalidate>
+                  <div class="estimate-form-head">
+                    <p class="mini-label">Step 6 of 6</p>
+                    <p class="eyebrow">${escapeHtml(contact.eyebrow || "Send the summary")}</p>
+                    <h3>${escapeHtml(contact.heading || "Send this estimate to Rifki")}</h3>
+                    ${contact.lead ? `<p>${escapeHtml(contact.lead)}</p>` : ""}
+                  </div>
+                  <div class="estimate-field-grid">
+                    ${renderEstimateContactFields()}
+                  </div>
+                </form>
+                <div class="estimate-error" data-estimate-submit-status role="status" aria-live="polite" hidden></div>
+                <div class="actions">
+                  <button class="btn btn-primary" type="button" data-estimate-submit>${escapeHtml(contact.submitLabel || "Send My Estimate to Rifki")}</button>
+                  <button class="btn btn-secondary" type="button" data-estimate-edit>${escapeHtml(contact.editLabel || "Edit answers")}</button>
+                  <a class="btn btn-secondary" href="${escapeAttribute(estimateMailHref())}" data-estimate-mailto>${escapeHtml(contact.emailFallbackLabel || "Email Project Brief")}</a>
+                </div>
+              </article>
+            </section>
+          </div>
+
+${renderEstimateSummaryPanel()}
         </div>
       </section>
 

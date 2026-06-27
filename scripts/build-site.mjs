@@ -6,17 +6,21 @@ const rootDir = process.cwd();
 const siteDataPath = path.join(rootDir, "content", "site-data.json");
 const caseStudiesPath = path.join(rootDir, "content", "case-studies.json");
 const notesPath = path.join(rootDir, "content", "notes.json");
+const estimateDataPath = path.join(rootDir, "content", "estimate.json");
+const estimateScriptPath = path.join(rootDir, "assets", "js", "estimate.js");
 const isCheckMode = process.argv.includes("--check");
 
-const [siteDataRaw, caseStudiesRaw, notesRaw] = await Promise.all([
+const [siteDataRaw, caseStudiesRaw, notesRaw, estimateDataRaw] = await Promise.all([
   fs.readFile(siteDataPath, "utf8"),
   fs.readFile(caseStudiesPath, "utf8"),
-  fs.readFile(notesPath, "utf8").catch(() => null)
+  fs.readFile(notesPath, "utf8").catch(() => null),
+  fs.readFile(estimateDataPath, "utf8")
 ]);
 
 const siteData = JSON.parse(siteDataRaw.replace(/^\uFEFF/, ""));
 const caseStudiesInput = JSON.parse(caseStudiesRaw.replace(/^\uFEFF/, ""));
 const notesData = notesRaw ? JSON.parse(notesRaw.replace(/^\uFEFF/, "")) : { posts: [] };
+const estimateData = JSON.parse(estimateDataRaw.replace(/^\uFEFF/, ""));
 const notes = (notesData.posts || []).slice().sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
 
 const requiredCaseSlugs = [
@@ -35,10 +39,19 @@ if (!siteUrl.startsWith("https://")) {
 const buildDate = await latestModifiedDate([
   siteDataPath,
   caseStudiesPath,
+  estimateDataPath,
   path.join(rootDir, "scripts", "build-site.mjs"),
   path.join(rootDir, "assets", "css", "site.css"),
-  path.join(rootDir, "assets", "js", "site.js")
+  path.join(rootDir, "assets", "js", "site.js"),
+  estimateScriptPath
 ]);
+
+const estimateWebhookEndpoint = String(
+  process.env.ESTIMATE_WEBHOOK_URL || siteData.estimate?.webhookEndpoint || estimateData.webhookEndpoint || ""
+).trim();
+if (estimateWebhookEndpoint && !estimateWebhookEndpoint.startsWith("https://")) {
+  throw new Error("ESTIMATE_WEBHOOK_URL or estimate.webhookEndpoint must be an https URL when provided.");
+}
 
 const caseStudies = caseStudiesInput
   .map((item) => ({
@@ -71,6 +84,7 @@ const navItems = [
   { label: "Home", href: "/" },
   { label: "Work", href: "/work/" },
   { label: "Writing", href: "/writing/" },
+  { label: "Estimate", href: "/estimate/" },
   { label: "Hire", href: "/hire/" },
   { label: "Contact", href: "/contact/" }
 ];
@@ -79,6 +93,7 @@ const footerNavItems = [
   { label: "Home", href: "/" },
   { label: "Work", href: "/work/" },
   { label: "Writing", href: "/writing/" },
+  { label: "Estimate", href: "/estimate/" },
   { label: "Hire", href: "/hire/" },
   { label: "Contact", href: "/contact/" }
 ];
@@ -172,6 +187,21 @@ function emailProjectBriefHref() {
   return `mailto:${siteData.contact.email}`;
 }
 
+function estimateMailHref(summary = "") {
+  const subject = "Automation estimate request";
+  const body = summary || [
+    "Hi Rifki,",
+    "",
+    "I completed the automation estimator and would like to discuss the scope.",
+    "",
+    "Project summary:",
+    "",
+    "Best,"
+  ].join("\n");
+
+  return `mailto:${siteData.contact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
 function resumeHref() {
   return siteData.resume?.href || "/Profile.pdf";
 }
@@ -236,7 +266,7 @@ function renderHeader(currentRoute) {
           ${renderNavLinks(currentRoute)}
         </nav>
         <div class="header-actions">
-          <a class="btn btn-primary btn-sm" href="${escapeAttribute(siteData.site.heroPrimaryCta.href)}">Share your scope</a>
+          <a class="btn btn-primary btn-sm" href="/estimate/">Get Automation Estimate</a>
           <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open navigation menu">Menu</button>
         </div>
       </div>
@@ -301,6 +331,7 @@ function renderDocument({
   ogType = "website",
   noIndex = false,
   injectHead = "",
+  extraScripts = "",
   ogImage = `${siteUrl}/og-image.png`,
   ogImageAlt = `${siteData.site.name} portfolio preview`,
   ogImageWidth = 1200,
@@ -351,6 +382,7 @@ function renderDocument({
   ${body}
   ${renderFooter()}
   <script src="/assets/js/site.js" defer></script>
+  ${extraScripts}
 </body>
 </html>`;
 }
@@ -738,6 +770,340 @@ function renderTestimonials() {
   `;
 }
 
+function requiredMark(required = true) {
+  return required ? ` <span aria-hidden="true">*</span>` : "";
+}
+
+function renderEstimateRadioGroup({ name, label, options, columns = "", required = true, helper = "" }) {
+  return `
+    <fieldset class="estimate-fieldset">
+      <legend>${escapeHtml(label)}${requiredMark(required)}</legend>
+      ${helper ? `<p class="estimate-helper">${escapeHtml(helper)}</p>` : ""}
+      <div class="estimate-options${columns ? ` ${escapeAttribute(columns)}` : ""}">
+        ${options
+          .map(
+            (option) => `
+          <label class="estimate-option">
+            <input type="radio" name="${escapeAttribute(name)}" value="${escapeAttribute(option.value)}"${required ? " required" : ""}>
+            <span>${escapeHtml(option.label)}</span>
+          </label>
+        `
+          )
+          .join("")}
+      </div>
+    </fieldset>
+  `;
+}
+
+function renderEstimateCheckboxGroup({ name, label, options, required = true, helper = "" }) {
+  return `
+    <fieldset class="estimate-fieldset"${required ? ` data-required-checkbox-group="${escapeAttribute(name)}"` : ""}>
+      <legend>${escapeHtml(label)}${requiredMark(required)}</legend>
+      ${helper ? `<p class="estimate-helper">${escapeHtml(helper)}</p>` : ""}
+      <div class="estimate-options estimate-options-check">
+        ${options
+          .map(
+            (option) => `
+          <label class="estimate-option">
+            <input type="checkbox" name="${escapeAttribute(name)}" value="${escapeAttribute(option.value)}">
+            <span>${escapeHtml(option.label)}</span>
+          </label>
+        `
+          )
+          .join("")}
+      </div>
+    </fieldset>
+  `;
+}
+
+function renderEstimateSelect({ name, label, options, required = true, helper = "" }) {
+  return `
+    <label class="estimate-field">
+      <span>${escapeHtml(label)}${requiredMark(required)}</span>
+      ${helper ? `<small class="estimate-helper">${escapeHtml(helper)}</small>` : ""}
+      <select name="${escapeAttribute(name)}"${required ? " required" : ""}>
+        <option value="">Select one</option>
+        ${options.map((option) => `<option value="${escapeAttribute(option.value)}">${escapeHtml(option.label)}</option>`).join("")}
+      </select>
+    </label>
+  `;
+}
+
+function renderEstimateBudgetOptions(question) {
+  return `
+    <fieldset class="estimate-fieldset">
+      <legend>${escapeHtml(question.label)}${requiredMark(question.required)}</legend>
+      ${question.helper ? `<p class="estimate-helper">${escapeHtml(question.helper)}</p>` : ""}
+      <div class="estimate-options">
+        ${(question.options || [])
+          .map(
+            (option) => `
+          <label class="estimate-option">
+            <input type="radio" name="${escapeAttribute(question.name)}" value="${escapeAttribute(option.value)}"${question.required ? " required" : ""}>
+            <span data-budget-label data-idr="${escapeAttribute(option.idrLabel || option.label)}" data-usd="${escapeAttribute(option.usdLabel || option.label)}">${escapeHtml(option.label)}</span>
+          </label>
+        `
+          )
+          .join("")}
+      </div>
+    </fieldset>
+  `;
+}
+
+function renderEstimateTextarea({ name, label, placeholder = "", required = true, rows = 5, helper = "" }) {
+  return `
+    <label class="estimate-field estimate-field-wide">
+      <span>${escapeHtml(label)}${requiredMark(required)}</span>
+      ${helper ? `<small class="estimate-helper">${escapeHtml(helper)}</small>` : ""}
+      <textarea name="${escapeAttribute(name)}" rows="${escapeAttribute(rows)}"${required ? " required" : ""}${placeholder ? ` placeholder="${escapeAttribute(placeholder)}"` : ""}></textarea>
+    </label>
+  `;
+}
+
+function renderEstimateQuestion(question) {
+  if (question.type === "select") return renderEstimateSelect(question);
+  if (question.type === "checkbox") return renderEstimateCheckboxGroup(question);
+  if (question.type === "textarea") return renderEstimateTextarea(question);
+  if (question.name === "budgetReadiness") return renderEstimateBudgetOptions(question);
+  return renderEstimateRadioGroup(question);
+}
+
+function renderEstimateFormSections() {
+  return (estimateData.form?.sections || [])
+    .map(
+      (section) => `
+        <section class="estimate-form-section" aria-labelledby="estimate-section-${escapeAttribute(section.id)}">
+          <div class="estimate-section-head">
+            ${section.eyebrow ? `<p class="mini-label">${escapeHtml(section.eyebrow)}</p>` : ""}
+            <h3 id="estimate-section-${escapeAttribute(section.id)}">${escapeHtml(section.heading)}</h3>
+          </div>
+          ${(section.questions || []).map((question) => renderEstimateQuestion(question)).join("")}
+        </section>
+      `
+    )
+    .join("");
+}
+
+function renderEstimateContactFields() {
+  return (estimateData.contact?.fields || [])
+    .map(
+      (field) => `
+        <label class="estimate-field">
+          <span>${escapeHtml(field.label)}${requiredMark(field.required)}</span>
+          <input type="${escapeAttribute(field.type || "text")}" name="${escapeAttribute(field.name)}"${field.autocomplete ? ` autocomplete="${escapeAttribute(field.autocomplete)}"` : ""}${field.type === "email" ? ' inputmode="email"' : ""}${field.required ? " required" : ""}>
+        </label>
+      `
+    )
+    .join("");
+}
+
+function renderEstimateProofStrip() {
+  const proof = estimateData.proof || {};
+  const proofItems = proof.items || [];
+
+  return `
+    <section class="section section-tight estimate-proof-section" aria-labelledby="estimate-proof-heading">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="estimate-proof-heading">${escapeHtml(proof.heading || "Relevant delivery proof")}</h2>
+          <p>${escapeHtml(proof.description || "")}</p>
+        </div>
+        <ul class="estimate-proof-strip">
+          ${proofItems
+            .map(
+              (item, index) => `
+          <li data-animate style="--delay:${animationDelay(index, 0.04)}">
+            <a href="${escapeAttribute(item.href)}" data-estimate-proof-link>
+              <strong>${escapeHtml(item.label)}</strong>
+              <span>${escapeHtml(item.outcome || item.detail || "")}</span>
+            </a>
+          </li>
+        `
+            )
+            .join("")}
+        </ul>
+      </div>
+    </section>
+  `;
+}
+
+function renderEstimateConfigScript() {
+  const config = {
+    webhookEndpoint: estimateWebhookEndpoint,
+    contactEmail: estimateData.fallbackEmail || siteData.contact.email,
+    source: "portfolio_estimate"
+  };
+  const safeJson = JSON.stringify(config).replace(/</g, "\\u003c");
+  return `<script type="application/json" id="estimate-config">${safeJson}</script>`;
+}
+
+function renderEstimateDataScript() {
+  const clientData = {
+    pricing: estimateData.pricing,
+    questions: estimateData.form?.sections || [],
+    contact: estimateData.contact || {},
+    result: estimateData.result || {},
+    disclaimer: estimateData.disclaimer,
+    scoring: estimateData.scoring || {},
+    analytics: estimateData.analytics || {}
+  };
+  const safeJson = JSON.stringify(clientData).replace(/</g, "\\u003c");
+  return `<script type="application/json" id="estimate-data">${safeJson}</script>`;
+}
+
+function estimatePage() {
+  const webPageJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: estimateData.hero?.headline,
+    url: toAbsoluteUrl("/estimate/"),
+    description: estimateData.seo?.description,
+    isPartOf: toAbsoluteUrl("/")
+  };
+
+  const serviceJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Automation system estimate",
+    provider: {
+      "@type": "Person",
+      name: siteData.site.name,
+      url: toAbsoluteUrl("/")
+    },
+    serviceType: "Automation, CRM, dashboard, AI, Android, and internal tooling delivery",
+    areaServed: ["Indonesia", "Remote"]
+  };
+  const sidePanel = estimateData.sidePanel || {};
+  const result = estimateData.result || {};
+  const contact = estimateData.contact || {};
+  const primaryCta = estimateData.hero?.primaryCta || "Get Automation Estimate";
+  const secondaryCta = estimateData.hero?.secondaryCta || "Review relevant work";
+
+  const body = `
+    <main id="main-content" tabindex="-1" data-estimate-page>
+      <section class="page-hero section estimate-hero">
+        <div class="container">
+          <p class="eyebrow" data-animate>${escapeHtml(estimateData.hero?.eyebrow || "Automation project estimator")}</p>
+          <h1 data-animate style="--delay:0.04s">${escapeHtml(estimateData.hero?.headline || "Estimate Your Automation System")}</h1>
+          <p data-animate style="--delay:0.08s">${escapeHtml(estimateData.hero?.subheadline || "")}</p>
+          <div class="actions" data-animate style="--delay:0.12s">
+            <a class="btn btn-primary" href="#estimate-form-heading">${escapeHtml(primaryCta)}</a>
+            <a class="btn btn-secondary" href="/work/">${escapeHtml(secondaryCta)}</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-tight estimate-section" aria-labelledby="estimate-form-heading">
+        <div class="container estimate-shell">
+          <form id="automation-estimate-form" class="estimate-form" data-estimate-form novalidate>
+            <div class="estimate-form-head">
+              <p class="eyebrow">${escapeHtml(estimateData.form?.eyebrow || "Pre-audit intake")}</p>
+              <h2 id="estimate-form-heading">${escapeHtml(estimateData.form?.heading || "Project details")}</h2>
+              ${estimateData.form?.lead ? `<p>${escapeHtml(estimateData.form.lead)}</p>` : ""}
+            </div>
+
+            ${renderEstimateFormSections()}
+
+            <label class="estimate-honeypot" aria-hidden="true">
+              <span>Website</span>
+              <input type="text" name="website" tabindex="-1" autocomplete="off">
+            </label>
+
+            <div class="estimate-error" data-estimate-error role="alert" hidden></div>
+            <div class="actions">
+              <button class="btn btn-primary" type="submit">${escapeHtml(estimateData.form?.submitLabel || "Show My Estimate")}</button>
+              <a class="btn btn-secondary" href="${escapeAttribute(estimateMailHref())}" data-estimate-mailto-trigger>${escapeHtml(estimateData.form?.emailFallbackLabel || "Email project brief")}</a>
+            </div>
+          </form>
+
+          <aside class="estimate-side" aria-label="Estimator scope">
+            <p class="eyebrow">${escapeHtml(sidePanel.eyebrow || "Estimate covers")}</p>
+            <ul class="estimate-side-list">
+              ${(sidePanel.items || [])
+                .map(
+                  (item) => `
+              <li>
+                <strong>${escapeHtml(item.title)}</strong>
+                <span>${escapeHtml(item.detail)}</span>
+              </li>`
+                )
+                .join("")}
+            </ul>
+            <div class="estimate-package-list">
+              <p class="mini-label">${escapeHtml(sidePanel.packageHeading || "Planning paths")}</p>
+              <dl>
+                ${(estimateData.pricing?.indonesia || [])
+                  .map((item) => `<div><dt>${escapeHtml(item.name)}</dt><dd>${escapeHtml(item.timeline)}</dd></div>`)
+                  .join("")}
+              </dl>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section section-tight estimate-result-section" data-estimate-result-section hidden aria-labelledby="estimate-result-heading">
+        <div class="container">
+          <article class="estimate-result-card" data-estimate-result-card aria-live="polite">
+            <div class="estimate-result-head">
+              <p class="eyebrow">${escapeHtml(result.eyebrow || "Pre-audit summary")}</p>
+              <h2 id="estimate-result-heading">${escapeHtml(result.heading || "Recommended implementation path")}</h2>
+              <p data-result="explanation"></p>
+            </div>
+            <dl class="estimate-result-grid">
+              <div>
+                <dt>${escapeHtml(result.labels?.range || "Estimated range")}</dt>
+                <dd data-result="range">-</dd>
+              </div>
+              <div>
+                <dt>${escapeHtml(result.labels?.timeline || "Estimated timeline")}</dt>
+                <dd data-result="timeline">-</dd>
+              </div>
+              <div>
+                <dt>${escapeHtml(result.labels?.package || "Recommended package")}</dt>
+                <dd data-result="package">-</dd>
+              </div>
+              <div>
+                <dt>${escapeHtml(result.labels?.complexity || "Complexity level")}</dt>
+                <dd data-result="complexity">-</dd>
+              </div>
+            </dl>
+            <p class="estimate-disclaimer">${escapeHtml(estimateData.disclaimer)}</p>
+            <div class="estimate-payload-preview" data-estimate-payload-preview></div>
+            <form class="estimate-contact-form" data-estimate-contact-form novalidate>
+              <div class="estimate-form-head">
+                <p class="eyebrow">${escapeHtml(contact.eyebrow || "Send the summary")}</p>
+                <h3>${escapeHtml(contact.heading || "Send this estimate to Rifki")}</h3>
+                ${contact.lead ? `<p>${escapeHtml(contact.lead)}</p>` : ""}
+              </div>
+              <div class="estimate-field-grid">
+                ${renderEstimateContactFields()}
+              </div>
+            </form>
+            <div class="estimate-error" data-estimate-submit-status role="status" aria-live="polite" hidden></div>
+            <div class="actions">
+              <button class="btn btn-primary" type="button" data-estimate-submit>${escapeHtml(contact.submitLabel || "Send My Estimate to Rifki")}</button>
+              <button class="btn btn-secondary" type="button" data-estimate-edit>${escapeHtml(contact.editLabel || "Edit answers")}</button>
+              <a class="btn btn-secondary" href="${escapeAttribute(estimateMailHref())}" data-estimate-mailto>${escapeHtml(contact.emailFallbackLabel || "Email Project Brief")}</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      ${renderEstimateProofStrip()}
+    </main>
+  `;
+
+  return {
+    route: "/estimate/",
+    filePath: path.join("estimate", "index.html"),
+    title: estimateData.seo?.title,
+    description: estimateData.seo?.description,
+    body,
+    jsonLd: [webPageJsonLd, serviceJsonLd],
+    extraScripts: `${renderEstimateConfigScript()}\n  ${renderEstimateDataScript()}\n  <script src="/assets/js/estimate.js" defer></script>`
+  };
+}
+
 function homePage() {
   const featuredCases = (siteData.featuredCaseSlugs || [])
     .map((slug) => findCaseStudy(slug))
@@ -812,6 +1178,18 @@ function homePage() {
         </div>
       </section>
 
+      <section class="section section-tight" aria-labelledby="estimate-home-heading">
+        <div class="container cta-panel" data-animate>
+          <p class="eyebrow">Pre-audit estimator</p>
+          <h2 id="estimate-home-heading">Get a fast budget range before writing a long brief.</h2>
+          <p>Answer a few workflow questions and get an estimated implementation path for automation, CRM, dashboards, Android + AI, or internal tooling work.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="/estimate/">Get Automation Estimate</a>
+            <a class="btn btn-secondary" href="/hire/">See engagement options</a>
+          </div>
+        </div>
+      </section>
+
       ${siteData.site.homeVideo && siteData.site.homeVideo.loomId ? `
       <section class="section section-tight" aria-labelledby="walkthrough-heading">
         <div class="container">
@@ -858,7 +1236,7 @@ function homePage() {
           </div>
           <div class="actions actions-inline">
             <a class="btn btn-primary" href="/hire/">See engagement options</a>
-            <a class="btn btn-secondary" href="/contact/">Share your scope</a>
+            <a class="btn btn-secondary" href="/estimate/">Get Automation Estimate</a>
           </div>
         </div>
       </section>
@@ -874,7 +1252,7 @@ function homePage() {
           </div>
           <div class="actions actions-inline">
             <a class="btn btn-primary" href="/work/">Review relevant work</a>
-            <a class="btn btn-secondary" href="/contact/">Share your scope</a>
+            <a class="btn btn-secondary" href="/estimate/">Get Automation Estimate</a>
           </div>
         </div>
       </section>
@@ -918,7 +1296,7 @@ function homePage() {
           <p>Share the current process, blockers, and timeline. I will reply with the best starting scope within 24 hours.</p>
           ${renderContactChannels()}
           <div class="actions">
-            <a class="btn btn-primary" href="/contact/">Share your scope</a>
+            <a class="btn btn-primary" href="/estimate/">Get Automation Estimate</a>
             <a class="btn btn-secondary" href="${escapeAttribute(scopeMailHref())}">Email project brief</a>
           </div>
         </div>
@@ -1105,7 +1483,7 @@ function workPage() {
           <h1 data-animate style="--delay:0.04s">Selected work</h1>
           <p data-animate style="--delay:0.08s">Case studies covering client systems, automation delivery, Android AI UX, and public Android + AI product work.</p>
           <div class="actions" data-animate style="--delay:0.12s">
-            <a class="btn btn-primary" href="/contact/">Share your scope</a>
+            <a class="btn btn-primary" href="#client-work-heading">Review client systems</a>
             <a class="btn btn-secondary" href="/hire/">See engagement options</a>
           </div>
         </div>
@@ -1138,9 +1516,9 @@ function workPage() {
       <section class="section">
         <div class="container cta-panel" data-animate>
           <h2>Have a workflow, internal tool, or Android AI feature to ship?</h2>
-          <p>Share the current state and target outcome. I will reply with the best next step for a scoped remote contract.</p>
+          <p>Use the estimator for a planning range, or email the project brief directly if the scope is already clear.</p>
           <div class="actions">
-            <a class="btn btn-primary" href="/contact/">Share your scope</a>
+            <a class="btn btn-primary" href="/estimate/">Get Automation Estimate</a>
             <a class="btn btn-secondary" href="${escapeAttribute(scopeMailHref())}">Email project brief</a>
           </div>
         </div>
@@ -1309,10 +1687,10 @@ function casePage(caseStudy) {
 
       <section class="section">
         <div class="container cta-panel" data-animate>
-          <h2>Planning a similar build?</h2>
-          <p>Share the workflow, delivery risk, and timeline. I will reply with the best starting scope.</p>
+          <h2>Have a similar workflow?</h2>
+          <p>Use the estimator for a planning range, or email the project brief directly if the scope is already clear.</p>
           <div class="actions">
-            <a class="btn btn-primary" href="/contact/">Share your scope</a>
+            <a class="btn btn-primary" href="/estimate/">Get Automation Estimate</a>
             <a class="btn btn-secondary" href="${escapeAttribute(scopeMailHref())}">Email project brief</a>
           </div>
         </div>
@@ -1380,7 +1758,7 @@ function hirePage() {
           <p data-animate style="--delay:0.08s">Remote contract support for AI-enabled workflows, internal tools, automation systems, and Android + AI product delivery.</p>
           <div class="avail-badge" data-animate style="--delay:0.10s;margin-top:0.8rem"><span class="avail-dot" aria-hidden="true"></span>${escapeHtml(siteData.site.heroAvailability || "Currently open to new projects")}</div>
           <div class="actions" data-animate style="--delay:0.14s">
-            <a class="btn btn-primary" href="/contact/">Send the current problem</a>
+            <a class="btn btn-primary" href="/estimate/">Get Automation Estimate</a>
             <a class="btn btn-secondary" href="${escapeAttribute(scopeMailHref())}">Email project brief</a>
             <a class="btn btn-secondary" href="${escapeAttribute(resumeHref())}">Download resume</a>
           </div>
@@ -1392,10 +1770,14 @@ function hirePage() {
           <div class="section-head">
             <h2 id="packages-heading">Engagement options</h2>
             <p>Clear paths for internal tools, automation systems, Android + AI delivery, and ongoing remote execution.</p>
-            <p class="pricing-note"><strong>Scope-based pricing.</strong> Production automation sprints start from $3,500, Android + AI delivery starts from $4,500, and internal tool builds start from $5,000. Send the brief and I will return a milestone estimate within 24 hours. No retainer required to start.</p>
+            <p class="pricing-note"><strong>Scope-based pricing.</strong> Use the estimator for a fast IDR/USD budget range, then I can confirm the final scope after a technical audit. No retainer required to start.</p>
           </div>
           <div class="grid grid-2">
             ${renderServiceCards(packages)}
+          </div>
+          <div class="actions actions-inline">
+            <a class="btn btn-primary" href="/estimate/">Get Automation Estimate</a>
+            <a class="btn btn-secondary" href="/work/">Review relevant work</a>
           </div>
         </div>
       </section>
@@ -1446,7 +1828,7 @@ function hirePage() {
           <h2>Need a scoped delivery partner?</h2>
           <p>Send the current workflow, blockers, and target outcome. I will respond with the best first milestone.</p>
           <div class="actions">
-            <a class="btn btn-primary" href="/contact/">Share your scope</a>
+            <a class="btn btn-primary" href="/estimate/">Get Automation Estimate</a>
             <a class="btn btn-secondary" href="/work/">Review relevant work</a>
           </div>
         </div>
@@ -1554,7 +1936,8 @@ function contactPage() {
           <p data-animate style="--delay:0.08s">Send the project brief, blockers, and timeline. I will reply with the best starting scope for the work.</p>
           <div class="avail-badge" data-animate style="--delay:0.10s;margin-top:0.6rem"><span class="avail-dot" aria-hidden="true"></span>${escapeHtml(siteData.site.heroAvailability || "Open to new projects")} &mdash; replies within 24h on weekdays</div>
           <div class="actions" data-animate style="--delay:0.16s">
-            <a class="btn btn-primary" href="${escapeAttribute(scopeMailHref())}">Email project brief</a>
+            <a class="btn btn-primary" href="/estimate/">Get Automation Estimate</a>
+            <a class="btn btn-secondary" href="${escapeAttribute(scopeMailHref())}">Email project brief</a>
             <button class="btn btn-secondary" type="button" data-copy-target="contact-scope-template-quick" data-copy-feedback="contact-scope-quick-feedback">Copy scope template</button>
           </div>
           <div class="hero-links" data-animate style="--delay:0.2s">
@@ -1614,10 +1997,10 @@ function contactPage() {
       <section class="section">
         <div class="container cta-panel" data-animate>
           <h2>Prefer to keep it simple?</h2>
-          <p>Email the project brief directly, or review the engagement options first if you want to see how the work is usually scoped.</p>
+          <p>Use the estimator for a structured pre-audit summary, or email the project brief directly if you already know the scope.</p>
           <div class="actions">
-            <a class="btn btn-primary" href="${escapeAttribute(scopeMailHref())}">Email project brief</a>
-            <a class="btn btn-secondary" href="/hire/">See engagement options</a>
+            <a class="btn btn-primary" href="/estimate/">Get Automation Estimate</a>
+            <a class="btn btn-secondary" href="${escapeAttribute(scopeMailHref())}">Email project brief</a>
           </div>
         </div>
       </section>
@@ -2269,6 +2652,137 @@ function pushMissing(errors, value, label) {
   }
 }
 
+function collectStringValues(value, list = []) {
+  if (typeof value === "string") {
+    list.push(value);
+  } else if (Array.isArray(value)) {
+    value.forEach((item) => collectStringValues(item, list));
+  } else if (value && typeof value === "object") {
+    Object.values(value).forEach((item) => collectStringValues(item, list));
+  }
+  return list;
+}
+
+function validateEstimateData(errors) {
+  pushMissing(errors, estimateData.seo?.title, "estimate.seo.title");
+  pushMissing(errors, estimateData.seo?.description, "estimate.seo.description");
+  pushMissing(errors, estimateData.fallbackEmail, "estimate.fallbackEmail");
+  pushMissing(errors, estimateData.hero?.headline, "estimate.hero.headline");
+  pushMissing(errors, estimateData.hero?.subheadline, "estimate.hero.subheadline");
+  pushMissing(errors, estimateData.form?.heading, "estimate.form.heading");
+  pushMissing(errors, estimateData.form?.submitLabel, "estimate.form.submitLabel");
+  pushMissing(errors, estimateData.contact?.submitLabel, "estimate.contact.submitLabel");
+  pushMissing(errors, estimateData.disclaimer, "estimate.disclaimer");
+  pushMissing(errors, estimateData.proof?.heading, "estimate.proof.heading");
+
+  if (!isValidUrl(`mailto:${estimateData.fallbackEmail || ""}`)) {
+    errors.push("estimate.fallbackEmail must be usable as a mailto URL.");
+  }
+
+  const bannedCopy = ["instant quote", "exact price", "cheap", "only", "guaranteed savings", "AI-powered calculator"];
+  for (const text of collectStringValues(estimateData)) {
+    if (text.includes("—")) {
+      errors.push("estimate.json user-facing copy must not contain em dashes.");
+      break;
+    }
+    const lower = text.toLowerCase();
+    const banned = bannedCopy.find((phrase) => lower.includes(phrase.toLowerCase()));
+    if (banned) {
+      errors.push(`estimate.json user-facing copy must not include "${banned}".`);
+      break;
+    }
+  }
+
+  const sections = estimateData.form?.sections || [];
+  if (!Array.isArray(sections) || sections.length === 0) {
+    errors.push("estimate.form.sections must contain at least one section.");
+  }
+
+  const questionNames = new Set();
+  for (const [sectionIndex, section] of sections.entries()) {
+    const sectionLabel = `estimate.form.sections[${sectionIndex}]`;
+    pushMissing(errors, section.id, `${sectionLabel}.id`);
+    pushMissing(errors, section.heading, `${sectionLabel}.heading`);
+    if (!Array.isArray(section.questions) || section.questions.length === 0) {
+      errors.push(`${sectionLabel}.questions must contain at least one question.`);
+      continue;
+    }
+    for (const [questionIndex, question] of section.questions.entries()) {
+      const label = `${sectionLabel}.questions[${questionIndex}]`;
+      pushMissing(errors, question.name, `${label}.name`);
+      pushMissing(errors, question.label, `${label}.label`);
+      if (!["radio", "checkbox", "select", "textarea"].includes(question.type)) {
+        errors.push(`${label}.type must be radio, checkbox, select, or textarea.`);
+      }
+      if (question.name && questionNames.has(question.name)) {
+        errors.push(`${label}.name must be unique.`);
+      }
+      questionNames.add(question.name);
+      if (question.type !== "textarea" && (!Array.isArray(question.options) || question.options.length < 2)) {
+        errors.push(`${label}.options must contain at least two options.`);
+      }
+      for (const [optionIndex, option] of (question.options || []).entries()) {
+        pushMissing(errors, option.value, `${label}.options[${optionIndex}].value`);
+        pushMissing(errors, option.label, `${label}.options[${optionIndex}].label`);
+      }
+    }
+  }
+
+  const requiredQuestionNames = [
+    "location",
+    "businessType",
+    "automationNeeds",
+    "currentProcess",
+    "teamSize",
+    "integrations",
+    "dataComplexity",
+    "urgency",
+    "budgetReadiness",
+    "projectDescription"
+  ];
+  for (const name of requiredQuestionNames) {
+    if (!questionNames.has(name)) {
+      errors.push(`estimate questions must include ${name}.`);
+    }
+  }
+
+  const contactFields = estimateData.contact?.fields || [];
+  const contactNames = new Set(contactFields.map((field) => field.name));
+  for (const name of ["name", "company", "email", "whatsapp"]) {
+    if (!contactNames.has(name)) {
+      errors.push(`estimate.contact.fields must include ${name}.`);
+    }
+  }
+
+  for (const market of ["indonesia", "international"]) {
+    const packages = estimateData.pricing?.[market] || [];
+    if (!Array.isArray(packages) || packages.length !== 4) {
+      errors.push(`estimate.pricing.${market} must contain exactly four packages.`);
+      continue;
+    }
+    for (const [index, item] of packages.entries()) {
+      const label = `estimate.pricing.${market}[${index}]`;
+      pushMissing(errors, item.id, `${label}.id`);
+      pushMissing(errors, item.name, `${label}.name`);
+      pushMissing(errors, item.range, `${label}.range`);
+      pushMissing(errors, item.timeline, `${label}.timeline`);
+    }
+  }
+
+  const proofItems = estimateData.proof?.items || [];
+  if (!Array.isArray(proofItems) || proofItems.length === 0) {
+    errors.push("estimate.proof.items must contain at least one item.");
+  }
+  for (const [index, item] of proofItems.entries()) {
+    const label = `estimate.proof.items[${index}]`;
+    pushMissing(errors, item.label, `${label}.label`);
+    pushMissing(errors, item.outcome, `${label}.outcome`);
+    if (!isValidUrl(item.href, { allowRelative: true })) {
+      errors.push(`${label}.href must be a relative path or absolute https URL.`);
+    }
+  }
+}
+
 function validateContentData() {
   const errors = [];
 
@@ -2347,6 +2861,8 @@ function validateContentData() {
     }
   }
 
+  validateEstimateData(errors);
+
   if (errors.length > 0) {
     throw new Error(`Content validation failed:\n${errors.map((line) => `- ${line}`).join("\n")}`);
   }
@@ -2391,6 +2907,7 @@ async function build() {
     homePage(),
     workPage(),
     writingIndexPage(),
+    estimatePage(),
     hirePage(),
     experiencePage(),
     contactPage(),
@@ -2413,6 +2930,7 @@ async function build() {
       ogType: page.ogType,
       noIndex: page.noIndex,
       injectHead: page.injectHead,
+      extraScripts: page.extraScripts,
       ogImage: page.ogImage,
       ogImageAlt: page.ogImageAlt,
       ogImageWidth: page.ogImageWidth,

@@ -1,0 +1,398 @@
+{
+  "seo": {
+    "title": "Estimate Your Automation System | Rifki Rosada",
+    "description": "Get a practical budget and timeline estimate for CRM, dashboard, workflow automation, Android AI, and internal tooling projects."
+  },
+  "fallbackEmail": "rifki@rifkirosada.com",
+  "hero": {
+    "eyebrow": "Automation project estimator",
+    "headline": "Estimate Your Automation System",
+    "subheadline": "Answer a few questions about your workflow, tools, team size, and business process. You will get an estimated budget range, timeline, and recommended implementation path.",
+    "primaryCta": "Get Automation Estimate",
+    "secondaryCta": "Review relevant work"
+  },
+  "form": {
+    "eyebrow": "Pre-audit intake",
+    "heading": "Project details",
+    "lead": "This planning estimate is for real business systems: automation, CRM, dashboards, Android AI workflows, and internal tools.",
+    "submitLabel": "Show My Estimate",
+    "emailFallbackLabel": "Email project brief",
+    "sections": [
+      {
+        "id": "context",
+        "eyebrow": "Step 1",
+        "heading": "Business context",
+        "questions": [
+          {
+            "name": "location",
+            "type": "radio",
+            "label": "Business location",
+            "required": true,
+            "columns": "estimate-options-2",
+            "options": [
+              { "value": "indonesia", "label": "Indonesia" },
+              { "value": "international", "label": "Outside Indonesia" }
+            ]
+          },
+          {
+            "name": "businessType",
+            "type": "select",
+            "label": "Business type",
+            "required": true,
+            "options": [
+              { "value": "service-business", "label": "Service business" },
+              { "value": "clinic-healthcare", "label": "Clinic / healthcare" },
+              { "value": "agency-consulting", "label": "Agency / consulting" },
+              { "value": "distributor-retail", "label": "Distributor / retail" },
+              { "value": "hospitality-hotel", "label": "Hospitality / hotel" },
+              { "value": "internal-operations-team", "label": "Internal operations team" },
+              { "value": "software-technology-team", "label": "Software / technology team" },
+              { "value": "other", "label": "Other" }
+            ]
+          },
+          {
+            "name": "currentProcess",
+            "type": "select",
+            "label": "Current process",
+            "required": true,
+            "options": [
+              { "value": "mostly-manual", "label": "Mostly manual" },
+              { "value": "using-spreadsheet", "label": "Using spreadsheet" },
+              { "value": "using-existing-crm-tools", "label": "Using existing CRM or tools" },
+              { "value": "custom-system-messy", "label": "Already have custom system but it is messy" },
+              { "value": "need-existing-system-integration", "label": "Need integration with existing system" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "scope",
+        "eyebrow": "Step 2",
+        "heading": "Scope signals",
+        "questions": [
+          {
+            "name": "automationNeeds",
+            "type": "checkbox",
+            "label": "What do you want to automate?",
+            "required": true,
+            "options": [
+              { "value": "whatsapp-customer-service", "label": "WhatsApp / customer service" },
+              { "value": "crm-sales-pipeline", "label": "CRM / sales pipeline" },
+              { "value": "daily-reports", "label": "Daily reports" },
+              { "value": "owner-manager-dashboard", "label": "Dashboard for owner or manager" },
+              { "value": "invoice-payment-checking", "label": "Invoice / payment checking" },
+              { "value": "lead-generation-outreach", "label": "Lead generation / outreach" },
+              { "value": "appointment-booking-workflow", "label": "Appointment / booking workflow" },
+              { "value": "internal-admin-workflow", "label": "Internal admin workflow" },
+              { "value": "ai-document-data-processing", "label": "AI document or data processing" },
+              { "value": "android-mobile-workflow", "label": "Android app or mobile workflow" }
+            ]
+          },
+          {
+            "name": "teamSize",
+            "type": "radio",
+            "label": "Number of users or team members",
+            "required": true,
+            "options": [
+              { "value": "1-3", "label": "1-3" },
+              { "value": "4-10", "label": "4-10" },
+              { "value": "11-30", "label": "11-30" },
+              { "value": "31-100", "label": "31-100" },
+              { "value": "100-plus", "label": "100+" }
+            ]
+          },
+          {
+            "name": "integrations",
+            "type": "radio",
+            "label": "Number of integrations",
+            "helper": "Examples: WhatsApp, Google Sheets, Gmail, Calendar, CRM, ERP, payment system, website, API.",
+            "required": true,
+            "options": [
+              { "value": "none", "label": "None" },
+              { "value": "1-2", "label": "1-2 tools" },
+              { "value": "3-5", "label": "3-5 tools" },
+              { "value": "more-than-5", "label": "More than 5 tools" }
+            ]
+          },
+          {
+            "name": "dataComplexity",
+            "type": "radio",
+            "label": "Data complexity",
+            "required": true,
+            "options": [
+              { "value": "simple-form-input", "label": "Simple form/input" },
+              { "value": "spreadsheet-database", "label": "Spreadsheet/database" },
+              { "value": "multiple-sources", "label": "Multiple sources" },
+              { "value": "cleaning-matching-validation", "label": "Need cleaning, matching, or validation" },
+              { "value": "ai-ocr-document-understanding", "label": "Need AI, OCR, or document understanding" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "timing",
+        "eyebrow": "Step 3",
+        "heading": "Timing and budget readiness",
+        "questions": [
+          {
+            "name": "urgency",
+            "type": "radio",
+            "label": "Urgency",
+            "required": true,
+            "options": [
+              { "value": "flexible", "label": "Flexible" },
+              { "value": "within-1-month", "label": "Within 1 month" },
+              { "value": "within-2-weeks", "label": "Within 2 weeks" },
+              { "value": "asap-urgent", "label": "ASAP / urgent" }
+            ]
+          },
+          {
+            "name": "budgetReadiness",
+            "type": "radio",
+            "label": "Budget readiness",
+            "required": true,
+            "options": [
+              {
+                "value": "below-minimum",
+                "label": "Below Rp5m / below $500",
+                "idrLabel": "Below Rp5m",
+                "usdLabel": "Below $500"
+              },
+              {
+                "value": "starter",
+                "label": "Rp5m-10m / $500-1k",
+                "idrLabel": "Rp5m-10m",
+                "usdLabel": "$500-1k"
+              },
+              {
+                "value": "mvp",
+                "label": "Rp10m-25m / $1k-2.5k",
+                "idrLabel": "Rp10m-25m",
+                "usdLabel": "$1k-2.5k"
+              },
+              {
+                "value": "system",
+                "label": "Rp25m-50m / $2.5k-5k",
+                "idrLabel": "Rp25m-50m",
+                "usdLabel": "$2.5k-5k"
+              },
+              {
+                "value": "advanced",
+                "label": "Rp50m+ / $5k+",
+                "idrLabel": "Rp50m+",
+                "usdLabel": "$5k+"
+              }
+            ]
+          },
+          {
+            "name": "projectDescription",
+            "type": "textarea",
+            "label": "Short project description",
+            "placeholder": "What is manual, slow, duplicated, or hard to track?",
+            "required": true,
+            "rows": 5
+          }
+        ]
+      }
+    ]
+  },
+  "contact": {
+    "eyebrow": "Send the summary",
+    "heading": "Send this estimate to Rifki",
+    "lead": "Add contact details after reviewing the planning range. I will use the estimate summary to confirm the best first scope.",
+    "submitLabel": "Send My Estimate to Rifki",
+    "editLabel": "Edit answers",
+    "emailFallbackLabel": "Email Project Brief",
+    "fields": [
+      { "name": "name", "label": "Name", "type": "text", "autocomplete": "name", "required": true },
+      { "name": "company", "label": "Company", "type": "text", "autocomplete": "organization", "required": false },
+      { "name": "email", "label": "Email", "type": "email", "autocomplete": "email", "required": false },
+      { "name": "whatsapp", "label": "WhatsApp", "type": "text", "autocomplete": "tel", "required": false }
+    ]
+  },
+  "result": {
+    "eyebrow": "Pre-audit summary",
+    "heading": "Recommended implementation path",
+    "labels": {
+      "range": "Estimated range",
+      "timeline": "Estimated timeline",
+      "package": "Recommended package",
+      "complexity": "Complexity level"
+    },
+    "lowFitNote": "The best first step is a smaller paid audit or one focused workflow slice before a larger build.",
+    "defaultExplanation": "The estimate depends on integration access, data quality, approval flow, and rollout constraints."
+  },
+  "disclaimer": "This estimate is a planning range, not a final quotation or delivery commitment. Final scope, timeline, and commercial terms are confirmed after a technical audit of requirements, data, integrations, access, and rollout constraints.",
+  "sidePanel": {
+    "eyebrow": "Estimate covers",
+    "items": [
+      {
+        "title": "CRM and dashboards",
+        "detail": "Lead flow, sales pipeline, reporting, and management visibility."
+      },
+      {
+        "title": "Workflow automation",
+        "detail": "Apps Script, n8n, WhatsApp, Sheets, API handoffs, and status tracking."
+      },
+      {
+        "title": "AI and Android systems",
+        "detail": "Document automation, AI-assisted workflows, and mobile AI features."
+      }
+    ],
+    "packageHeading": "Planning paths"
+  },
+  "pricing": {
+    "indonesia": [
+      {
+        "id": "audit",
+        "name": "Automation Audit & Blueprint",
+        "range": "Rp1.500.000 - Rp3.500.000",
+        "timeline": "2-5 days"
+      },
+      {
+        "id": "mvp",
+        "name": "MVP Automation Sprint",
+        "range": "Rp10.000.000 - Rp25.000.000",
+        "timeline": "2-4 weeks"
+      },
+      {
+        "id": "system",
+        "name": "Internal Business System",
+        "range": "Rp25.000.000 - Rp50.000.000",
+        "timeline": "4-8 weeks"
+      },
+      {
+        "id": "advanced",
+        "name": "Advanced AI / Multi-Integration System",
+        "range": "Rp50.000.000+",
+        "timeline": "8-12+ weeks"
+      }
+    ],
+    "international": [
+      {
+        "id": "audit",
+        "name": "Automation Audit & Blueprint",
+        "range": "$500 - $1,000",
+        "timeline": "2-5 days"
+      },
+      {
+        "id": "mvp",
+        "name": "MVP Automation Sprint",
+        "range": "$3,500 - $5,000",
+        "timeline": "2-4 weeks"
+      },
+      {
+        "id": "system",
+        "name": "Internal Business System",
+        "range": "$5,000 - $12,000",
+        "timeline": "4-8 weeks"
+      },
+      {
+        "id": "advanced",
+        "name": "Advanced AI / Multi-Integration System",
+        "range": "$12,000+",
+        "timeline": "8-12+ weeks"
+      }
+    ]
+  },
+  "proof": {
+    "heading": "Relevant delivery proof",
+    "description": "Public-safe examples across automation, CRM, dashboards, Android AI, and internal systems.",
+    "items": [
+      {
+        "label": "CRM / Operations Automation",
+        "outcome": "Pipeline review moved from about 2 days of spreadsheet reconciliation to about 15 minutes.",
+        "href": "/work/enterprise-crm-sales-pipeline-performance-system/"
+      },
+      {
+        "label": "Tekape n8n Workflow System",
+        "outcome": "Estimated 60-80 hours/month of manual logging removed across multi-branch operations.",
+        "href": "/work/automation-workflows-n8n-gas-api-integrations/"
+      },
+      {
+        "label": "AI Content Research & Script Automation",
+        "outcome": "Research, scripts, Docs output, and Sheets approval tracking moved into one repeatable workflow.",
+        "href": "/work/ai-content-research-script-automation/"
+      },
+      {
+        "label": "SP2DK/LHP2DK WhatsApp Reminder System",
+        "outcome": "Deadline monitoring became structured follow-up buckets with WhatsApp-ready reminder output.",
+        "href": "/work/sp2dk-lhp2dk-whatsapp-reminder-system/"
+      },
+      {
+        "label": "Android + AI Media App",
+        "outcome": "Production AI chat-to-search state sync was stabilized across discovery flows.",
+        "href": "/work/media-app-android-ai-chat-search-ux/"
+      }
+    ]
+  },
+  "scoring": {
+    "complexityLabels": [
+      { "min": 12, "label": "Advanced complexity" },
+      { "min": 8, "label": "High complexity" },
+      { "min": 4, "label": "Moderate complexity" },
+      { "min": 0, "label": "Low complexity" }
+    ],
+    "leadLabels": {
+      "high": "HIGH FIT",
+      "medium": "MEDIUM FIT",
+      "low": "LOW FIT"
+    },
+    "complexNeeds": [
+      "ai-document-data-processing",
+      "android-mobile-workflow",
+      "invoice-payment-checking"
+    ],
+    "highFitNeeds": [
+      "whatsapp-customer-service",
+      "crm-sales-pipeline",
+      "daily-reports",
+      "owner-manager-dashboard",
+      "invoice-payment-checking",
+      "lead-generation-outreach",
+      "appointment-booking-workflow",
+      "internal-admin-workflow",
+      "ai-document-data-processing",
+      "android-mobile-workflow"
+    ],
+    "clearPainKeywords": [
+      "manual",
+      "slow",
+      "duplicate",
+      "spreadsheet",
+      "follow up",
+      "invoice",
+      "payment",
+      "dashboard",
+      "crm",
+      "whatsapp",
+      "report",
+      "tracking",
+      "data",
+      "error",
+      "approval",
+      "booking",
+      "lead",
+      "customer"
+    ],
+    "lowFitKeywords": [
+      "student",
+      "personal project",
+      "clone app",
+      "app idea",
+      "homework",
+      "assignment"
+    ]
+  },
+  "analytics": {
+    "events": {
+      "start": "estimate_start",
+      "result": "estimate_result_view",
+      "submitClick": "estimate_submit_click",
+      "submitSuccess": "estimate_submit_success",
+      "submitError": "estimate_submit_error",
+      "mailtoFallback": "estimate_mailto_fallback",
+      "proofClick": "proof_click"
+    }
+  }
+}

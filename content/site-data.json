@@ -8,11 +8,11 @@
     "heroHeadline": "I build production Android apps, custom CRMs, and operations automation for client teams.",
     "heroSubheadline": "Recent work spans Laravel + Next.js platforms, n8n + OpenAI workflows, and Android + AI features in live products. IEEE Xplore-published in real-time computer vision.",
     "heroPrimaryCta": {
-      "label": "Share your scope",
-      "href": "/contact/"
+      "label": "Get Automation Estimate",
+      "href": "/estimate/"
     },
     "heroSecondaryCta": {
-      "label": "See client work",
+      "label": "Review relevant work",
       "href": "/work/"
     },
     "heroAvailability": "Open to new remote contract work",
@@ -50,6 +50,9 @@
     "github": "https://github.com/rifki-rosada",
     "whatsapp": "",
     "responseTime": "Usually replies within 24 hours on weekdays."
+  },
+  "estimate": {
+    "webhookEndpoint": ""
   },
   "resume": {
     "label": "Resume",

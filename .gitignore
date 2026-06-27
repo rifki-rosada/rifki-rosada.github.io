@@ -2,6 +2,9 @@ node_modules/
 tmp-chrome-lh/
 content/allsearches.txt
 .DS_Store
+.env
+.env.*
+!.env.example
 LINKEDIN_REWRITE.md
 COLD_OUTREACH.md
 SESSION_RESUME.md

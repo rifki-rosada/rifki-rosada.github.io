@@ -9,6 +9,7 @@ High-conversion static portfolio for GitHub Pages + custom domain deployment (`r
 - Content model:
   - `content/site-data.json`
   - `content/case-studies.json`
+  - `content/estimate.json`
 - Shared assets:
   - `assets/css/site.css`
   - `assets/js/site.js`
@@ -23,6 +24,7 @@ High-conversion static portfolio for GitHub Pages + custom domain deployment (`r
 - `/` Home
 - `/work/`
 - `/work/<slug>/` case details
+- `/estimate/`
 - `/hire/`
 - `/experience/`
 - `/contact/`
@@ -59,12 +61,22 @@ Generated during build:
 - Lint alias:
   - `npm run lint`
 
+### Estimate Content and Webhook
+
+The estimator page is generated from `content/estimate.json`. Questions, pricing, proof items, scoring labels, result copy, SEO text, and the fallback email belong there so builds stay deterministic.
+
+Submissions are client-side. To send leads to a Google Apps Script web app, set `ESTIMATE_WEBHOOK_URL` during build or update `content/site-data.json` -> `estimate.webhookEndpoint` with a public, rotatable endpoint.
+
+Do not commit private credentials, Apps Script secrets, Google Sheet URLs, or a local `.env`. The default repo value is blank and the page keeps a mailto fallback when no endpoint is configured.
+
 ## Where to Edit Content
 
 - Global site settings, services, process, contact, experience:
   - `content/site-data.json`
 - Case study cards + detail content:
   - `content/case-studies.json`
+- Estimator questions, pricing, proof, scoring, SEO, and fallback email:
+  - `content/estimate.json`
 
 After editing content:
 

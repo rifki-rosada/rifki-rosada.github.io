@@ -69,6 +69,8 @@ Submissions are client-side. To send leads to a Google Apps Script web app, set 
 
 Do not commit private credentials, Apps Script secrets, Google Sheet URLs, or a local `.env`. The default repo value is blank and the page keeps a mailto fallback when no endpoint is configured.
 
+Backend setup notes and a fake lead payload live in `docs/estimate-apps-script.md` and `docs/estimate-sample-payload.json`.
+
 ## Where to Edit Content
 
 - Global site settings, services, process, contact, experience:

@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { createHash } from "node:crypto";
 import sharp from "sharp";
 
 const rootDir = process.cwd();
@@ -44,6 +45,13 @@ const buildDate = await latestModifiedDate([
   path.join(rootDir, "assets", "css", "site.css"),
   path.join(rootDir, "assets", "js", "site.js"),
   estimateScriptPath
+]);
+
+const assetVersion = (source) => createHash("sha256").update(source).digest("hex").slice(0, 12);
+const [stylesheetVersion, siteScriptVersion, estimateScriptVersion] = await Promise.all([
+  fs.readFile(path.join(rootDir, "assets", "css", "site.css")).then(assetVersion),
+  fs.readFile(path.join(rootDir, "assets", "js", "site.js")).then(assetVersion),
+  fs.readFile(estimateScriptPath).then(assetVersion)
 ]);
 
 const estimateWebhookEndpoint = String(
@@ -373,7 +381,7 @@ function renderDocument({
   <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32">
   <link rel="apple-touch-icon" href="/favicon-192.png" sizes="192x192">
   <link rel="manifest" href="/site.webmanifest">
-  <link rel="stylesheet" href="/assets/css/site.min.css">
+  <link rel="stylesheet" href="/assets/css/site.min.css?v=${stylesheetVersion}">
   ${renderJsonLd(jsonLd)}
   ${injectHead}
 </head>
@@ -381,7 +389,7 @@ function renderDocument({
   ${renderHeader(route)}
   ${body}
   ${renderFooter()}
-  <script src="/assets/js/site.js" defer></script>
+  <script src="/assets/js/site.js?v=${siteScriptVersion}" defer></script>
   ${extraScripts}
 </body>
 </html>`;
@@ -1136,7 +1144,7 @@ ${renderEstimateSummaryPanel()}
     description: estimateData.seo?.description,
     body,
     jsonLd: [webPageJsonLd, serviceJsonLd],
-    extraScripts: `${renderEstimateConfigScript()}\n  ${renderEstimateDataScript()}\n  <script src="/assets/js/estimate.js" defer></script>`
+    extraScripts: `${renderEstimateConfigScript()}\n  ${renderEstimateDataScript()}\n  <script src="/assets/js/estimate.js?v=${estimateScriptVersion}" defer></script>`
   };
 }
 

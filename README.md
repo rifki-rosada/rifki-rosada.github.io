@@ -107,6 +107,7 @@ After editing content:
 ## Notes
 
 - Internal links are validated across HTML output during build.
+- Generated HTML adds content-hash query strings to CSS and JavaScript URLs so GitHub Pages and returning browsers load the matching assets after a deployment.
 - Case studies are anonymized for client privacy with NDA-safe wording.
 - Case cover art is illustrative. The linked Loom walkthrough is actual project footage; do not label cover art as a product screenshot or add client screens without permission.
 - `apps/offscanai` support/legal files are auto-maintained by the build script to avoid broken links.

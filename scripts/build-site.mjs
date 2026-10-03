@@ -81,12 +81,10 @@ for (const item of caseStudies) {
 validateContentData();
 
 const navItems = [
-  { label: "Home", href: "/" },
   { label: "Work", href: "/work/" },
-  { label: "Writing", href: "/writing/" },
-  { label: "Estimate", href: "/estimate/" },
-  { label: "Hire", href: "/hire/" },
-  { label: "Contact", href: "/contact/" }
+  { label: "Services", href: "/hire/" },
+  { label: "About & resume", href: "/experience/" },
+  { label: "Writing", href: "/writing/" }
 ];
 
 const footerNavItems = [
@@ -94,7 +92,8 @@ const footerNavItems = [
   { label: "Work", href: "/work/" },
   { label: "Writing", href: "/writing/" },
   { label: "Estimate", href: "/estimate/" },
-  { label: "Hire", href: "/hire/" },
+  { label: "Services", href: "/hire/" },
+  { label: "About & resume", href: "/experience/" },
   { label: "Contact", href: "/contact/" }
 ];
 const writtenFiles = [];
@@ -266,7 +265,7 @@ function renderHeader(currentRoute) {
           ${renderNavLinks(currentRoute)}
         </nav>
         <div class="header-actions">
-          <a class="btn btn-primary btn-sm" href="/estimate/">Get Automation Estimate</a>
+          <a class="btn btn-primary btn-sm" href="/contact/">Discuss a project</a>
           <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open navigation menu">Menu</button>
         </div>
       </div>
@@ -274,6 +273,7 @@ function renderHeader(currentRoute) {
         <nav aria-label="Mobile navigation">
           <ul>
             ${renderNavLinks(currentRoute, true)}
+            <li><a href="/contact/">Discuss a project</a></li>
           </ul>
         </nav>
       </div>
@@ -425,7 +425,7 @@ function renderServiceCards(items, startingDelay = 0) {
       <article class="card service-card" data-animate style="--delay:${animationDelay(index, 0.05, startingDelay)}">
         <header class="service-header">
           <h3>${escapeHtml(item.name)}</h3>
-          ${item.priceFrom ? `<p class="service-price"><strong>${escapeHtml(item.priceFrom)}</strong> &middot; fixed-scope</p>` : ""}
+          ${item.priceFrom ? `<p class="service-price"><strong>${escapeHtml(item.priceFrom)}</strong> &middot; ${String(item.priceFrom).includes("/month") ? "monthly" : "scoped project"}</p>` : ""}
           <p class="service-summary">${escapeHtml(item.summary)}</p>
         </header>
         <p class="service-timeline">${escapeHtml(item.timeline)}</p>
@@ -585,9 +585,6 @@ function renderCaseCategoryVisual(caseStudy) {
 
 function renderCaseCard(caseStudy, index, options = {}) {
   const { showVisual = true, compact = false } = options;
-  const problemLine = caseStudy.problem || caseStudy.shortSummary;
-  const approachLine = (caseStudy.approach || [])[0] || caseStudy.shortSummary;
-  const resultLine = caseStudy.outcome || (caseStudy.results || [])[0] || caseStudy.shortSummary;
   const proofLabel = caseStudy.type === "client" ? "Client delivery" : "Public build";
   const proofClass = caseStudy.type === "client" ? "case-proof-nda" : "case-proof-nda case-proof-public";
   const topStack = (caseStudy.techStack || []).slice(0, compact ? 3 : 5);
@@ -601,17 +598,12 @@ function renderCaseCard(caseStudy, index, options = {}) {
           <p class="${proofClass}">${escapeHtml(proofLabel)}</p>
         </div>
         <h3 class="line-clamp line-clamp-2">${escapeHtml(caseStudy.title)}</h3>
-        <p class="case-role">${escapeHtml(caseStudy.role)}<span aria-hidden="true"> | </span>${escapeHtml(caseStudy.timeline)}</p>
+        <p class="case-role">${escapeHtml(caseStudy.role)}<span aria-hidden="true"> · </span>${escapeHtml(caseStudy.timeline)}</p>
         <p class="case-outcome">${escapeHtml(caseStudy.outcome || caseStudy.shortSummary)}</p>
-        <ul class="case-summary">
-          <li><span class="case-summary-label">Problem</span><p class="line-clamp line-clamp-2">${escapeHtml(problemLine)}</p></li>
-          <li><span class="case-summary-label">My scope</span><p class="line-clamp line-clamp-2">${escapeHtml(approachLine)}</p></li>
-          <li><span class="case-summary-label">Result</span><p class="line-clamp line-clamp-2">${escapeHtml(resultLine)}</p></li>
-        </ul>
         <ul class="stack-list">
           ${topStack.map((tech) => `<li>${escapeHtml(tech)}</li>`).join("")}
         </ul>
-        <a class="btn btn-secondary btn-read" href="${escapeAttribute(caseStudy.route)}">Read case study</a>
+        <a class="text-link case-read" href="${escapeAttribute(caseStudy.route)}">Read the case study <span aria-hidden="true">↗</span></a>
       </div>
     </article>
   `;
@@ -744,7 +736,7 @@ function renderTestimonials() {
         <div class="container">
           <div class="section-head">
             <h2 id="testimonials-heading">What clients say</h2>
-            <p>Verified delivery across CRM, automation, and internal tooling projects. Repeat-client context available on call.</p>
+            <p>Client feedback from CRM, automation, and internal tooling deliveries. Some reviews are translated from Indonesian.</p>
           </div>
           <div class="testimonials-grid">
             ${testimonials
@@ -1062,7 +1054,7 @@ function estimatePage() {
 
               ${renderEstimateFormSections()}
 
-              <label class="estimate-honeypot" aria-hidden="true">
+              <label class="estimate-honeypot" aria-hidden="true" hidden>
                 <span>Website</span>
                 <input type="text" name="website" tabindex="-1" autocomplete="off">
               </label>
@@ -1113,7 +1105,7 @@ function estimatePage() {
                     <p class="mini-label">Step 6 of 6</p>
                     <p class="eyebrow">${escapeHtml(contact.eyebrow || "Send the summary")}</p>
                     <h3>${escapeHtml(contact.heading || "Send this estimate to Rifki")}</h3>
-                    ${contact.lead ? `<p>${escapeHtml(contact.lead)}</p>` : ""}
+                    ${estimateWebhookEndpoint ? (contact.lead ? `<p>${escapeHtml(contact.lead)}</p>` : "") : `<p>Review the summary, then open it in your email app. Nothing is sent until you send the email there.</p>`}
                   </div>
                   <div class="estimate-field-grid">
                     ${renderEstimateContactFields()}
@@ -1121,9 +1113,9 @@ function estimatePage() {
                 </form>
                 <div class="estimate-error" data-estimate-submit-status role="status" aria-live="polite" hidden></div>
                 <div class="actions">
-                  <button class="btn btn-primary" type="button" data-estimate-submit>${escapeHtml(contact.submitLabel || "Send My Estimate to Rifki")}</button>
+                  ${estimateWebhookEndpoint ? `<button class="btn btn-primary" type="button" data-estimate-submit>${escapeHtml(contact.submitLabel || "Send My Estimate to Rifki")}</button>` : ""}
                   <button class="btn btn-secondary" type="button" data-estimate-edit>${escapeHtml(contact.editLabel || "Edit answers")}</button>
-                  <a class="btn btn-secondary" href="${escapeAttribute(estimateMailHref())}" data-estimate-mailto>${escapeHtml(contact.emailFallbackLabel || "Email Project Brief")}</a>
+                  <a class="btn ${estimateWebhookEndpoint ? "btn-secondary" : "btn-primary"}" href="${escapeAttribute(estimateMailHref())}" data-estimate-mailto>${estimateWebhookEndpoint ? escapeHtml(contact.emailFallbackLabel || "Email Project Brief") : "Open email with summary"}</a>
                 </div>
               </article>
             </section>
@@ -1149,10 +1141,14 @@ ${renderEstimateSummaryPanel()}
 }
 
 function homePage() {
-  const featuredCases = (siteData.featuredCaseSlugs || [])
+  const featuredCases = [
+    "enterprise-crm-sales-pipeline-performance-system",
+    "automation-workflows-n8n-gas-api-integrations",
+    "media-app-android-ai-chat-search-ux",
+    "ai-content-research-script-automation"
+  ]
     .map((slug) => findCaseStudy(slug))
-    .filter(Boolean)
-    .slice(0, 4);
+    .filter(Boolean);
 
   const websiteJsonLd = {
     "@context": "https://schema.org",
@@ -1200,149 +1196,107 @@ function homePage() {
               <a class="btn btn-primary" href="${escapeAttribute(siteData.site.heroPrimaryCta.href)}">${escapeHtml(siteData.site.heroPrimaryCta.label)}</a>
               <a class="btn btn-secondary" href="${escapeAttribute(siteData.site.heroSecondaryCta.href)}">${escapeHtml(siteData.site.heroSecondaryCta.label)}</a>
             </div>
+            <p class="hero-microcopy">Direct collaboration · Scoped milestones · Remote delivery</p>
           </div>
-          <aside class="hero-panel" data-animate style="--delay:0.08s" aria-label="Positioning and proof summary">
-            <div class="profile-photo-wrap">
+          <aside class="hero-panel" data-animate style="--delay:0.08s" aria-label="About Rifki">
+            <div class="hero-person">
               <picture>
                 <source srcset="/assets/images/profile.webp" type="image/webp">
-                <img class="profile-photo" src="/assets/images/profile.jpg" alt="${escapeAttribute(siteData.site.name)}" width="96" height="96" loading="eager" decoding="async">
+                <img class="profile-photo" src="/assets/images/profile.jpg" alt="Rifki Rosada" width="96" height="96" loading="eager" decoding="async">
               </picture>
+              <div>
+                <p class="hero-person-name">Rifki Rosada</p>
+                <p>Engineer and delivery partner</p>
+              </div>
             </div>
-            <div class="avail-badge"><span class="avail-dot" aria-hidden="true"></span>${escapeHtml(siteData.site.heroAvailability || "Open to new projects")}</div>
-            <p class="eyebrow eyebrow-muted" style="margin-top:0.9rem">Primary focus</p>
-            <h2>${escapeHtml(siteData.site.heroPanelHeadline || "Internal tools, automation, and reliable remote delivery")}</h2>
-            <ul class="list-dot list-dot-tight">
-              ${(siteData.site.heroPanelBullets || [
-                "Best fit for workflow-heavy teams that need clearer operating systems.",
-                "Android + AI stays visible as a secondary specialization, not the whole story.",
-                "Replies within 24 hours on weekdays."
-              ]).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
-            </ul>
+            <div class="avail-badge"><span class="avail-dot" aria-hidden="true"></span>${escapeHtml(siteData.site.heroAvailability || "Open to projects")}</div>
+            <h2>${escapeHtml(siteData.site.heroPanelHeadline)}</h2>
+            <ul class="list-dot list-dot-tight">${(siteData.site.heroPanelBullets || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+            <a class="text-link" href="/experience/">Engineering background & resume <span aria-hidden="true">↗</span></a>
           </aside>
         </div>
       </section>
 
-      <section class="section section-tight" aria-labelledby="estimate-home-heading">
-        <div class="container cta-panel" data-animate>
-          <p class="eyebrow">Pre-audit estimator</p>
-          <h2 id="estimate-home-heading">Get a fast budget range before writing a long brief.</h2>
-          <p>Answer a few workflow questions and get an estimated implementation path for automation, CRM, dashboards, Android + AI, or internal tooling work.</p>
-          <div class="actions">
-            <a class="btn btn-primary" href="/estimate/">Get Automation Estimate</a>
-            <a class="btn btn-secondary" href="/hire/">See engagement options</a>
+      <section class="section section-tight" aria-labelledby="outcomes-heading">
+        <div class="container outcome-band">
+          <div class="outcome-band-heading">
+            <p class="eyebrow">Evidence from delivered work</p>
+            <h2 id="outcomes-heading">Results before buzzwords.</h2>
           </div>
-        </div>
-      </section>
-
-      ${siteData.site.homeVideo && siteData.site.homeVideo.loomId ? `
-      <section class="section section-tight" aria-labelledby="walkthrough-heading">
-        <div class="container">
-          <div class="section-head" data-animate>
-            ${siteData.site.homeVideo.eyebrow ? `<p class="eyebrow">${escapeHtml(siteData.site.homeVideo.eyebrow)}</p>` : ""}
-            <h2 id="walkthrough-heading">${escapeHtml(siteData.site.homeVideo.title || "Walkthrough")}</h2>
-            ${siteData.site.homeVideo.lead ? `<p>${escapeHtml(siteData.site.homeVideo.lead)}</p>` : ""}
-          </div>
-          <div class="video-frame" data-animate style="--delay:0.06s">
-            <iframe
-              src="https://www.loom.com/embed/${escapeAttribute(siteData.site.homeVideo.loomId)}"
-              title="${escapeAttribute(siteData.site.homeVideo.title || "Walkthrough video")}"
-              frameborder="0"
-              webkitallowfullscreen
-              mozallowfullscreen
-              allowfullscreen
-              loading="lazy"
-            ></iframe>
-          </div>
-        </div>
-      </section>
-      ` : ""}
-
-      <section class="section section-tight" aria-labelledby="proof-heading">
-        <div class="container panel panel-highlight">
-          <div class="section-head">
-            <h2 id="proof-heading">Commercial proof</h2>
-            <p>CRM, automation, Android AI UX, and multi-surface delivery kept at the center of the portfolio.</p>
-          </div>
-          <ul class="proof-strip">
-            ${renderProofStrip(siteData.proofStrip || [])}
-          </ul>
-        </div>
-      </section>
-
-      <section class="section" aria-labelledby="services-heading">
-        <div class="container">
-          <div class="section-head">
-            <h2 id="services-heading">How I help</h2>
-            <p>Outcome-first engagement options for teams that need delivery, not generic freelance coverage.</p>
-          </div>
-          <div class="grid grid-3">
-            ${renderServiceCards(siteData.services || [])}
-          </div>
-          <div class="actions actions-inline">
-            <a class="btn btn-primary" href="/hire/">See engagement options</a>
-            <a class="btn btn-secondary" href="/estimate/">Get Automation Estimate</a>
-          </div>
+          <a href="/work/enterprise-crm-sales-pipeline-performance-system/" class="outcome-stat"><strong>~2 days → ~15 min</strong><span>Weekly pipeline review after a custom CRM replaced three spreadsheets</span></a>
+          <a href="/work/automation-workflows-n8n-gas-api-integrations/" class="outcome-stat"><strong>60–80 hours/month</strong><span>Estimated manual logging removed for a multi-branch operator</span></a>
         </div>
       </section>
 
       <section class="section" aria-labelledby="selected-work-heading">
         <div class="container">
-          <div class="section-head">
-            <h2 id="selected-work-heading">Selected systems and product delivery</h2>
-            <p>Highest-fit proof for internal tools, automation, platform delivery, and Android + AI execution.</p>
+          <div class="section-head section-head-with-action">
+            <div><p class="eyebrow">Selected work</p><h2 id="selected-work-heading">Built for real operating constraints.</h2><p>Start with the outcome, then see the decisions and implementation behind it.</p></div>
+            <a class="text-link" href="/work/">All case studies <span aria-hidden="true">↗</span></a>
           </div>
           <div class="grid case-grid case-grid-featured">
             ${featuredCases.map((item, index) => renderCaseCard(item, index, { showVisual: true })).join("")}
           </div>
-          <div class="actions actions-inline">
-            <a class="btn btn-primary" href="/work/">Review relevant work</a>
-            <a class="btn btn-secondary" href="/estimate/">Get Automation Estimate</a>
+        </div>
+      </section>
+
+      ${siteData.site.homeVideo?.loomId ? `
+      <section class="section section-tight" aria-labelledby="walkthrough-heading">
+        <div class="container walkthrough-layout">
+          <div class="walkthrough-copy">
+            <p class="eyebrow">Actual project walkthrough</p>
+            <h2 id="walkthrough-heading">See the automation in action.</h2>
+            <p>${escapeHtml(siteData.site.homeVideo.lead || "")}</p>
+            <div class="proof-actions"><a class="text-link" href="https://www.loom.com/share/${escapeAttribute(siteData.site.homeVideo.loomId)}" target="_blank" rel="noopener noreferrer">Open the walkthrough on Loom <span aria-hidden="true">↗</span></a><a class="text-link" href="/work/automation-workflows-n8n-gas-api-integrations/">Read the delivery story <span aria-hidden="true">↗</span></a></div>
           </div>
+          <div class="video-frame">
+            <iframe src="https://www.loom.com/embed/${escapeAttribute(siteData.site.homeVideo.loomId)}" title="${escapeAttribute(siteData.site.homeVideo.title || "Automation walkthrough")}" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+          </div>
+        </div>
+      </section>` : ""}
+
+      <section class="section" aria-labelledby="services-heading">
+        <div class="container">
+          <div class="section-head section-head-with-action">
+            <div><p class="eyebrow">Ways to work together</p><h2 id="services-heading">The right scope for the job.</h2><p>From a focused workflow sprint to a full internal system or an Android feature inside your product.</p></div>
+            <a class="text-link" href="/hire/">Scope & pricing details <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="grid grid-3 offer-grid">
+            ${(siteData.services || []).map((item, index) => `<article class="card offer-card" data-animate style="--delay:${animationDelay(index, 0.05)}"><p class="mini-label">0${index + 1} / ${escapeHtml(item.timeline)}</p><h3>${escapeHtml(item.name)}</h3><p>${escapeHtml(item.summary)}</p><div class="offer-card-footer"><strong>${escapeHtml(item.priceFrom || "Scope-based")}</strong><a class="text-link" href="/hire/">Explore service <span aria-hidden="true">↗</span></a></div></article>`).join("")}
+          </div>
+          <p class="pricing-note">Starting prices are for defined scopes. The final quote follows a review of requirements, integrations, and delivery constraints.</p>
         </div>
       </section>
 
       ${renderTestimonials()}
 
-      <section class="section" aria-labelledby="trust-heading">
-        <div class="container trust-grid">
-          <div class="card" data-animate>
-            <h2 id="trust-heading">Why teams bring me in</h2>
-            <ul class="list-dot">
-              ${(siteData.trust?.credibility || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
-            </ul>
-            <h3 class="links-title">Good fit</h3>
-            <ul class="list-dot">
-              ${(siteData.hireFit?.goodFit || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
-            </ul>
-          </div>
-          <div class="card" data-animate style="--delay:0.06s">
-            <h3>Working style</h3>
-            <ul class="list-dot">
-              ${(siteData.trust?.workingStyle || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
-            </ul>
-            <h3 class="links-title">Core stack</h3>
-            <ul class="stack-list large">
-              ${(siteData.trust?.stack || []).map((stack) => `<li>${escapeHtml(stack)}</li>`).join("")}
-            </ul>
-            <h3 class="links-title">Profiles</h3>
-            <div class="profile-links">
-              ${renderProfileLinks()}
-            </div>
-            ${renderCredentialLinks()}
-          </div>
+      <section class="section" aria-labelledby="process-heading">
+        <div class="container">
+          <div class="section-head"><p class="eyebrow">From first conversation to handoff</p><h2 id="process-heading">A clear path from problem to production.</h2><p>You work directly with the engineer responsible for the implementation.</p></div>
+          <ul class="process-grid">${renderProcessCards(siteData.workProcess || [])}</ul>
+        </div>
+      </section>
+
+      <section class="section section-tight" aria-labelledby="recruiter-heading">
+        <div class="container recruiter-band">
+          <div><p class="eyebrow">For engineering teams & recruiters</p><h2 id="recruiter-heading">Need the technical story?</h2><p>See product delivery, Android and on-device AI work, published research, and a downloadable resume.</p></div>
+          <div class="actions"><a class="btn btn-secondary" href="/experience/">View engineering background</a><a class="text-link" href="${escapeAttribute(resumeHref())}">Download resume <span aria-hidden="true">↗</span></a></div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="planning-heading">
+        <div class="container planning-band">
+          <div><p class="eyebrow">Early planning</p><h2 id="planning-heading">Need a starting budget range?</h2><p>The guided estimator can help frame an automation or internal system project. It is a planning tool; a final quote depends on scope and technical review.</p></div>
+          <a class="btn btn-secondary" href="/estimate/">Try the estimator</a>
         </div>
       </section>
 
       <section class="section">
-        <div class="container cta-panel" data-animate>
-          <p class="eyebrow">Remote contract engineering</p>
-          <h2>Ready to stop patching the same workflow every quarter?</h2>
-          <p>Share the current process, blockers, and timeline. I will reply with the best starting scope within 24 hours.</p>
-          ${renderContactChannels()}
-          <div class="actions">
-            <a class="btn btn-primary" href="/estimate/">Get Automation Estimate</a>
-            <a class="btn btn-secondary" href="${escapeAttribute(scopeMailHref())}">Email project brief</a>
-          </div>
+        <div class="container cta-panel final-cta" data-animate>
+          <p class="eyebrow">Have a project in mind?</p>
+          <h2>Tell me what is slowing your team down.</h2>
+          <p>Share the current process, target outcome, and timeline. I’ll reply with a practical first step. ${escapeHtml(siteData.contact.responseTime)}</p>
+          <div class="actions"><a class="btn btn-primary" href="/contact/">Discuss a project</a><a class="btn btn-secondary" href="mailto:${escapeAttribute(siteData.contact.email)}">Email ${escapeHtml(siteData.contact.email)}</a></div>
         </div>
       </section>
     </main>
@@ -1351,9 +1305,9 @@ function homePage() {
   return {
     route: "/",
     filePath: "index.html",
-    title: `${siteData.site.name} | Remote Contract AI Workflow & Product Engineer`,
+    title: `AI Automation & Product Engineer | ${siteData.site.name}`,
     description:
-      "Remote contract engineer building AI-enabled workflows, internal tools, automation systems, and Android + AI product delivery.",
+      "Rifki Rosada builds custom CRMs, internal tools, and AI-assisted workflows for operations teams, plus Android and on-device AI features for products. Explore real delivery work.",
     body,
     jsonLd: [websiteJsonLd, personJsonLd, serviceJsonLd]
   };
@@ -1525,7 +1479,7 @@ function workPage() {
         <div class="container">
           <p class="eyebrow" data-animate>${escapeHtml(siteData.site.heroEyebrow)}</p>
           <h1 data-animate style="--delay:0.04s">Selected work</h1>
-          <p data-animate style="--delay:0.08s">Case studies covering client systems, automation delivery, Android AI UX, and public Android + AI product work.</p>
+          <p data-animate style="--delay:0.08s">The problem, my role, implementation choices, and outcomes from client systems, automation, Android, and public products. Client details stay private where needed.</p>
           <div class="actions" data-animate style="--delay:0.12s">
             <a class="btn btn-primary" href="#client-work-heading">Review client systems</a>
             <a class="btn btn-secondary" href="/hire/">See engagement options</a>
@@ -1537,7 +1491,7 @@ function workPage() {
         <div class="container">
           <div class="section-head">
             <h2 id="client-work-heading">Client systems and delivery</h2>
-            <p>Primary commercial proof across CRM, automation, Android + AI UX, platform delivery, and supporting product work.</p>
+            <p>Primary commercial proof across CRM, automation, Android + AI UX, platform delivery, and supporting product work. Cover art summarizes projects; client screens remain private.</p>
           </div>
           <div class="grid case-grid case-grid-work">
             ${clientCaseStudies.map((item, index) => renderCaseCard(item, index, { showVisual: true })).join("")}
@@ -1560,10 +1514,10 @@ function workPage() {
       <section class="section">
         <div class="container cta-panel" data-animate>
           <h2>Have a workflow, internal tool, or Android AI feature to ship?</h2>
-          <p>Use the estimator for a planning range, or email the project brief directly if the scope is already clear.</p>
+          <p>Tell me the current workflow and the outcome you need. We can choose a useful first milestone together.</p>
           <div class="actions">
-            <a class="btn btn-primary" href="/estimate/">Get Automation Estimate</a>
-            <a class="btn btn-secondary" href="${escapeAttribute(scopeMailHref())}">Email project brief</a>
+            <a class="btn btn-primary" href="/contact/">Discuss a project</a>
+            <a class="btn btn-secondary" href="/hire/">See services & pricing</a>
           </div>
         </div>
       </section>
@@ -1616,6 +1570,7 @@ function casePage(caseStudy) {
   };
 
   const keyOutcomes = (caseStudy.results || []).slice(0, 3);
+  const isWalkthroughCase = caseStudy.slug === "automation-workflows-n8n-gas-api-integrations" && siteData.site.homeVideo?.loomId;
 
   const body = `
     <main id="main-content" tabindex="-1">
@@ -1654,6 +1609,8 @@ function casePage(caseStudy) {
           </div>
         </div>
       </section>
+
+      ${isWalkthroughCase ? `<section class="section section-tight" aria-labelledby="case-video-heading"><div class="container case-proof-panel"><div><p class="eyebrow">Project walkthrough</p><h2 id="case-video-heading">Watch the delivered workflow.</h2><p>A walkthrough of the multi-branch automation, showing bookings, reporting, and staff KPI flows.</p><div class="proof-actions"><a class="text-link" href="https://www.loom.com/share/${escapeAttribute(siteData.site.homeVideo.loomId)}" target="_blank" rel="noopener noreferrer">Open on Loom <span aria-hidden="true">↗</span></a></div></div><div class="video-frame"><iframe src="https://www.loom.com/embed/${escapeAttribute(siteData.site.homeVideo.loomId)}" title="Multi-branch operations automation walkthrough" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe></div></div></section>` : ""}
 
       <section class="section section-tight">
         <div class="container case-layout">
@@ -1732,10 +1689,10 @@ function casePage(caseStudy) {
       <section class="section">
         <div class="container cta-panel" data-animate>
           <h2>Have a similar workflow?</h2>
-          <p>Use the estimator for a planning range, or email the project brief directly if the scope is already clear.</p>
+          <p>Share what your team needs to improve. I can help define the first useful milestone.</p>
           <div class="actions">
-            <a class="btn btn-primary" href="/estimate/">Get Automation Estimate</a>
-            <a class="btn btn-secondary" href="${escapeAttribute(scopeMailHref())}">Email project brief</a>
+            <a class="btn btn-primary" href="/contact/">Discuss a project</a>
+            <a class="btn btn-secondary" href="/hire/">See services & pricing</a>
           </div>
         </div>
       </section>
@@ -1798,13 +1755,12 @@ function hirePage() {
       <section class="page-hero section">
         <div class="container">
           <p class="eyebrow" data-animate>${escapeHtml(siteData.site.heroEyebrow)}</p>
-          <h1 data-animate style="--delay:0.04s">Hire ${escapeHtml(siteData.site.name)}</h1>
-          <p data-animate style="--delay:0.08s">Remote contract support for AI-enabled workflows, internal tools, automation systems, and Android + AI product delivery.</p>
+          <h1 data-animate style="--delay:0.04s">Engineering help, scoped to the outcome.</h1>
+          <p data-animate style="--delay:0.08s">Choose a focused sprint, a complete internal system, or embedded product support. Each engagement starts with a clear goal, constraints, milestones, and handoff.</p>
           <div class="avail-badge" data-animate style="--delay:0.10s;margin-top:0.8rem"><span class="avail-dot" aria-hidden="true"></span>${escapeHtml(siteData.site.heroAvailability || "Currently open to new projects")}</div>
           <div class="actions" data-animate style="--delay:0.14s">
-            <a class="btn btn-primary" href="/estimate/">Get Automation Estimate</a>
-            <a class="btn btn-secondary" href="${escapeAttribute(scopeMailHref())}">Email project brief</a>
-            <a class="btn btn-secondary" href="${escapeAttribute(resumeHref())}">Download resume</a>
+            <a class="btn btn-primary" href="/contact/">Discuss a project</a>
+            <a class="btn btn-secondary" href="/work/">See delivered work</a>
           </div>
         </div>
       </section>
@@ -1814,14 +1770,14 @@ function hirePage() {
           <div class="section-head">
             <h2 id="packages-heading">Engagement options</h2>
             <p>Clear paths for internal tools, automation systems, Android + AI delivery, and ongoing remote execution.</p>
-            <p class="pricing-note"><strong>Scope-based pricing.</strong> Use the estimator for a fast IDR/USD budget range, then I can confirm the final scope after a technical audit. No retainer required to start.</p>
+            <p class="pricing-note"><strong>Starting prices in USD for remote engagements.</strong> They describe defined scopes, not fixed quotes. Integration access, data quality, and rollout needs determine the final proposal. The estimator gives separate planning ranges for automation and internal systems.</p>
           </div>
           <div class="grid grid-2">
             ${renderServiceCards(packages)}
           </div>
           <div class="actions actions-inline">
-            <a class="btn btn-primary" href="/estimate/">Get Automation Estimate</a>
-            <a class="btn btn-secondary" href="/work/">Review relevant work</a>
+            <a class="btn btn-primary" href="/contact/">Discuss a project</a>
+            <a class="btn btn-secondary" href="/estimate/">Explore a planning range</a>
           </div>
         </div>
       </section>
@@ -1872,7 +1828,7 @@ function hirePage() {
           <h2>Need a scoped delivery partner?</h2>
           <p>Send the current workflow, blockers, and target outcome. I will respond with the best first milestone.</p>
           <div class="actions">
-            <a class="btn btn-primary" href="/estimate/">Get Automation Estimate</a>
+            <a class="btn btn-primary" href="/contact/">Discuss a project</a>
             <a class="btn btn-secondary" href="/work/">Review relevant work</a>
           </div>
         </div>
@@ -1883,7 +1839,7 @@ function hirePage() {
   return {
     route: "/hire/",
     filePath: path.join("hire", "index.html"),
-    title: `Hire ${siteData.site.name} | Remote Contract Product Engineer`,
+    title: `Services & Pricing | ${siteData.site.name}`,
     description:
       "Hire Rifki Rosada for remote contract work across internal tools, automation systems, AI-enabled workflows, and Android + AI product delivery.",
     body,
@@ -1896,9 +1852,12 @@ function experiencePage() {
     <main id="main-content" tabindex="-1">
       <section class="page-hero section">
         <div class="container">
-          <p class="eyebrow" data-animate>${escapeHtml(siteData.site.name)} | Delivery background</p>
-          <h1 data-animate style="--delay:0.04s">Experience</h1>
-          <p data-animate style="--delay:0.08s">Supporting context behind the case studies: remote contract delivery first, earlier team experience second.</p>
+          <p class="eyebrow" data-animate>${escapeHtml(siteData.site.name)} | Engineering background</p>
+          <h1 data-animate style="--delay:0.04s">Product engineer across web, automation, and Android.</h1>
+          <p data-animate style="--delay:0.08s">I work from problem framing through implementation and handoff, with a specialist track in Android and on-device AI. Here is the delivery history behind the case studies.</p>
+          <div class="actions"><a class="btn btn-primary" href="${escapeAttribute(resumeHref())}">Download resume (PDF)</a><a class="btn btn-secondary" href="/work/">View case studies</a><a class="btn btn-secondary" href="/contact/">Get in touch</a></div>
+          <div class="profile-links">${renderProfileLinks()}</div>
+          ${renderCredentialLinks()}
         </div>
       </section>
 
@@ -1929,11 +1888,11 @@ function experiencePage() {
 
       <section class="section">
         <div class="container cta-panel" data-animate>
-          <h2>Want the strongest proof first?</h2>
-          <p>Start with the case studies, then send scope if the work looks aligned.</p>
+          <h2>Want to talk about a role or project?</h2>
+          <p>Share the team context and what you need delivered. I can point you to the most relevant work.</p>
           <div class="actions">
-            <a class="btn btn-primary" href="/work/">Review relevant work</a>
-            <a class="btn btn-secondary" href="/contact/">Share your scope</a>
+            <a class="btn btn-primary" href="/contact/">Get in touch</a>
+            <a class="btn btn-secondary" href="/work/">Review relevant work</a>
           </div>
         </div>
       </section>
@@ -1943,7 +1902,7 @@ function experiencePage() {
   return {
     route: "/experience/",
     filePath: path.join("experience", "index.html"),
-    title: `Experience | ${siteData.site.name}`,
+    title: `Engineering Background & Resume | ${siteData.site.name}`,
     description:
       "Delivery background across remote contract work, client systems, automation, Android AI UX, and earlier team experience.",
     body,
@@ -1958,94 +1917,57 @@ function experiencePage() {
 }
 
 function contactPage() {
-  const introTemplate = (siteData.introTemplate || []).join("\n");
-  const scopeTemplate = (siteData.scopeTemplate || []).join("\n");
-  const channels = [
-    { label: "Email", value: siteData.contact.email, href: emailProjectBriefHref() },
-    { label: resumeLabel(), value: "Download PDF", href: resumeHref() },
-    { label: "LinkedIn", value: "Open profile", href: siteData.contact.linkedin },
-    { label: "GitHub", value: "View repositories", href: siteData.contact.github }
-  ];
-
-  if (siteData.contact.whatsapp) {
-    channels.splice(1, 0, { label: "WhatsApp", value: "Open chat", href: siteData.contact.whatsapp });
-  }
-
   const body = `
     <main id="main-content" tabindex="-1">
-      <section class="page-hero section">
-        <div class="container">
-          <p class="eyebrow" data-animate>${escapeHtml(siteData.site.heroEyebrow)}</p>
-          <h1 data-animate style="--delay:0.04s">Share your scope</h1>
-          <p data-animate style="--delay:0.08s">Send the project brief, blockers, and timeline. I will reply with the best starting scope for the work.</p>
-          <div class="avail-badge" data-animate style="--delay:0.10s;margin-top:0.6rem"><span class="avail-dot" aria-hidden="true"></span>${escapeHtml(siteData.site.heroAvailability || "Open to new projects")} &mdash; replies within 24h on weekdays</div>
-          <div class="actions" data-animate style="--delay:0.16s">
-            <a class="btn btn-primary" href="/estimate/">Get Automation Estimate</a>
-            <a class="btn btn-secondary" href="${escapeAttribute(scopeMailHref())}">Email project brief</a>
-            <button class="btn btn-secondary" type="button" data-copy-target="contact-scope-template-quick" data-copy-feedback="contact-scope-quick-feedback">Copy scope template</button>
+      <section class="page-hero section contact-hero">
+        <div class="container contact-hero-grid">
+          <div>
+            <p class="eyebrow">Start a conversation</p>
+            <h1>Let's make the next step clear.</h1>
+            <p>Tell me what your team is trying to improve. A short note is enough to start; I can help shape the scope from there.</p>
+            <div class="avail-badge"><span class="avail-dot" aria-hidden="true"></span>${escapeHtml(siteData.site.heroAvailability || "Open to projects")}</div>
           </div>
-          <div class="hero-links" data-animate style="--delay:0.2s">
-            <a class="text-link" href="/hire/">See engagement options</a>
-            <a class="text-link" href="/work/">Review relevant work</a>
-          </div>
-          <p id="contact-scope-quick-feedback" class="copy-feedback" role="status" aria-live="polite">Paste the template, add details, then send.</p>
-          <pre id="contact-scope-template-quick" class="sr-only-copy-source">${escapeHtml(scopeTemplate)}</pre>
-        </div>
-      </section>
-
-      <section class="section section-tight" aria-labelledby="channel-heading">
-        <div class="container">
-          <div class="section-head">
-            <h2 id="channel-heading">Direct channels</h2>
-            <p>Low-friction contact stays visible. Email is the fastest route for scoped work.</p>
-          </div>
-          <div class="grid grid-2">
-            ${channels
-              .map(
-                (item, index) => `
-                <article class="card channel-card" data-animate style="--delay:${animationDelay(index, 0.05)}">
-                  <h3>${escapeHtml(item.label)}</h3>
-                  <p>${escapeHtml(item.value)}</p>
-                  <a class="text-link" href="${escapeAttribute(item.href)}"${externalLinkAttributes(item.href)}>Open ${escapeHtml(item.label)}</a>
-                </article>
-              `
-              )
-              .join("")}
+          <div class="contact-direct card">
+            <p class="mini-label">Direct email</p>
+            <a class="contact-email" href="mailto:${escapeAttribute(siteData.contact.email)}">${escapeHtml(siteData.contact.email)}</a>
+            <p>${escapeHtml(siteData.contact.responseTime)}</p>
+            <p>Recruiter or engineering team? <a class="text-link" href="/experience/">See my background and resume <span aria-hidden="true">↗</span></a></p>
           </div>
         </div>
       </section>
 
-      <section class="section" aria-labelledby="contact-template-heading">
-        <div class="container">
-          <div class="section-head">
-            <h2 id="contact-template-heading">Project brief templates</h2>
-            <p>Use one of these if you want a faster first response and a cleaner handoff into milestones.</p>
+      <section class="section section-tight" aria-labelledby="contact-form-heading">
+        <div class="container contact-grid">
+          <div class="card contact-form-card">
+            <p class="eyebrow">Project brief</p>
+            <h2 id="contact-form-heading">A few useful details</h2>
+            <p>This prepares an email in your own email app. You can review and send it there; no information is submitted on this page.</p>
+            <form data-contact-form action="mailto:${escapeAttribute(siteData.contact.email)}" method="get">
+              <div class="contact-fields">
+                <label>Your name <input name="name" autocomplete="name" required maxlength="120" placeholder="Name"></label>
+                <label>Your email <input name="email" type="email" autocomplete="email" required maxlength="180" placeholder="you@company.com"></label>
+                <label>Company or team <input name="company" autocomplete="organization" maxlength="160" placeholder="Optional"></label>
+                <label>Project type <select name="projectType" required><option value="">Choose one</option><option>Internal tool or CRM</option><option>AI or workflow automation</option><option>Android or on-device AI</option><option>Other engineering work</option></select></label>
+                <label class="contact-field-wide">What needs to change? <textarea name="goal" required maxlength="1600" rows="5" placeholder="What happens today, and what outcome would make this successful?"></textarea></label>
+                <label>Target timeline <input name="timeline" maxlength="120" placeholder="Optional"></label>
+                <label>Indicative budget <input name="budget" maxlength="120" placeholder="Optional"></label>
+              </div>
+              <div class="actions"><button class="btn btn-primary" type="submit">Open email with brief</button><button class="btn btn-secondary" type="button" data-copy-target="contact-brief-preview" data-copy-feedback="contact-copy-feedback">Copy brief</button></div>
+              <p id="contact-copy-feedback" class="copy-feedback" role="status" aria-live="polite">If your email app does not open, copy the brief and send it to ${escapeHtml(siteData.contact.email)}.</p>
+              <pre id="contact-brief-preview" class="sr-only-copy-source" data-contact-preview></pre>
+            </form>
           </div>
-          <div class="grid grid-2 copy-grid">
-            <article class="card copy-card" data-animate>
-              <h3>Intro message</h3>
-              <pre id="contact-intro-template">${escapeHtml(introTemplate)}</pre>
-              <button class="btn btn-secondary" type="button" data-copy-target="contact-intro-template" data-copy-feedback="contact-intro-feedback">Copy intro message</button>
-              <p id="contact-intro-feedback" class="copy-feedback" role="status" aria-live="polite">Customize before sending so I can respond with better context.</p>
-            </article>
-            <article class="card copy-card" data-animate style="--delay:0.08s">
-              <h3>Scope template</h3>
-              <pre id="contact-scope-template">${escapeHtml(scopeTemplate)}</pre>
-              <button class="btn btn-secondary" type="button" data-copy-target="contact-scope-template" data-copy-feedback="contact-scope-feedback">Copy scope template</button>
-              <p id="contact-scope-feedback" class="copy-feedback" role="status" aria-live="polite">Include timeline and definition of done for the most useful reply.</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="container cta-panel" data-animate>
-          <h2>Prefer to keep it simple?</h2>
-          <p>Use the estimator for a structured pre-audit summary, or email the project brief directly if you already know the scope.</p>
-          <div class="actions">
-            <a class="btn btn-primary" href="/estimate/">Get Automation Estimate</a>
-            <a class="btn btn-secondary" href="${escapeAttribute(scopeMailHref())}">Email project brief</a>
-          </div>
+          <aside class="contact-next">
+            <div class="card">
+              <p class="eyebrow">What happens next</p>
+              <ol class="numbered-list"><li>I review your goal, current workflow, and constraints.</li><li>We agree on the smallest useful first scope and any access needed.</li><li>You receive a milestone plan and quote before implementation begins.</li></ol>
+            </div>
+            <div class="card">
+              <p class="eyebrow">Still exploring?</p>
+              <h3>See the work and planning options.</h3>
+              <div class="inline-links"><a href="/work/">Case studies</a><a href="/hire/">Services & pricing</a><a href="/estimate/">Planning estimator</a></div>
+            </div>
+          </aside>
         </div>
       </section>
     </main>
@@ -2054,9 +1976,8 @@ function contactPage() {
   return {
     route: "/contact/",
     filePath: path.join("contact", "index.html"),
-    title: `Share Your Scope | ${siteData.site.name}`,
-    description:
-      "Share project scope, blockers, and timeline with Rifki Rosada for remote contract engineering support.",
+    title: `Discuss a Project | ${siteData.site.name}`,
+    description: "Contact Rifki Rosada about AI automation, internal systems, custom CRMs, Android, and product engineering projects.",
     body,
     jsonLd: {
       "@context": "https://schema.org",

@@ -558,11 +558,6 @@
     if (complexityPoints >= 8) index = 2;
     if (complexityPoints >= 12) index = 3;
 
-    const budgetFloor = { mvp: 1, system: 2, advanced: 3 }[data.budgetReadiness];
-    if (typeof budgetFloor === "number") {
-      index = Math.max(index, budgetFloor);
-    }
-
     return packages[Math.min(index, packages.length - 1)] || audit;
   }
 

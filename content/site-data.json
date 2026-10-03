@@ -3,24 +3,24 @@
     "name": "Rifki Rosada",
     "url": "https://rifkirosada.com",
     "title": "AI Workflow & Product Engineer",
-    "tagline": "Remote contract engineer for AI-enabled workflows, internal tools, automation systems, and Android AI delivery.",
-    "heroEyebrow": "Software engineer · Remote contract work",
-    "heroHeadline": "I build production Android apps, custom CRMs, and operations automation for client teams.",
-    "heroSubheadline": "Recent work spans Laravel + Next.js platforms, n8n + OpenAI workflows, and Android + AI features in live products. IEEE Xplore-published in real-time computer vision.",
+    "tagline": "AI automation and product engineering for teams ready to replace manual work with dependable systems.",
+    "heroEyebrow": "AI automation & product engineer · Remote worldwide",
+    "heroHeadline": "Turn manual operations into systems your team can trust.",
+    "heroSubheadline": "I design and build custom CRMs, internal tools, and AI-assisted workflows that remove repetitive work and make decisions clearer. I also ship Android and on-device AI features for product teams.",
     "heroPrimaryCta": {
-      "label": "Get Automation Estimate",
-      "href": "/estimate/"
+      "label": "Discuss a project",
+      "href": "/contact/"
     },
     "heroSecondaryCta": {
-      "label": "Review relevant work",
+      "label": "Explore the work",
       "href": "/work/"
     },
-    "heroAvailability": "Open to new remote contract work",
-    "heroPanelHeadline": "What I work on",
+    "heroAvailability": "Available for remote contract projects",
+    "heroPanelHeadline": "Engineering from workflow to launch",
     "heroPanelBullets": [
-      "Custom CRMs and internal tools (Laravel, Next.js, PostgreSQL)",
-      "Operations automation (n8n, Google Apps Script, Telegram, OpenAI)",
-      "Android + on-device AI (Kotlin, Compose, TensorFlow Lite, YOLO)"
+      "Custom CRMs and internal tools for operations teams",
+      "AI and API automation with validation and human review",
+      "Android and on-device AI for product teams"
     ],
     "homeVideo": {
       "loomId": "bf2091b9cbe549779d12ff558836080d",
@@ -69,7 +69,7 @@
     {
       "name": "AI Workflow & Internal Tool Sprint",
       "priceFrom": "From $5,000",
-      "timeline": "Typical sprint: 2–6 weeks",
+      "timeline": "Typical build: 4–8 weeks",
       "bestFor": "Best for: internal workflow cleanup, ops tooling, team visibility",
       "summary": "Design and ship the system that removes manual steps, clarifies ownership, and gives the team a cleaner operating baseline. Built on Laravel or Next.js depending on what fits the existing stack.",
       "deliverables": [
@@ -87,7 +87,7 @@
     {
       "name": "Automation & Ops Clarity Sprint",
       "priceFrom": "From $3,500",
-      "timeline": "Typical sprint: 1–3 weeks",
+      "timeline": "Typical sprint: 2–4 weeks",
       "bestFor": "Best for: lead routing, reporting handoffs, manual admin reduction",
       "summary": "Build n8n, Apps Script, and API automation layers that move data between tools, eliminate repetitive logging, and make operational state easier to trust.",
       "deliverables": [

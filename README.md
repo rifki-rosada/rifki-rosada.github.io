@@ -1,6 +1,8 @@
 # Rifki Rosada Portfolio
 
-High-conversion static portfolio for GitHub Pages + custom domain deployment (`rifkirosada.com`).
+Static portfolio for GitHub Pages + custom domain deployment (`rifkirosada.com`).
+
+The client path is homepage outcome proof → case studies → services → contact. The recruiter path is `/experience/` with a direct resume download. The estimator is an optional planning tool for automation and internal systems.
 
 ## Audit Summary (Current Stack)
 
@@ -67,6 +69,10 @@ The estimator page is generated from `content/estimate.json`. Questions, pricing
 
 Submissions are client-side. To send leads to a Google Apps Script web app, set `ESTIMATE_WEBHOOK_URL` during build or update `content/site-data.json` -> `estimate.webhookEndpoint` with a public, rotatable endpoint.
 
+When no webhook is configured, the estimator shows an **Open email with summary** link and no online submit button. The contact page prepares a project brief in the visitor's email app and offers a copy action. Neither flow claims to have sent a message until the visitor sends it in their email app. The direct email address remains visible as a fallback.
+
+The estimate selects a planning package from scope complexity. Budget readiness can route a low-budget lead to a smaller audit, but a larger available budget does not force an advanced package. Starting service prices and estimator bands are both indicative; final quotes follow scope review.
+
 Do not commit private credentials, Apps Script secrets, Google Sheet URLs, or a local `.env`. The default repo value is blank and the page keeps a mailto fallback when no endpoint is configured.
 
 Backend setup notes and a fake lead payload live in `docs/estimate-apps-script.md` and `docs/estimate-sample-payload.json`.
@@ -102,4 +108,5 @@ After editing content:
 
 - Internal links are validated across HTML output during build.
 - Case studies are anonymized for client privacy with NDA-safe wording.
+- Case cover art is illustrative. The linked Loom walkthrough is actual project footage; do not label cover art as a product screenshot or add client screens without permission.
 - `apps/offscanai` support/legal files are auto-maintained by the build script to avoid broken links.

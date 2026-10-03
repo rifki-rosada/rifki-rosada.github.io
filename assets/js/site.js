@@ -80,4 +80,47 @@
       }
     });
   });
+
+  const contactForm = document.querySelector("[data-contact-form]");
+  const contactPreview = document.querySelector("[data-contact-preview]");
+  if (contactForm && contactPreview) {
+    function briefText() {
+      const data = new FormData(contactForm);
+      const value = (key) => String(data.get(key) || "").trim();
+      return [
+        "Hi Rifki,",
+        "",
+        `I'm reaching out about: ${value("projectType") || "[project type]"}`,
+        "",
+        "What needs to change:",
+        value("goal") || "[current problem and target outcome]",
+        "",
+        `Timeline: ${value("timeline") || "To discuss"}`,
+        `Indicative budget: ${value("budget") || "To discuss"}`,
+        "",
+        `Name: ${value("name") || "[name]"}`,
+        `Company or team: ${value("company") || "-"}`,
+        `Reply to: ${value("email") || "[email]"}`
+      ].join("\n");
+    }
+
+    function updateBrief() {
+      contactPreview.textContent = briefText();
+    }
+
+    contactForm.addEventListener("input", updateBrief);
+    contactForm.addEventListener("change", updateBrief);
+    contactForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      if (!contactForm.reportValidity()) return;
+      updateBrief();
+      const email = String(contactForm.getAttribute("action") || "").replace(/^mailto:/i, "");
+      const subject = "Project inquiry — " + String(new FormData(contactForm).get("projectType") || "Engineering work");
+      const href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(briefText())}`;
+      const feedback = document.getElementById("contact-copy-feedback");
+      if (feedback) feedback.textContent = `Your email app should open with the brief. Review and send it there. If it does not open, copy the brief and email ${email}.`;
+      window.location.href = href;
+    });
+    updateBrief();
+  }
 })();

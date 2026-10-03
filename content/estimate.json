@@ -1,13 +1,13 @@
 {
   "seo": {
-    "title": "Estimate Your Automation System | Rifki Rosada",
-    "description": "Get a practical planning range and implementation path for CRM, dashboard, workflow automation, Android AI, and internal tooling projects."
+    "title": "Automation & Internal System Planning Estimate | Rifki Rosada",
+    "description": "Explore a preliminary planning range for workflow automation, CRMs, dashboards, and internal tools. Final quotes follow a scope review."
   },
   "fallbackEmail": "rifki@rifkirosada.com",
   "hero": {
     "eyebrow": "Automation pre-audit",
-    "headline": "Plan Your Automation System",
-    "subheadline": "Walk through a short consultant-led pre-audit about your workflow, tools, team size, and rollout context. You will get a planning range, likely delivery window, and recommended implementation path.",
+    "headline": "Explore a starting range for your internal system.",
+    "subheadline": "Answer a few questions about workflow, tools, team size, and rollout needs. You will see an indicative automation or internal tool range and a possible delivery path. For Android product work, contact me for a tailored scope.",
     "primaryCta": "Start Pre-audit",
     "secondaryCta": "Review relevant work"
   },
@@ -218,7 +218,7 @@
   },
   "contact": {
     "eyebrow": "Send the summary",
-    "heading": "Send this estimate to Rifki",
+    "heading": "Take the next step with this summary",
     "lead": "Add contact details after reviewing the planning range. I will use the estimate summary to confirm the best first scope.",
     "submitLabel": "Send My Estimate to Rifki",
     "editLabel": "Edit answers",

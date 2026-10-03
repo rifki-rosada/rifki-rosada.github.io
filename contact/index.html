@@ -31,7 +31,7 @@
   <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32">
   <link rel="apple-touch-icon" href="/favicon-192.png" sizes="192x192">
   <link rel="manifest" href="/site.webmanifest">
-  <link rel="stylesheet" href="/assets/css/site.min.css?v=aa5028c917f1">
+  <link rel="stylesheet" href="/assets/css/site.min.css?v=8f4c63775982">
   <script type="application/ld+json">[{"@context":"https://schema.org","@type":"ContactPage","name":"Rifki Rosada contact","url":"https://rifkirosada.com/contact/","isPartOf":"https://rifkirosada.com/"}]</script>
 
 </head>
@@ -86,19 +86,25 @@
           <div class="card contact-form-card">
             <p class="eyebrow">Project brief</p>
             <h2 id="contact-form-heading">A few useful details</h2>
-            <p>This prepares an email in your own email app. You can review and send it there; no information is submitted on this page.</p>
-            <form data-contact-form action="mailto:rifki@rifkirosada.com" method="get">
+            <p>Send the brief here and I will reply with a practical first step, usually within 24 hours on weekdays.</p>
+            <form data-contact-form data-contact-email="rifki@rifkirosada.com" data-lead-endpoint="https://formsubmit.co/ajax/rifki%40rifkirosada.com">
+              <label class="lead-honeypot" aria-hidden="true">Leave this blank <input name="_honey" tabindex="-1" autocomplete="off"></label>
               <div class="contact-fields">
                 <label>Your name <input name="name" autocomplete="name" required maxlength="120" placeholder="Name"></label>
                 <label>Your email <input name="email" type="email" autocomplete="email" required maxlength="180" placeholder="you@company.com"></label>
                 <label>Company or team <input name="company" autocomplete="organization" maxlength="160" placeholder="Optional"></label>
+                <label>WhatsApp <input name="whatsapp" type="tel" autocomplete="tel" maxlength="40" placeholder="Optional"></label>
+                <label>Location <input name="location" autocomplete="country-name" maxlength="120" placeholder="City or country, optional"></label>
                 <label>Project type <select name="projectType" required><option value="">Choose one</option><option>Internal tool or CRM</option><option>AI or workflow automation</option><option>Android or on-device AI</option><option>Other engineering work</option></select></label>
                 <label class="contact-field-wide">What needs to change? <textarea name="goal" required maxlength="1600" rows="5" placeholder="What happens today, and what outcome would make this successful?"></textarea></label>
+                <label>Tools or integrations <input name="integrations" maxlength="300" placeholder="Optional"></label>
+                <label>Users or complexity <input name="complexity" maxlength="160" placeholder="Optional"></label>
                 <label>Target timeline <input name="timeline" maxlength="120" placeholder="Optional"></label>
                 <label>Indicative budget <input name="budget" maxlength="120" placeholder="Optional"></label>
               </div>
-              <div class="actions"><button class="btn btn-primary" type="submit">Open email with brief</button><button class="btn btn-secondary" type="button" data-copy-target="contact-brief-preview" data-copy-feedback="contact-copy-feedback">Copy brief</button></div>
-              <p id="contact-copy-feedback" class="copy-feedback" role="status" aria-live="polite">If your email app does not open, copy the brief and send it to rifki@rifkirosada.com.</p>
+              <div class="actions"><button class="btn btn-primary" type="submit">Send project brief</button><a class="btn btn-secondary" data-contact-mailto href="mailto:rifki@rifkirosada.com" hidden>Email brief instead</a><button class="btn btn-secondary" type="button" data-copy-target="contact-brief-preview" data-copy-feedback="contact-copy-feedback">Copy brief</button></div>
+              <p class="lead-status" data-contact-status role="status" aria-live="polite" hidden></p>
+              <p id="contact-copy-feedback" class="copy-feedback" role="status" aria-live="polite"></p>
               <pre id="contact-brief-preview" class="sr-only-copy-source" data-contact-preview></pre>
             </form>
           </div>
@@ -171,7 +177,7 @@
       </div>
     </footer>
 
-  <script src="/assets/js/site.js?v=83c4303d29f5" defer></script>
+  <script src="/assets/js/site.js?v=745f027be6d5" defer></script>
 
 </body>
 </html>

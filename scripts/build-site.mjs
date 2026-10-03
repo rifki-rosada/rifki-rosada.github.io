@@ -54,12 +54,7 @@ const [stylesheetVersion, siteScriptVersion, estimateScriptVersion] = await Prom
   fs.readFile(estimateScriptPath).then(assetVersion)
 ]);
 
-const estimateWebhookEndpoint = String(
-  process.env.ESTIMATE_WEBHOOK_URL || siteData.estimate?.webhookEndpoint || estimateData.webhookEndpoint || ""
-).trim();
-if (estimateWebhookEndpoint && !estimateWebhookEndpoint.startsWith("https://")) {
-  throw new Error("ESTIMATE_WEBHOOK_URL or estimate.webhookEndpoint must be an https URL when provided.");
-}
+const leadEndpoint = "https://formsubmit.co/ajax/" + encodeURIComponent(siteData.contact.email);
 
 const caseStudies = caseStudiesInput
   .map((item) => ({
@@ -902,7 +897,7 @@ function renderEstimateContactFields() {
       (field) => `
         <label class="estimate-field">
           <span>${escapeHtml(field.label)}${requiredMark(field.required)}</span>
-          <input type="${escapeAttribute(field.type || "text")}" name="${escapeAttribute(field.name)}"${field.autocomplete ? ` autocomplete="${escapeAttribute(field.autocomplete)}"` : ""}${field.type === "email" ? ' inputmode="email"' : ""}${field.required ? " required" : ""}>
+          <input type="${escapeAttribute(field.type || "text")}" name="${escapeAttribute(field.name)}" maxlength="${field.name === "email" ? 180 : field.name === "whatsapp" ? 40 : field.name === "company" ? 140 : 120}"${field.autocomplete ? ` autocomplete="${escapeAttribute(field.autocomplete)}"` : ""}${field.type === "email" ? ' inputmode="email"' : ""}${field.name === "whatsapp" ? ' inputmode="tel"' : ""}${field.required ? " required" : ""}>
         </label>
       `
     )
@@ -976,7 +971,7 @@ function renderEstimateSummaryPanel() {
 
 function renderEstimateConfigScript() {
   const config = {
-    webhookEndpoint: estimateWebhookEndpoint,
+    webhookEndpoint: leadEndpoint,
     contactEmail: estimateData.fallbackEmail || siteData.contact.email,
     source: "portfolio_estimate"
   };
@@ -1113,7 +1108,7 @@ function estimatePage() {
                     <p class="mini-label">Step 6 of 6</p>
                     <p class="eyebrow">${escapeHtml(contact.eyebrow || "Send the summary")}</p>
                     <h3>${escapeHtml(contact.heading || "Send this estimate to Rifki")}</h3>
-                    ${estimateWebhookEndpoint ? (contact.lead ? `<p>${escapeHtml(contact.lead)}</p>` : "") : `<p>Review the summary, then open it in your email app. Nothing is sent until you send the email there.</p>`}
+                    <p>Send your complete planning brief here. I usually reply within 24 hours on weekdays.</p>
                   </div>
                   <div class="estimate-field-grid">
                     ${renderEstimateContactFields()}
@@ -1121,9 +1116,9 @@ function estimatePage() {
                 </form>
                 <div class="estimate-error" data-estimate-submit-status role="status" aria-live="polite" hidden></div>
                 <div class="actions">
-                  ${estimateWebhookEndpoint ? `<button class="btn btn-primary" type="button" data-estimate-submit>${escapeHtml(contact.submitLabel || "Send My Estimate to Rifki")}</button>` : ""}
+                  <button class="btn btn-primary" type="button" data-estimate-submit>${escapeHtml(contact.submitLabel || "Send My Estimate to Rifki")}</button>
                   <button class="btn btn-secondary" type="button" data-estimate-edit>${escapeHtml(contact.editLabel || "Edit answers")}</button>
-                  <a class="btn ${estimateWebhookEndpoint ? "btn-secondary" : "btn-primary"}" href="${escapeAttribute(estimateMailHref())}" data-estimate-mailto>${estimateWebhookEndpoint ? escapeHtml(contact.emailFallbackLabel || "Email Project Brief") : "Open email with summary"}</a>
+                  <a class="btn btn-secondary" href="${escapeAttribute(estimateMailHref())}" data-estimate-mailto hidden>${escapeHtml(contact.emailFallbackLabel || "Email Project Brief")}</a>
                 </div>
               </article>
             </section>
@@ -1949,19 +1944,25 @@ function contactPage() {
           <div class="card contact-form-card">
             <p class="eyebrow">Project brief</p>
             <h2 id="contact-form-heading">A few useful details</h2>
-            <p>This prepares an email in your own email app. You can review and send it there; no information is submitted on this page.</p>
-            <form data-contact-form action="mailto:${escapeAttribute(siteData.contact.email)}" method="get">
+            <p>Send the brief here and I will reply with a practical first step, usually within 24 hours on weekdays.</p>
+            <form data-contact-form data-contact-email="${escapeAttribute(siteData.contact.email)}" data-lead-endpoint="${escapeAttribute(leadEndpoint)}">
+              <label class="lead-honeypot" aria-hidden="true">Leave this blank <input name="_honey" tabindex="-1" autocomplete="off"></label>
               <div class="contact-fields">
                 <label>Your name <input name="name" autocomplete="name" required maxlength="120" placeholder="Name"></label>
                 <label>Your email <input name="email" type="email" autocomplete="email" required maxlength="180" placeholder="you@company.com"></label>
                 <label>Company or team <input name="company" autocomplete="organization" maxlength="160" placeholder="Optional"></label>
+                <label>WhatsApp <input name="whatsapp" type="tel" autocomplete="tel" maxlength="40" placeholder="Optional"></label>
+                <label>Location <input name="location" autocomplete="country-name" maxlength="120" placeholder="City or country, optional"></label>
                 <label>Project type <select name="projectType" required><option value="">Choose one</option><option>Internal tool or CRM</option><option>AI or workflow automation</option><option>Android or on-device AI</option><option>Other engineering work</option></select></label>
                 <label class="contact-field-wide">What needs to change? <textarea name="goal" required maxlength="1600" rows="5" placeholder="What happens today, and what outcome would make this successful?"></textarea></label>
+                <label>Tools or integrations <input name="integrations" maxlength="300" placeholder="Optional"></label>
+                <label>Users or complexity <input name="complexity" maxlength="160" placeholder="Optional"></label>
                 <label>Target timeline <input name="timeline" maxlength="120" placeholder="Optional"></label>
                 <label>Indicative budget <input name="budget" maxlength="120" placeholder="Optional"></label>
               </div>
-              <div class="actions"><button class="btn btn-primary" type="submit">Open email with brief</button><button class="btn btn-secondary" type="button" data-copy-target="contact-brief-preview" data-copy-feedback="contact-copy-feedback">Copy brief</button></div>
-              <p id="contact-copy-feedback" class="copy-feedback" role="status" aria-live="polite">If your email app does not open, copy the brief and send it to ${escapeHtml(siteData.contact.email)}.</p>
+              <div class="actions"><button class="btn btn-primary" type="submit">Send project brief</button><a class="btn btn-secondary" data-contact-mailto href="mailto:${escapeAttribute(siteData.contact.email)}" hidden>Email brief instead</a><button class="btn btn-secondary" type="button" data-copy-target="contact-brief-preview" data-copy-feedback="contact-copy-feedback">Copy brief</button></div>
+              <p class="lead-status" data-contact-status role="status" aria-live="polite" hidden></p>
+              <p id="contact-copy-feedback" class="copy-feedback" role="status" aria-live="polite"></p>
               <pre id="contact-brief-preview" class="sr-only-copy-source" data-contact-preview></pre>
             </form>
           </div>

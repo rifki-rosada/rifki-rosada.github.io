@@ -129,24 +129,23 @@
       return;
     }
 
-    if (!config.webhookEndpoint) {
-      showMessage(submitStatus, "Online submission is not configured yet. Use Email Project Brief to send the same summary.");
-      trackEvent(analyticsEvents.mailtoFallback || "estimate_mailto_fallback", publicEventPayload(currentPayload));
-      return;
-    }
-
     isSubmitting = true;
     finalSubmitButton.disabled = true;
-    showMessage(submitStatus, "Sending estimate request...");
+    finalSubmitButton.textContent = "Sending...";
+    showMessage(submitStatus, "Sending your complete estimate and project brief...");
 
     try {
       await postToWebhook(config.webhookEndpoint, currentPayload);
       setLastSubmittedAt();
-      showMessage(submitStatus, "Sent. I will review the estimate request and reply with the best next step.");
+      showMessage(submitStatus, "Received. I review project briefs within 24 hours on weekdays.");
+      finalSubmitButton.textContent = "Estimate received";
+      if (mailtoLink) mailtoLink.hidden = true;
       trackEvent(analyticsEvents.submitSuccess || "estimate_submit_success", publicEventPayload(currentPayload));
     } catch {
-      showMessage(submitStatus, "Online submission was unavailable. Use Email Project Brief to send the same summary.");
+      showMessage(submitStatus, "Your estimate could not be sent. Please try again or use Email Project Brief below.");
       finalSubmitButton.disabled = false;
+      finalSubmitButton.textContent = "Try sending again";
+      if (mailtoLink) mailtoLink.hidden = false;
       trackEvent(analyticsEvents.submitError || "estimate_submit_error", publicEventPayload(currentPayload));
     } finally {
       isSubmitting = false;
@@ -478,6 +477,9 @@
     }
     if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
       return { valid: false, message: "Enter a valid email address.", target: contactForm?.elements.email };
+    }
+    if (data.whatsapp && (!/^[+()\d\s-]+$/.test(data.whatsapp) || data.whatsapp.replace(/\D/g, "").length < 7)) {
+      return { valid: false, message: "Enter a valid WhatsApp number.", target: contactForm?.elements.whatsapp };
     }
     return { valid: true, message: "" };
   }
@@ -913,11 +915,18 @@
   }
 
   async function postToWebhook(endpoint, payload) {
-    await fetch(endpoint, {
-      method: "POST",
-      mode: "no-cors",
-      keepalive: true,
-      body: JSON.stringify(payload)
+    if (!window.RifkiLead?.submit) throw new Error("Lead submission is unavailable.");
+    await window.RifkiLead.submit(endpoint, {
+      _subject: "New automation estimate from rifkirosada.com",
+      _honey: "",
+      name: payload.name,
+      email: payload.email,
+      company: payload.company,
+      whatsapp: payload.whatsapp,
+      recommended_package: payload.recommendedPackage,
+      estimated_range: payload.estimatedRange,
+      source_url: payload.pageUrl,
+      message: JSON.stringify(payload, null, 2)
     });
   }
 

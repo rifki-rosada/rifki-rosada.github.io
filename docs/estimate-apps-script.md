@@ -1,5 +1,7 @@
 # Estimate Lead Capture with Google Apps Script
 
+Archived reference: the live contact and estimator forms now use FormSubmit AJAX. This guide is not wired into the site build or production submission flow.
+
 This guide documents an optional Google Apps Script bridge for the `/estimate/` page. It receives estimator submissions, validates the required lead fields server-side, appends sanitized lead data to Google Sheets, and emails a notification to Rifki.
 
 Use obvious placeholders while setting this up. Do not commit real Sheet IDs, deployment URLs, credentials, or local `.env` files.

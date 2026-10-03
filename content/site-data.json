@@ -51,9 +51,6 @@
     "whatsapp": "",
     "responseTime": "Usually replies within 24 hours on weekdays."
   },
-  "estimate": {
-    "webhookEndpoint": ""
-  },
   "resume": {
     "label": "Resume",
     "href": "/Profile.pdf"

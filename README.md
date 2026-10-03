@@ -63,19 +63,17 @@ Generated during build:
 - Lint alias:
   - `npm run lint`
 
-### Estimate Content and Webhook
+### Lead submission
 
-The estimator page is generated from `content/estimate.json`. Questions, pricing, proof items, scoring labels, result copy, SEO text, and the fallback email belong there so builds stay deterministic.
+The contact and estimator forms submit through FormSubmit's AJAX endpoint to `rifki@rifkirosada.com`. Visitors remain on the site. A submission is shown as received only when the service returns a successful response. Failed requests reveal an email fallback that contains the same brief.
 
-Submissions are client-side. To send leads to a Google Apps Script web app, set `ESTIMATE_WEBHOOK_URL` during build or update `content/site-data.json` -> `estimate.webhookEndpoint` with a public, rotatable endpoint.
+The first production submission triggers an activation email to the contact inbox. The mailbox owner must confirm it before delivery is live, then verify a second test lead arrives with the full brief. FormSubmit says it holds pending submissions for up to 30 days. Check the inbox and spam folder. Its documented free tier supports unlimited forms and submissions, but it is a third-party service and retains submissions for 30 days.
 
-When no webhook is configured, the estimator shows an **Open email with summary** link and no online submit button. The contact page prepares a project brief in the visitor's email app and offers a copy action. Neither flow claims to have sent a message until the visitor sends it in their email app. The direct email address remains visible as a fallback.
+Spam controls are a hidden honeypot, FormSubmit's filtering, and a short repeat-submit cooldown for estimates. The forms send no private API key. The estimator notification includes the complete structured result and all selected answers as JSON; the contact notification includes every visible field.
 
 The estimate selects a planning package from scope complexity. Budget readiness can route a low-budget lead to a smaller audit, but a larger available budget does not force an advanced package. Starting service prices and estimator bands are both indicative; final quotes follow scope review.
 
-Do not commit private credentials, Apps Script secrets, Google Sheet URLs, or a local `.env`. The default repo value is blank and the page keeps a mailto fallback when no endpoint is configured.
-
-Backend setup notes and a fake lead payload live in `docs/estimate-apps-script.md` and `docs/estimate-sample-payload.json`.
+Do not commit private credentials or a local `.env`. The older Apps Script guide in `docs/estimate-apps-script.md` is retained for reference and is not the active submission path.
 
 ## Where to Edit Content
 
